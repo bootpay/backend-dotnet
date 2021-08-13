@@ -1,0 +1,9 @@
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.GeneratedMSBuildEditorConfig.editorconfig
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.AssemblyInfoInputs.cache
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.AssemblyInfo.cs
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.csproj.CoreCompileInputs.cache
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.deps.json
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.dll
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.pdb
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.dll
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.pdb

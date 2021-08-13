@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "0IALCc+wX9dpKMSTySDMwuj8GSu2bqTdhk3ZXc2YXCR4YfzGp2bsYZLJQkRVpb2ioXFY5j5IMBkCUvlFusdaXw==",
+  "success": true,
+  "projectFilePath": "/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Sample/Sample.csproj",
+  "expectedPackageFiles": [
+    "/Users/bootpay/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
