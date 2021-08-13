@@ -17,13 +17,11 @@ namespace Sample.Controllers
     {
         public async Task<IActionResult> IndexAsync()
         {
-            BootpayApi api = new BootpayApi("5b8f6a4d396fa665fdc2b5ea", "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=");
-           
-            var res = await api.GetAccessToken();
-            
+            BootpayApi api = new BootpayApi("5b8f6a4d396fa665fdc2b5ea", "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=");           
+            var res = await api.GetAccessToken();            
             var jsonString = JsonConvert.SerializeObject(res); 
 
             return Ok(jsonString);
-        }
+        } 
     }
 }

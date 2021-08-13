@@ -62,7 +62,11 @@ namespace Bootpay
                 if (json.Length > 0) {
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");  
                 }
-                if (_token != null && _token.Length > 0) { request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token); }
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "1234");
+
+                
+
+                if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", _token); }
                 
                 var res = await client.SendAsync(request);
                 string resJson = await res.Content.ReadAsStringAsync();

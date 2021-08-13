@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http; 
 using System.Threading.Tasks;
 using Bootpay.models;
+using Bootpay.models.response;
 using Bootpay.service;
 
 namespace Bootpay
@@ -17,7 +18,7 @@ namespace Bootpay
         }
 
         //billing
-        public async Task<ResDefault> getBillingKey(Subscribe subsribe) {
+        public async Task<ResBillingKey> getBillingKey(Subscribe subsribe) {
             return await BillingService.GetBillingKey(this, subsribe);
         }
 

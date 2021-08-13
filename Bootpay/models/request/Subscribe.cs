@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Bootpay.models
@@ -7,7 +8,9 @@ namespace Bootpay.models
     {
         [JsonPropertyName("order_id")]
         public string orderId { get; set; }
-        public string pg { get; set; }
+
+
+        public string pgs { get; set; }
 
         [JsonPropertyName("item_name")]
         public string itemName { get; set; }

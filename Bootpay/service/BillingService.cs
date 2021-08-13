@@ -2,15 +2,16 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bootpay.models;
+using Bootpay.models.response;
 using Newtonsoft.Json;
 
 namespace Bootpay.service
 {
     public class BillingService
     {
-        public static async Task<ResDefault> GetBillingKey(BootpayObject bootpay, Subscribe subsribe)
+        public static async Task<ResBillingKey> GetBillingKey(BootpayObject bootpay, Subscribe subsribe)
         {
-            return await bootpay.SendAsync<ResDefault>("request/card_rebill", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(subsribe));
+            return await bootpay.SendAsync<ResBillingKey>("request/card_rebill", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(subsribe));
         }
 
         public static async Task<ResDefault> DestroyBillingKey(BootpayObject bootpay, string billingKey)
