@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Bootpay.models
 {
     public class Item
     {
-        [JsonPropertyName("item_name")]
+        [JsonProperty("item_name")]
         public string itemName { get; set; }
         public int qty { get; set; }
         public string unique { get; set; }

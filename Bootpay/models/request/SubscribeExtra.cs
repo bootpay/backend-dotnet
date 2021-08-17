@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Bootpay.models
 {
     public class SubscribeExtra
     {
-        [JsonPropertyName("subscribe_test_payment")]
+        [JsonProperty("subscribe_test_payment")]
         public int subscribeTestPayment { get; set; }
 
-        [JsonPropertyName("raw_data")]
+        [JsonProperty("raw_data")]
         public int rawData { get; set; }
     }
 }
