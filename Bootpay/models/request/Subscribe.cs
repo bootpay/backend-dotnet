@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Bootpay.models
 {
     public class Subscribe
-    {
-        [JsonPropertyName("order_id")]
+    { 
+        [JsonProperty("order_id")]        
         public string orderId { get; set; }
 
 
-        public string pgs { get; set; }
+        public string pg { get; set; }
 
-        [JsonPropertyName("item_name")]
+        [JsonProperty("item_name")]
         public string itemName { get; set; }
 
-        [JsonPropertyName("card_no")]
+        [JsonProperty("card_no")]
         public string cardNo { get; set; }
 
-        [JsonPropertyName("card_pw")]
+        [JsonProperty("card_pw")]
         public string cardPw { get; set; }
 
-        [JsonPropertyName("expire_year")]
+        [JsonProperty("expire_year")]
         public string expireYear { get; set; }
 
-        [JsonPropertyName("expire_month")]
+        [JsonProperty("expire_month")]
         public string expireMonth { get; set; }
 
-        [JsonPropertyName("identify_number")]
+        [JsonProperty("identify_number")]
         public string identifyNumber { get; set; } 
     }
 }

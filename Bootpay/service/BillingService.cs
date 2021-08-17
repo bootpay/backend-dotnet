@@ -11,7 +11,14 @@ namespace Bootpay.service
     {
         public static async Task<ResBillingKey> GetBillingKey(BootpayObject bootpay, Subscribe subsribe)
         {
-            return await bootpay.SendAsync<ResBillingKey>("request/card_rebill", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(subsribe));
+             
+            string json = JsonConvert.SerializeObject(subsribe,
+                            Newtonsoft.Json.Formatting.None,
+                            new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            }); 
+            return await bootpay.SendAsync<ResBillingKey>("request/card_rebill", HttpMethod.Post, json);
         }
 
         public static async Task<ResDefault> DestroyBillingKey(BootpayObject bootpay, string billingKey)
@@ -21,12 +28,24 @@ namespace Bootpay.service
 
         public static async Task<ResDefault> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(payload));
+            string json = JsonConvert.SerializeObject(payload,
+                            Newtonsoft.Json.Formatting.None,
+                            new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
+            return await bootpay.SendAsync<ResDefault>("subscribe/billing", HttpMethod.Post, json);
         }
 
         public static async Task<ResDefault> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(payload));
+            string json = JsonConvert.SerializeObject(payload,
+                            Newtonsoft.Json.Formatting.None,
+                            new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
+            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve", HttpMethod.Post, json);
         }
 
         public static async Task<ResDefault> ReserveCancelSubscribe(BootpayObject bootpay, string reserveId)

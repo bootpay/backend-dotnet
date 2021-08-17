@@ -24,7 +24,9 @@ namespace Sample.Controllers
         {
             BootpayApi api = new BootpayApi("5b8f6a4d396fa665fdc2b5ea", "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=");
             var res = await api.GetAccessToken();
-            //subscribe.orderId = api._token;
+
+
+            subscribe.orderId = "1234";
 
             var resKey = await api.getBillingKey(subscribe);
             var jsonString = System.Text.Json.JsonSerializer.Serialize(subscribe);
