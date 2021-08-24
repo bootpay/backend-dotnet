@@ -14,7 +14,7 @@ namespace Bootpay.service
         }
 
         public static async Task<ResDefault> Certificate(BootpayObject bootpay, string receiptId)
-        { 
+        {
             return await bootpay.SendAsync<ResDefault>("certificate/" + receiptId, HttpMethod.Get);
         }
     }

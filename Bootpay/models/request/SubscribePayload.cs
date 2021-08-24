@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Collections.Generic; 
 using Newtonsoft.Json;
 
 namespace Bootpay.models
@@ -36,7 +35,7 @@ namespace Bootpay.models
         [JsonProperty("scheduler_type")]
         public string schedulerType { get; set; }
 
-        [JsonPJsonPropertyropertyName("execute_at")]
+        [JsonProperty("execute_at")]
         public long executeAt { get; set; }
     }
 }

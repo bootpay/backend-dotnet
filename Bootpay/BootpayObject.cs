@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Bootpay.converter;
 using Bootpay.models;
 using Newtonsoft.Json;
 
@@ -45,14 +46,23 @@ namespace Bootpay
             {
                 applicationId = _applicationId,
                 privateKey = _privateKey
-            }; 
+            };
 
-            var res = await SendAsync<ResToken>("request/token", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(token));
+            string json = JsonConvert.SerializeObject(token,
+                        Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
+
+
+            var res = await SendAsync<ResToken>("request/token", HttpMethod.Post, json);
             _token = res.data.token;
             return res;
         }
-         
+
         public async Task<TRes> SendAsync<TRes>(string url, HttpMethod method, string json = "")
+        //public async Task<string> SendAsync(string url, HttpMethod method, string json = "")
         { 
             using (HttpRequestMessage request = new HttpRequestMessage())
             using (HttpClient client = new HttpClient())
@@ -70,7 +80,10 @@ namespace Bootpay
                 
                 var res = await client.SendAsync(request);
                 string resJson = await res.Content.ReadAsStringAsync();
+
                 return JsonConvert.DeserializeObject<TRes>(resJson);
+
+                //return await res.Content.ReadAsStringAsync();
             }
         }
     }

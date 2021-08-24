@@ -1,48 +1,50 @@
 ﻿using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Bootpay.models.response
 {
     public class ResBillingKey : ResDefault
     {
-        public BillingKeyData data { get; set; }
+
+        //[JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public new BillingKeyData data { get; set; }
     }
 
     public class BillingKeyData
     {
-        [JsonPropertyName("billing_key")]
+        [JsonProperty("billing_key")]
         public string billingKey { get; set; }
 
-        [JsonPropertyName("pg_name")]
+        [JsonProperty("pg_name")]
         public string pgName { get; set; }
 
-        [JsonPropertyName("method_name")]
+        [JsonProperty("method_name")]
         public string methodName { get; set; }
 
-        [JsonPropertyName("method")]
+        [JsonProperty("method")]
         public string method { get; set; }
 
         public BillingKeyCardData data { get; set; }
 
-        [JsonPropertyName("e_at")]
+        [JsonProperty("e_at")]
         public string endAt { get; set; }
 
-        [JsonPropertyName("c_at")]
+        [JsonProperty("c_at")]
         public string createAt { get; set; }
     }
 
     public class BillingKeyCardData
     {
-        [JsonPropertyName("card_code")]
+        [JsonProperty("card_code")]
         public string cardCode { get; set; }
 
-        [JsonPropertyName("card_name")]
+        [JsonProperty("card_name")]
         public string cardName { get; set; }
 
-        [JsonPropertyName("card_no")]
+        [JsonProperty("card_no")]
         public string cardNo { get; set; }
 
-        [JsonPropertyName("card_cl")]
+        [JsonProperty("card_cl")]
         public string cardCl { get; set; } 
     }
 }

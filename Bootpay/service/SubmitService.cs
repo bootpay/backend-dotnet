@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bootpay.models;
+using Newtonsoft.Json;
 
 namespace Bootpay.service
 {
@@ -13,7 +14,15 @@ namespace Bootpay.service
             {
                 receiptId = receiptId
             };
-            return await bootpay.SendAsync<ResDefault>("submit", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(submit));
+
+            string json = JsonConvert.SerializeObject(submit,
+                            Newtonsoft.Json.Formatting.None,
+                            new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
+
+            return await bootpay.SendAsync<ResDefault>("submit", HttpMethod.Post, json);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bootpay.models;
+using Newtonsoft.Json;
 
 namespace Bootpay.service
 {
@@ -9,7 +10,14 @@ namespace Bootpay.service
     {
         public static async Task<ResDefault> ReceiptCancel(BootpayObject bootpay, Cancel cancel)
         {
-            return await bootpay.SendAsync<ResDefault>("cancel", HttpMethod.Post, System.Text.Json.JsonSerializer.Serialize(cancel));
+            string json = JsonConvert.SerializeObject(cancel,
+                            Newtonsoft.Json.Formatting.None,
+                            new JsonSerializerSettings
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
+
+            return await bootpay.SendAsync<ResDefault>("cancel", HttpMethod.Post, json);
         }
     }
 }

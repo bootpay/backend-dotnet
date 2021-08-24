@@ -6,6 +6,7 @@ using Bootpay;
 using Bootpay.models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Sample.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,18 +23,11 @@ namespace Sample.Controllers
         [HttpPost("billing/get_billing_key")]
         public async Task<IActionResult> GetBillingKey(Subscribe subscribe)
         {
-            BootpayApi api = new BootpayApi("5b8f6a4d396fa665fdc2b5ea", "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=");
-            var res = await api.GetAccessToken();
-
-
-            subscribe.orderId = "1234";
-
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            var res = await api.GetAccessToken(); 
             var resKey = await api.getBillingKey(subscribe);
-            var jsonString = System.Text.Json.JsonSerializer.Serialize(subscribe);
-                //JsonConvert.SerializeObject(resKey);
-
-            //subscribe.card
-
+            
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(resKey);
             return Ok(jsonString);
         }
     }

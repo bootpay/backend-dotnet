@@ -7,3 +7,4 @@
 /Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.pdb
 /Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.dll
 /Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.pdb
+/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.csproj.AssemblyReference.cache

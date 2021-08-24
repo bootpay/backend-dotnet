@@ -8,10 +8,12 @@
     <None Remove="models\request\" />
     <None Remove="models\response\" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="converter\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\request\" />
     <Folder Include="models\response\" />
+    <Folder Include="converter\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

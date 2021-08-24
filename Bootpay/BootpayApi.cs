@@ -18,11 +18,12 @@ namespace Bootpay
         }
 
         //billing
-        public async Task<ResBillingKey> getBillingKey(Subscribe subsribe) {
+        public async Task<ResDefault> getBillingKey(Subscribe subsribe) {
             return await BillingService.GetBillingKey(this, subsribe);
         }
 
-        //public async Task<HttpResponseMessage> requestSubscribe(SubscribePayload payload)  {
+        //public async Task<HttpResponseMessage> requestSubscribe(SubscribePayload payload)
+        //{
         //    return BillingService.requestSubscribe(this, payload);
         //}
         //public async Task<HttpResponseMessage> reserveSubscribe(SubscribePayload payload) throws Exception
