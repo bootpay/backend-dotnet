@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+
 using System.Threading.Tasks;
 using Bootpay;
 using Bootpay.models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Sample.Models;
 
-
 namespace Sample.Controllers
 {
-    public class TokenController : Controller
+    public class CancelController : Controller
     {
-        public async Task<IActionResult> IndexAsync()
+        [HttpPost("cancel")]
+        public async Task<IActionResult> ReceiptCancel(Cancel cancel)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            var res = await api.GetAccessToken();
+            await api.GetAccessToken();
+            var res = await api.receiptCancel(cancel);
 
             string json = JsonConvert.SerializeObject(res,
                     Newtonsoft.Json.Formatting.None,
@@ -27,7 +25,8 @@ namespace Sample.Controllers
                         NullValueHandling = NullValueHandling.Ignore
                     });
 
+
             return Ok(json);
-        } 
+        }
     }
 }

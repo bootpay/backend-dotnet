@@ -24,11 +24,86 @@ namespace Sample.Controllers
         public async Task<IActionResult> GetBillingKey(Subscribe subscribe)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            var res = await api.GetAccessToken(); 
-            var resKey = await api.getBillingKey(subscribe);
-            
-            var jsonString = System.Text.Json.JsonSerializer.Serialize(resKey);
-            return Ok(jsonString);
+            await api.GetAccessToken();
+            var res = await api.getBillingKey(subscribe);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+            return Ok(json);
+        }
+
+        [HttpDelete("billing/destroy_billing_key")]
+        public async Task<IActionResult> DestroyBillingKey(string billingKeyID)
+        {
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.destroyBillingKey(billingKeyID);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+
+            return Ok(json);
+        }
+
+        [HttpPost("billing/request_subscribe")]
+        public async Task<IActionResult> RequestSubscribe(SubscribePayload payload)
+        {
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.requestSubscribe(payload);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+            return Ok(json);
+        }
+
+        [HttpPost("billing/reserve_subscribe")]
+        public async Task<IActionResult> ReserveSubscribe(SubscribePayload payload)
+        {
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.reserveSubscribe(payload);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+            return Ok(json);
+        }
+
+        [HttpDelete("billing/reserve_cancel_subscribe")]
+        public async Task<IActionResult> ReserveCancelSubscribe(string reserveId)
+        {
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.reserveCancelSubscribe(reserveId);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+            return Ok(json);
         }
     }
 }

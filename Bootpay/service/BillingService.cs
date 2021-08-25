@@ -26,7 +26,7 @@ namespace Bootpay.service
             return await bootpay.SendAsync<ResDefault>("subscribe/billing/" + billingKey, HttpMethod.Delete);
         }
 
-        public static async Task<ResDefault> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
+        public static async Task<ResBillingSubscribe> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
@@ -34,7 +34,7 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             });
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing", HttpMethod.Post, json);
+            return await bootpay.SendAsync<ResBillingSubscribe>("subscribe/billing", HttpMethod.Post, json);
         }
 
         public static async Task<ResDefault> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)

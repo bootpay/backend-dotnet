@@ -8,7 +8,7 @@ namespace Bootpay.service
 {
     public class LinkService
     {
-        public static async Task<ResDefault> GetUserToken(BootpayObject bootpay, Payload payload)
+        public static async Task<ResDefault> RequestPayment(BootpayObject bootpay, Payload payload)
         {
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
