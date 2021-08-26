@@ -12,7 +12,7 @@ namespace Sample.Controllers
     public class CancelController : Controller
     {
         [HttpPost("cancel")]
-        public async Task<IActionResult> ReceiptCancel(Cancel cancel)
+        public async Task<IActionResult> ReceiptCancel([FromBody]Cancel cancel)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();

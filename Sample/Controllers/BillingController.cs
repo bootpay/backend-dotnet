@@ -21,7 +21,7 @@ namespace Sample.Controllers
         }
 
         [HttpPost("billing/get_billing_key")]
-        public async Task<IActionResult> GetBillingKey(Subscribe subscribe)
+        public async Task<IActionResult> GetBillingKey([FromBody]Subscribe subscribe)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
@@ -56,8 +56,8 @@ namespace Sample.Controllers
         }
 
         [HttpPost("billing/request_subscribe")]
-        public async Task<IActionResult> RequestSubscribe(SubscribePayload payload)
-        {
+        public async Task<IActionResult> RequestSubscribe([FromBody]SubscribePayload payload)
+        { 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.requestSubscribe(payload);
@@ -73,7 +73,7 @@ namespace Sample.Controllers
         }
 
         [HttpPost("billing/reserve_subscribe")]
-        public async Task<IActionResult> ReserveSubscribe(SubscribePayload payload)
+        public async Task<IActionResult> ReserveSubscribe([FromBody]SubscribePayload payload)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();

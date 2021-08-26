@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System; 
+using Newtonsoft.Json;
 
 namespace Bootpay.models.response
 {
@@ -10,13 +10,13 @@ namespace Bootpay.models.response
 
     public class ResEasyData
     {
-        [JsonPropertyName("user_token")]
+        [JsonProperty("user_token")]
         public string userToken { get; set; }
 
-        [JsonPropertyName("expired_unixtime")]
+        [JsonProperty("expired_unixtime")]
         public long expiredUnixtime { get; set; }
 
-        [JsonPropertyName("expired_localtime")]
+        [JsonProperty("expired_localtime")]
         public string expiredLocaltime { get; set; }
     }
 }

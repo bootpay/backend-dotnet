@@ -10,8 +10,7 @@ namespace Bootpay.models
         public int code { get; set; }
         public string message { get; set; }
 
-
-        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> data { get; set; }
     }
 }

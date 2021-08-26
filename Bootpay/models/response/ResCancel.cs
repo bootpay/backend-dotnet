@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System; 
+using Newtonsoft.Json;
 
 namespace Bootpay.models.response
 {
@@ -10,25 +10,25 @@ namespace Bootpay.models.response
 
     public class ResCancelData
     {
-        [JsonPropertyName("receipt_id")]
+        [JsonProperty("receipt_id")]
         public string receiptId { get; set; }
 
-        [JsonPropertyName("request_cancel_price")]
+        [JsonProperty("request_cancel_price")]
         public int requestCancelPrice { get; set; }
 
-        [JsonPropertyName("remain_price")]
+        [JsonProperty("remain_price")]
         public int remainPrice { get; set; }
 
-        [JsonPropertyName("remain_tax_free")]
+        [JsonProperty("remain_tax_free")]
         public int remainTaxFree { get; set; }
 
-        [JsonPropertyName("cancelled_price")]
+        [JsonProperty("cancelled_price")]
         public int cancelledPrice { get; set; }
 
-        [JsonPropertyName("cancelled_tax_free")]
+        [JsonProperty("cancelled_tax_free")]
         public int cancelledTaxFree { get; set; }
 
-        [JsonPropertyName("revoked_at")]
+        [JsonProperty("revoked_at")]
         public string revokedAt { get; set; }
          
         public string tid { get; set; }

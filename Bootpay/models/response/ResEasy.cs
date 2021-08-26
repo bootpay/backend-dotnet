@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Collections.Generic; 
+using Newtonsoft.Json;
 
 namespace Bootpay.models.response
 {
@@ -11,61 +11,61 @@ namespace Bootpay.models.response
 
     public class ResVerifyData
     {
-        [JsonPropertyName("receipt_id")]
+        [JsonProperty("receipt_id")]
         public string receiptId { get; set; }
 
-        [JsonPropertyName("order_id")]
+        [JsonProperty("order_id")]
         public string orderId { get; set; }
         
         public string name { get; set; }
         public double price { get; set; }
 
-        [JsonPropertyName("tax_free")]
+        [JsonProperty("tax_free")]
         public double taxFree { get; set; }
 
-        [JsonPropertyName("remain_price")]
+        [JsonProperty("remain_price")]
         public double remainPrice { get; set; }
 
-        [JsonPropertyName("remain_tax_free")]
+        [JsonProperty("remain_tax_free")]
         public double remainTaxFree { get; set; }
 
-        [JsonPropertyName("cancelled_price")]
+        [JsonProperty("cancelled_price")]
         public double cancelledPrice { get; set; }
 
-        [JsonPropertyName("cancelled_tax_free")]
+        [JsonProperty("cancelled_tax_free")]
         public double cancelledTaxFree { get; set; }
 
-        [JsonPropertyName("receipt_url")]
+        [JsonProperty("receipt_url")]
         public string receiptUrl { get; set; }
          
         public string unit { get; set; } 
         public string pg { get; set; }
         public string methd { get; set; }
 
-        [JsonPropertyName("pg_name")]
+        [JsonProperty("pg_name")]
         public string pgName { get; set; }
 
-        [JsonPropertyName("method_name")]
+        [JsonProperty("method_name")]
         public string methodName { get; set; }
 
-        [JsonPropertyName("params")]
+        [JsonProperty("params")]
         public Dictionary<string, object> paramsCustom { get; set; }
 
-        [JsonPropertyName("payment_data")]
+        [JsonProperty("payment_data")]
         public Dictionary<string, object> paymentData { get; set; }
 
-        [JsonPropertyName("requested_at")]
+        [JsonProperty("requested_at")]
         public string requestedAt { get; set; }
 
-        [JsonPropertyName("purchased_at")]
+        [JsonProperty("purchased_at")]
         public string purchasedAt { get; set; }
 
         public int status { get; set; }
 
-        [JsonPropertyName("status_en")]
+        [JsonProperty("status_en")]
         public string statusEn { get; set; }
 
-        [JsonPropertyName("status_ko")]
+        [JsonProperty("status_ko")]
         public string statusKn { get; set; } 
     }
 }

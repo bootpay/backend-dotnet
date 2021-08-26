@@ -22,7 +22,7 @@ namespace Bootpay
             return await BillingService.DestroyBillingKey(this, billing_key);
         }
 
-        public async Task<ResBillingSubscribe> requestSubscribe(SubscribePayload payload) {
+        public async Task<ResDefault> requestSubscribe(SubscribePayload payload) {
             return await BillingService.RequestSubscribe(this, payload);
         }
 

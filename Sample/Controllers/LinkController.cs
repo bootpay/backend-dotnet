@@ -12,7 +12,7 @@ namespace Sample.Controllers
     public class LinkController : Controller
     {
         [HttpPost("link")]
-        public async Task<IActionResult> RequestPayment(Payload payload)
+        public async Task<IActionResult> RequestPayment([FromBody]Payload payload)
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();

@@ -18,7 +18,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync<ResEasy>("request/user/token", HttpMethod.Post, json);
+            return await bootpay.SendAsync<ResEasy>("request/user/token.json", HttpMethod.Post, json);
         }
     }
 }

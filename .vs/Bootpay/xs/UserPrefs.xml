@@ -1,14 +1,22 @@
 ﻿<Properties StartupConfiguration="{6FFF6D11-82D3-4861-A029-D82E5B5DB183}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bootpay/models/request/SubscribePayload.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Bootpay/models/request/User.cs">
     <Files>
-      <File FileName="Bootpay/BootpayObject.cs" Line="64" Column="33" />
-      <File FileName="Sample/Controllers/HomeController.cs" Line="1" Column="1" />
-      <File FileName="Sample/Controllers/TokenController.cs" Line="34" Column="1" />
-      <File FileName="Sample/Controllers/CancelController.cs" Line="33" Column="1" />
-      <File FileName="Sample/Controllers/VerificationController.cs" Line="18" Column="40" />
-      <File FileName="Sample/Controllers/BillingController.cs" Line="76" Column="70" />
-      <File FileName="Bootpay/models/request/SubscribePayload.cs" Line="7" Column="18" />
+      <File FileName="Sample/Controllers/BillingController.cs" Line="76" Column="74" NotebookId="1" />
+      <File FileName="Bootpay/models/request/SubscribePayload.cs" Line="25" Column="18" NotebookId="1" />
+      <File FileName="Bootpay/models/request/User.cs" Line="4" Column="18" NotebookId="1" />
     </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="97" Y="44" Width="1089" Height="879">
+        <Files>
+          <File FileName="Bootpay/models/response/ResBillingKey.cs" Line="9" Column="79" />
+          <File FileName="Bootpay/models/response/ResCancel.cs" Line="24" Column="1" />
+          <File FileName="Bootpay/models/response/ResDefault.cs" Line="13" Column="77" />
+          <File FileName="Bootpay/models/response/ResEasy.cs" Line="68" Column="22" />
+          <File FileName="Bootpay/models/response/ResToken.cs" Line="1" Column="1" />
+          <File FileName="Bootpay/models/response/ResVerify.cs" Line="19" Column="22" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
@@ -17,7 +25,7 @@
               <Node name="converter" expanded="True" />
               <Node name="models" expanded="True">
                 <Node name="request" expanded="True">
-                  <Node name="SubscribePayload.cs" selected="True" />
+                  <Node name="User.cs" selected="True" />
                 </Node>
                 <Node name="response" expanded="True" />
               </Node>
@@ -33,6 +41,9 @@
             </Node>
           </Node>
         </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

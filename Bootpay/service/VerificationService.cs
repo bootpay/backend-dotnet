@@ -10,12 +10,12 @@ namespace Bootpay.service
 
         public static async Task<ResDefault> Verify(BootpayObject bootpay, string receiptId)
         {
-            return await bootpay.SendAsync<ResDefault>("receipt/" + receiptId, HttpMethod.Get);
+            return await bootpay.SendAsync<ResDefault>("receipt/" + receiptId + ".json", HttpMethod.Get);
         }
 
         public static async Task<ResDefault> Certificate(BootpayObject bootpay, string receiptId)
         {
-            return await bootpay.SendAsync<ResDefault>("certificate/" + receiptId, HttpMethod.Get);
+            return await bootpay.SendAsync<ResDefault>("certificate/" + receiptId + ".json", HttpMethod.Get);
         }
     }
 }

@@ -61,6 +61,10 @@ namespace Bootpay
             return res;
         }
 
+        //private readonly ILogger<Worker> _logger;
+        //public Worker(ILogger<Worker> logger) =>
+        //    _logger = logger;
+
         public async Task<TRes> SendAsync<TRes>(string url, HttpMethod method, string json = "")
         //public async Task<string> SendAsync(string url, HttpMethod method, string json = "")
         { 
@@ -69,17 +73,19 @@ namespace Bootpay
             {                     
                 request.Method = method;
                 request.RequestUri = new Uri(_baseUrl + url);
+                Console.WriteLine("json length: " + json.Length);
+
                 if (json.Length > 0) {
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");  
-                }
-                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "1234");
-
-                
+                } 
 
                 if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", _token); }
                 
                 var res = await client.SendAsync(request);
                 string resJson = await res.Content.ReadAsStringAsync();
+
+                Console.WriteLine(resJson);
+                
 
                 return JsonConvert.DeserializeObject<TRes>(resJson);
 
