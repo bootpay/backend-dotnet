@@ -5,7 +5,7 @@ namespace Bootpay.models
 {
     public class ResToken : ResDefault
     {
-        public ResTokenData data { get; set; }
+        public new ResTokenData data { get; set; }
     }
 
     public class ResTokenData {

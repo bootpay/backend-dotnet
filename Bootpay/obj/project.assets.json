@@ -51,10 +51,10 @@
     "/Users/bootpay/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "restore": {
       "projectUniqueName": "/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/Bootpay.csproj",
-      "projectName": "Bootpay",
+      "projectName": "Bootpay.net",
       "projectPath": "/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/Bootpay.csproj",
       "packagesPath": "/Users/bootpay/.nuget/packages/",
       "outputPath": "/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/obj/",

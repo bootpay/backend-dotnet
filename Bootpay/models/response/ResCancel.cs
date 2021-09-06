@@ -5,7 +5,7 @@ namespace Bootpay.models.response
 {
     public class ResCancel : ResDefault
     {
-        public ResCancelData data { get; set; }
+        public new ResCancelData data { get; set; }
     }
 
     public class ResCancelData

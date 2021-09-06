@@ -6,7 +6,7 @@ namespace Bootpay.models.response
 {
     public class ResVerify : ResDefault
     {
-        public ResVerifyData data { get; set; }
+        public new ResVerifyData data { get; set; }
     }
 
     public class ResVerifyData
