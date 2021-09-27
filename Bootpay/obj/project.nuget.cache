@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UWt5qufF58uNfb0NFDZ9JuE0xdZxiRzXndXaqIVr5oJe4buIBU7tiljH5bjfDy60ziv6o3dAR8XJ+L2l8yMwaA==",
+  "dgSpecHash": "an39HM5sNr6mbNCsJBNCzpo23hqLPHwuQMh+DKFOlTlnWBO4d3v0McopgH8ghyv0UFVleHZoShANjsW7c/xVtg==",
   "success": true,
-  "projectFilePath": "/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/Bootpay.csproj",
+  "projectFilePath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj",
   "expectedPackageFiles": [
     "/Users/bootpay/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
   ],
