@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Bootpay server side package for dotnet</Description>
     <AssemblyTitle>Bootpay.net</AssemblyTitle> 
-    <Version>1.0.1</Version>    
+    <Version>1.0.2</Version>    
     <Authors>Bootpay, ehowlsla</Authors>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Bootpay.net</AssemblyName>

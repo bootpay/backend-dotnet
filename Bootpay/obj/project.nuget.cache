@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "an39HM5sNr6mbNCsJBNCzpo23hqLPHwuQMh+DKFOlTlnWBO4d3v0McopgH8ghyv0UFVleHZoShANjsW7c/xVtg==",
+  "dgSpecHash": "NTLXuQHZFfIzY7yoZ+u5724sEEtQqpaAgxIH3IuoJGxWlGJhhMPOPFDRn8vntBt4KTBPmN3HgGW5FgBAImzaLA==",
   "success": true,
   "projectFilePath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj",
   "expectedPackageFiles": [

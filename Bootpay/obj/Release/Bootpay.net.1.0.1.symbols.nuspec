@@ -18,6 +18,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.pdb" target="lib/netcoreapp3.1/Bootpay.net.pdb" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.pdb" target="lib/netcoreapp3.1/Bootpay.net.pdb" />
   </files>
 </package>

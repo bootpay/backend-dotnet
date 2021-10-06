@@ -307,7 +307,7 @@ return Ok(json);
 
 ## Example 프로젝트
 
-[적용한 샘플 프로젝트](https://github.com/bootpay/backend-dotnet-example)을 참조해주세요
+[적용한 샘플 프로젝트](https://github.com/bootpay/backend-dotnet/tree/main/Sample)을 참조해주세요
 
 ## Documentation
 

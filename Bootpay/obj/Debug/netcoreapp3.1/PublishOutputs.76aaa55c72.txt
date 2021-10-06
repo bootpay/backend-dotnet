@@ -1,0 +1,5 @@
+/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/publish/Bootpay.net.dll
+/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/publish/Bootpay.net.deps.json
+/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/publish/Bootpay.net.pdb
+/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/publish/Newtonsoft.Json.dll
+/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Debug/netcoreapp3.1/publish/Bootpay.net.xml

@@ -5,7 +5,7 @@
   },
   "projects": {
     "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "restore": {
         "projectUniqueName": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj",
         "projectName": "Bootpay.net",
@@ -14,7 +14,7 @@
         "outputPath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/bootpay/.config/NuGet/NuGet.Config"
+          "/Users/bootpay/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"

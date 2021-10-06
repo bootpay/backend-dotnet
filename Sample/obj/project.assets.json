@@ -11,7 +11,7 @@
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
-      "Bootpay.net/1.0.1": {
+      "Bootpay.net/1.0.2": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
@@ -54,7 +54,7 @@
         "packageIcon.png"
       ]
     },
-    "Bootpay.net/1.0.1": {
+    "Bootpay.net/1.0.2": {
       "type": "project",
       "path": "../Bootpay/Bootpay.csproj",
       "msbuildProject": "../Bootpay/Bootpay.csproj"
@@ -62,7 +62,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "Bootpay.net >= 1.0.1"
+      "Bootpay.net >= 1.0.2"
     ]
   },
   "packageFolders": {
@@ -78,7 +78,7 @@
       "outputPath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/bootpay/.config/NuGet/NuGet.Config"
+        "/Users/bootpay/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"

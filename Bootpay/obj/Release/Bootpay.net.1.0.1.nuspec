@@ -18,10 +18,10 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.pdb" target="lib/netcoreapp3.1/Bootpay.net.pdb" />
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.dll" target="lib/netcoreapp3.1/Bootpay.net.dll" />
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.xml" target="lib/netcoreapp3.1/Bootpay.net.xml" />
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/LICENSE" target="LICENSE" />
-    <file src="/Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Bootpay/icon.png" target="icon.png" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.pdb" target="lib/netcoreapp3.1/Bootpay.net.pdb" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.dll" target="lib/netcoreapp3.1/Bootpay.net.dll" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/bin/Release/netcoreapp3.1/Bootpay.net.xml" target="lib/netcoreapp3.1/Bootpay.net.xml" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/LICENSE" target="LICENSE" />
+    <file src="/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/icon.png" target="icon.png" />
   </files>
 </package>
