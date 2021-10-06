@@ -11,9 +11,12 @@ namespace Sample.Controllers
 {
     public class VerificationController : Controller
     {
+        //2. 결제 검증 
         [HttpGet("verification/verify")]
-        public async Task<IActionResult> Verify(string receiptId)
+        public async Task<IActionResult> Verify()
         {
+            string receiptId = "";
+
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.Verify(receiptId);
@@ -29,9 +32,12 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
+        // 8. 본인 인증 결과 조회 
         [HttpGet("verification/certificate")]
-        public async Task<IActionResult> Certificate(string receiptId)
+        public async Task<IActionResult> Certificate()
         {
+            string receiptId = "";
+
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.Certificate(receiptId);

@@ -1,29 +1,29 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Bootpay;
 using Bootpay.models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Sample.Models;
 
+
 namespace Sample.Controllers
 {
-    public class LinkController : Controller
+    public class EasyUserTokenController : Controller
     {
-        // 6. 결제 링크 생성 
-        //[HttpGet("link")]
-        public async Task<IActionResult> Index()
+        // 5. 사용자 토큰 발급 
+        public async Task<IActionResult> IndexAsync()
         {
-            Payload payload = new Payload();
-            payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            payload.price = 1000;
-            payload.name = "테스트 결제";
-            payload.pg = "nicepay";
+            UserToken userToken = new UserToken();
+            userToken.userId = "1234";
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
-            var res = await api.requestPayment(payload);
+            var res = await api.getUserToken(userToken);
 
             string json = JsonConvert.SerializeObject(res,
                     Newtonsoft.Json.Formatting.None,
@@ -32,10 +32,7 @@ namespace Sample.Controllers
                         NullValueHandling = NullValueHandling.Ignore
                     });
 
-
             return Ok(json);
         }
     }
-
-    
 }

@@ -40,6 +40,12 @@ namespace Bootpay
             _baseUrl = _URL[mode];
         }
 
+        /***
+         * ## 1. 토큰 발급 
+         *
+         *   부트페이와 서버간 통신을 하기 위해서는 부트페이 서버로부터 토큰을 발급받아야 합니다.  
+         *   발급된 토큰은 30분간 유효하며, 최초 발급일로부터 30분이 지날 경우 토큰 발급 함수를 재호출 해주셔야 합니다.
+         */
         public async Task<ResToken> GetAccessToken()
         { 
             Token token = new Token()
@@ -60,10 +66,7 @@ namespace Bootpay
             _token = res.data.token;
             return res;
         }
-
-        //private readonly ILogger<Worker> _logger;
-        //public Worker(ILogger<Worker> logger) =>
-        //    _logger = logger;
+         
 
         public async Task<TRes> SendAsync<TRes>(string url, HttpMethod method, string json = "")
         //public async Task<string> SendAsync(string url, HttpMethod method, string json = "")

@@ -1,3 +1,3 @@
 is_global = true
 build_property.RootNamespace = Sample
-build_property.ProjectDir = /Users/bootpay/IdeaProjects/bootpay-dotnet/Bootpay/Sample/
+build_property.ProjectDir = /Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/

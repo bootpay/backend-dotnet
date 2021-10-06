@@ -21,9 +21,7 @@ namespace Bootpay.models
 
         [JsonProperty("offer_period")]
         public bool offerPeriod { get; set; }
-
-        [JsonProperty("sellerName")]
-        public string seller_name { get; set; }
+         
         public string theme { get; set; }
 
         [JsonProperty("custom_background")]

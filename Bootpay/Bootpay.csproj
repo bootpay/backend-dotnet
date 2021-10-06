@@ -27,18 +27,20 @@
     <None Remove="models\response\" />
     <None Remove="Newtonsoft.Json" />
     <None Remove="converter\" />
+    <None Remove="constant\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\request\" />
     <Folder Include="models\response\" />
     <Folder Include="converter\" />
+    <Folder Include="constant\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LICENSE" Pack="true" PackagePath=""/>
+    <None Include="LICENSE" Pack="true" PackagePath="" />
     <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 </Project>

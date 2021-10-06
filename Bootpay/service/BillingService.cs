@@ -39,6 +39,8 @@ namespace Bootpay.service
 
         public static async Task<ResDefault> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
+            payload.schedulerType = "oneshot";
+
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
                             new JsonSerializerSettings
@@ -50,7 +52,7 @@ namespace Bootpay.service
 
         public static async Task<ResDefault> ReserveCancelSubscribe(BootpayObject bootpay, string reserveId)
         {
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve" + reserveId + ".json", HttpMethod.Delete);
+            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve/" + reserveId + ".json", HttpMethod.Delete);
         }
     }
 }

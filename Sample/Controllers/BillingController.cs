@@ -20,9 +20,21 @@ namespace Sample.Controllers
             return Ok("1234");
         }
 
-        [HttpPost("billing/get_billing_key")]
-        public async Task<IActionResult> GetBillingKey([FromBody]Subscribe subscribe)
+        // 4. 빌링키 발급 
+        [HttpGet("billing/get_billing_key")]
+        public async Task<IActionResult> GetBillingKey()
         {
+            Subscribe subscribe = new Subscribe();
+            subscribe.itemName = "정기결제 테스트 아이템";
+            subscribe.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            subscribe.pg = "nicepay"; 
+
+            subscribe.cardNo = "5570**********1074"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
+            subscribe.cardPw = "**"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
+            subscribe.expireYear = "**"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
+            subscribe.expireMonth = "**"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
+            subscribe.identifyNumber = ""; //주민등록번호 또는 사업자 등록번호 (- 없이 입력)
+
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.getBillingKey(subscribe);
@@ -37,27 +49,18 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
-        [HttpDelete("billing/destroy_billing_key")]
-        public async Task<IActionResult> DestroyBillingKey(string billingKeyID)
+
+        // 4-1. 발급된 빌링키로 결제 승인 요청 
+        [HttpGet("billing/request_subscribe")]
+        public async Task<IActionResult> RequestSubscribe()
         {
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            await api.GetAccessToken();
-            var res = await api.destroyBillingKey(billingKeyID);
-
-            string json = JsonConvert.SerializeObject(res,
-                    Newtonsoft.Json.Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
+            SubscribePayload payload = new SubscribePayload();
+            payload.billingKey = "615d00f0238684001f60241e";
+            payload.itemName = "아이템01";
+            payload.price = 1000;
+            payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
 
-            return Ok(json);
-        }
-
-        [HttpPost("billing/request_subscribe")]
-        public async Task<IActionResult> RequestSubscribe([FromBody]SubscribePayload payload)
-        { 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.requestSubscribe(payload);
@@ -72,9 +75,17 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
-        [HttpPost("billing/reserve_subscribe")]
-        public async Task<IActionResult> ReserveSubscribe([FromBody]SubscribePayload payload)
+        // 4-2. 발급된 빌링키로 결제 예약 요청
+        [HttpGet("billing/reserve_subscribe")]
+        public async Task<IActionResult> ReserveSubscribe()
         {
+            SubscribePayload payload = new SubscribePayload();
+            payload.billingKey = "615d00f0238684001f60241e";
+            payload.itemName = "아이템01";
+            payload.price = 1000;
+            payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            payload.executeAt = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000) + 10;
+
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.reserveSubscribe(payload);
@@ -89,9 +100,13 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
-        [HttpDelete("billing/reserve_cancel_subscribe")]
-        public async Task<IActionResult> ReserveCancelSubscribe(string reserveId)
+
+        // 4-2-1. 발급된 빌링키로 결제 예약 - 취소 요청 
+        [HttpGet("billing/reserve_cancel_subscribe")]
+        public async Task<IActionResult> ReserveCancelSubscribe()
         {
+            string reserveId = "615d08a67b5ba4002011cd41";
+
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.reserveCancelSubscribe(reserveId);
@@ -102,6 +117,28 @@ namespace Sample.Controllers
                     {
                         NullValueHandling = NullValueHandling.Ignore
                     });
+
+            return Ok(json);
+        }
+
+
+        // 4-3. 빌링키 삭제         
+        [HttpGet("billing/destroy_billing_key")]
+        public async Task<IActionResult> DestroyBillingKey()
+        {
+            string billingKey = "615d00f0238684001f60241e";
+
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.destroyBillingKey(billingKey);
+
+            string json = JsonConvert.SerializeObject(res,
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
 
             return Ok(json);
         }

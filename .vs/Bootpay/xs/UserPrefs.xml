@@ -1,30 +1,27 @@
 ﻿<Properties StartupConfiguration="{6FFF6D11-82D3-4861-A029-D82E5B5DB183}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bootpay/models/request/Subscribe.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/Controllers/VerificationController.cs">
     <Files>
-      <File FileName="Bootpay/service/CancelService.cs" Line="1" Column="1" />
-      <File FileName="Sample/Controllers/BillingController.cs" Line="1" Column="1" />
-      <File FileName="Sample/Controllers/CancelController.cs" />
-      <File FileName="Sample/Controllers/HomeController.cs" />
-      <File FileName="Bootpay/service/VerificationService.cs" />
-      <File FileName="Sample/Controllers/LinkController.cs" Line="1" Column="1" />
-      <File FileName="Sample/Controllers/TokenController.cs" Line="20" Column="48" />
-      <File FileName="Sample/Models/Constants.cs" Line="10" Column="1" />
-      <File FileName="Bootpay/models/request/Subscribe.cs" Line="1" Column="1" />
-      <File FileName="Bootpay/BootpayApi.cs" Line="1" Column="1" />
+      <File FileName="Sample/Controllers/EasyUserTokenController.cs" Line="21" Column="13" />
+      <File FileName="Sample/Controllers/LinkController.cs" Line="18" Column="13" />
+      <File FileName="Sample/Controllers/SubmitController.cs" Line="16" Column="24" />
+      <File FileName="Sample/Controllers/VerificationController.cs" Line="39" Column="13" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Bootpay" expanded="True">
             <Node name="Bootpay" expanded="True">
+              <Node name="constant" expanded="True" />
               <Node name="models" expanded="True">
-                <Node name="request" expanded="True">
-                  <Node name="Subscribe.cs" selected="True" />
-                </Node>
+                <Node name="request" expanded="True" />
+                <Node name="response" expanded="True" />
               </Node>
+              <Node name="service" expanded="True" />
             </Node>
             <Node name="Sample" expanded="True">
-              <Node name="Controllers" expanded="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="VerificationController.cs" selected="True" />
+              </Node>
               <Node name="Models" expanded="True" />
             </Node>
           </Node>

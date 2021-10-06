@@ -13,8 +13,10 @@ using Sample.Models;
 
 namespace Sample.Controllers
 {
+
     public class TokenController : Controller
     {
+        // 1. 토큰 발급 
         public async Task<IActionResult> IndexAsync()
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
@@ -28,6 +30,6 @@ namespace Sample.Controllers
                     });
 
             return Ok(json);
-        } 
+        }
     }
 }

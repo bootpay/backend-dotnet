@@ -13,6 +13,9 @@ namespace Bootpay
 
         public BootpayApi(string applicationId, string privateKey, int mode = MODE_PRODUCTION) : base(applicationId, privateKey, mode) { }
 
+     
+
+
         /* billing */
         public async Task<ResBillingKey> getBillingKey(Subscribe subsribe) {
             return await BillingService.GetBillingKey(this, subsribe);
@@ -45,7 +48,7 @@ namespace Bootpay
         }
 
         /* link */
-        public async Task<ResDefault> requestPayment(Payload paylod)
+        public async Task<ResLink> requestPayment(Payload paylod)
         {
             return await LinkService.RequestPayment(this, paylod);
         }
