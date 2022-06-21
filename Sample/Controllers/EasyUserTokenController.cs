@@ -16,6 +16,7 @@ namespace Sample.Controllers
     public class EasyUserTokenController : Controller
     {
         // 5. 사용자 토큰 발급 
+        [HttpGet("easy_user_token")]
         public async Task<IActionResult> IndexAsync()
         {
             UserToken userToken = new UserToken();
@@ -23,9 +24,9 @@ namespace Sample.Controllers
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
-            var res = await api.getUserToken(userToken);
+            var res = await api.GetUserToken(userToken);
 
-            string json = JsonConvert.SerializeObject(res,
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {

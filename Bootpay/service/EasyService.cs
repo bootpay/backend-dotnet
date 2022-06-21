@@ -9,7 +9,7 @@ namespace Bootpay.service
 {
     public class EasyService
     {
-        public static async Task<ResEasy> GetUserToken(BootpayObject bootpay, UserToken userToken)
+        public static async Task<HttpResponseMessage> GetUserToken(BootpayObject bootpay, UserToken userToken)
         {
             string json = JsonConvert.SerializeObject(userToken,
                             Newtonsoft.Json.Formatting.None,
@@ -18,7 +18,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync<ResEasy>("request/user/token.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/user/token.json", HttpMethod.Post, json);
         }
     }
 }

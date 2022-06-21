@@ -8,7 +8,7 @@ namespace Bootpay.models
         [JsonProperty("user_id")]
         public string userId { get; set; }        
         public string email { get; set; }
-        public string name { get; set; }
+        public string username { get; set; }
         public int gender { get; set; }
         public string birth { get; set; }
         public string phone { get; set; }

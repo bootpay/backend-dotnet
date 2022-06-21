@@ -8,7 +8,7 @@ namespace Bootpay.service
 {
     public class CancelService
     {
-        public static async Task<ResDefault> ReceiptCancel(BootpayObject bootpay, Cancel cancel)
+        public static async Task<HttpResponseMessage> ReceiptCancel(BootpayObject bootpay, Cancel cancel)
         {
             string json = JsonConvert.SerializeObject(cancel,
                             Newtonsoft.Json.Formatting.None,
@@ -17,7 +17,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync<ResDefault>("cancel.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("cancel.json", HttpMethod.Post, json);
         }
     }
 }

@@ -16,9 +16,9 @@ namespace Sample.Controllers
         public async Task<IActionResult> ReceiptCancel()
         {
             Cancel cancel = new Cancel();
-            cancel.receiptId = "6100e77a019943003650f4d5";
-            cancel.name = "관리자";
-            cancel.reason = "테스트 결제";
+            cancel.receiptId = "62b12ece6262500007629fe6";
+            cancel.cancelUsername = "관리자";
+            cancel.cancelMessage = "테스트 결제";
 
             //cancel.price = 1000.0; //부분취소 요청시
             //cancel.cancelId = "12342134"; //부분취소 요청시, 중복 부분취소 요청하는 실수를 방지하고자 할때 지정
@@ -30,9 +30,9 @@ namespace Sample.Controllers
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
-            var res = await api.receiptCancel(cancel);
+            var res = await api.ReceiptCancel(cancel);
 
-            string json = JsonConvert.SerializeObject(res,
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {

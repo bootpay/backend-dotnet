@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "NTLXuQHZFfIzY7yoZ+u5724sEEtQqpaAgxIH3IuoJGxWlGJhhMPOPFDRn8vntBt4KTBPmN3HgGW5FgBAImzaLA==",
+  "dgSpecHash": "gxeWfxgirV1eeB2dgYiF6btPu1n4sKd+rm0ZOSMVo1Eyi3wjr8MHoa/TH7CdKj9Z8Xb/nPbGEPW4p5m7iCofEA==",
   "success": true,
-  "projectFilePath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj",
+  "projectFilePath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj",
   "expectedPackageFiles": [
-    "/Users/bootpay/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
+    "/Users/ehowlsla/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/Users/ehowlsla/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
+    "/Users/ehowlsla/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

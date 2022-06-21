@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Bootpay.converter;
+using System.Net.Http; 
+using System.Text; 
+using System.Threading.Tasks; 
 using Bootpay.models;
 using Newtonsoft.Json;
 
@@ -27,10 +24,10 @@ namespace Bootpay
 
         private readonly Dictionary<int, string> _URL = new Dictionary<int, string>()
         {
-            { MODE_DEVELOPMENT, "https://dev-api.bootpay.co.kr/" },
-            { MODE_TEST, "https://test-api.bootpay.co.kr/" },
-            { MODE_STAGE, "https://stage-api.bootpay.co.kr/" },
-            { MODE_PRODUCTION, "https://api.bootpay.co.kr/" },
+            { MODE_DEVELOPMENT, "https://dev-api.bootpay.co.kr/v2/" },
+            { MODE_TEST, "https://test-api.bootpay.co.kr/v2/" },
+            { MODE_STAGE, "https://stage-api.bootpay.co.kr/v2/" },
+            { MODE_PRODUCTION, "https://api.bootpay.co.kr/v2/" },
         };
 
         public BootpayObject(string applicationId, string privateKey, int mode = MODE_PRODUCTION)
@@ -46,7 +43,7 @@ namespace Bootpay
          *   부트페이와 서버간 통신을 하기 위해서는 부트페이 서버로부터 토큰을 발급받아야 합니다.  
          *   발급된 토큰은 30분간 유효하며, 최초 발급일로부터 30분이 지날 경우 토큰 발급 함수를 재호출 해주셔야 합니다.
          */
-        public async Task<ResToken> GetAccessToken()
+        public async Task<HttpResponseMessage> GetAccessToken()
         { 
             Token token = new Token()
             {
@@ -62,38 +59,70 @@ namespace Bootpay
                         });
 
 
-            var res = await SendAsync<ResToken>("request/token", HttpMethod.Post, json);
-            _token = res.data.token;
+            var res = await SendAsync("request/token.json", HttpMethod.Post, json);
+            if (res.IsSuccessStatusCode) {
+                string resJson = await res.Content.ReadAsStringAsync();
+                var resToken = JsonConvert.DeserializeObject<ResToken>(resJson);
+                _token = resToken.access_token;
+            }
+            //res.Is
+            //if(res.)
+            //if(res.)
+            //_token = res.access_token;
             return res;
         }
          
 
-        public async Task<TRes> SendAsync<TRes>(string url, HttpMethod method, string json = "")
+        //public async Task<TRes> SendAsync<TRes>(string url, HttpMethod method, string json = "")
+        ////public async Task<string> SendAsync(string url, HttpMethod method, string json = "")
+        //{ 
+        //    using (HttpRequestMessage request = new HttpRequestMessage())
+        //    using (HttpClient client = new HttpClient())
+        //    {                     
+        //        request.Method = method;
+        //        request.RequestUri = new Uri(_baseUrl + url);
+        //        //Console.WriteLine("json length: " + json.Length);
+
+        //        if (json.Length > 0) {
+        //            request.Content = new StringContent(json, Encoding.UTF8, "application/json");  
+        //        } 
+
+        //        if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", getTokenValue()); }
+                
+        //        var res = await client.SendAsync(request); 
+
+        //        string resJson = await res.Content.ReadAsStringAsync();
+                 
+                
+
+        //        return JsonConvert.DeserializeObject<TRes>(resJson); 
+        //    }
+        //}
+
+        public async Task<HttpResponseMessage> SendAsync(string url, HttpMethod method, string json = "")
         //public async Task<string> SendAsync(string url, HttpMethod method, string json = "")
-        { 
+        {
             using (HttpRequestMessage request = new HttpRequestMessage())
             using (HttpClient client = new HttpClient())
-            {                     
+            {
                 request.Method = method;
                 request.RequestUri = new Uri(_baseUrl + url);
-                Console.WriteLine("json length: " + json.Length);
+                //Console.WriteLine("json length: " + json.Length);
 
-                if (json.Length > 0) {
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");  
-                } 
+                if (json.Length > 0)
+                {
+                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                }
 
-                if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", _token); }
-                
-                var res = await client.SendAsync(request);
-                string resJson = await res.Content.ReadAsStringAsync();
+                if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", getTokenValue()); }
 
-                Console.WriteLine(resJson);
-                
-
-                return JsonConvert.DeserializeObject<TRes>(resJson);
-
-                //return await res.Content.ReadAsStringAsync();
+                return await client.SendAsync(request); 
             }
+        }
+
+        private String getTokenValue()
+        {
+            return "Bearer " + _token;
         }
     }
 }

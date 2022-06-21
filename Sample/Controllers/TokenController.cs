@@ -17,12 +17,13 @@ namespace Sample.Controllers
     public class TokenController : Controller
     {
         // 1. 토큰 발급 
+        [HttpGet("token")]
         public async Task<IActionResult> IndexAsync()
         {
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             var res = await api.GetAccessToken();
 
-            string json = JsonConvert.SerializeObject(res,
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {

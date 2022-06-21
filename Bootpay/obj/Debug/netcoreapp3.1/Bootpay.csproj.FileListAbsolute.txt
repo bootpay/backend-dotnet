@@ -20,3 +20,15 @@
 /Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.dll
 /Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.xml
 /Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.pdb
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.net.deps.json
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.net.dll
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.net.pdb
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/bin/Debug/netcoreapp3.1/Bootpay.net.xml
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.csproj.AssemblyReference.cache
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.AssemblyInfoInputs.cache
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.AssemblyInfo.cs
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.csproj.CoreCompileInputs.cache
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.dll
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.xml
+/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/Debug/netcoreapp3.1/Bootpay.net.pdb

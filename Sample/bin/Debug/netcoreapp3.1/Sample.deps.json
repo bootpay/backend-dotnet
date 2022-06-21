@@ -338,10 +338,10 @@
           "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
-          "Bootpay.net.dll": {}
+          "Bootpay.dll": {}
         },
         "compile": {
-          "Bootpay.net.dll": {}
+          "Bootpay.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/3.1.0.0": {

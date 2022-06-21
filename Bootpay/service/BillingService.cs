@@ -9,7 +9,7 @@ namespace Bootpay.service
 {
     public class BillingService
     {
-        public static async Task<ResBillingKey> GetBillingKey(BootpayObject bootpay, Subscribe subsribe)
+        public static async Task<HttpResponseMessage> GetBillingKey(BootpayObject bootpay, Subscribe subsribe)
         {
              
             string json = JsonConvert.SerializeObject(subsribe,
@@ -18,15 +18,27 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             }); 
-            return await bootpay.SendAsync<ResBillingKey>("request/card_rebill.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/subscribe.json", HttpMethod.Post, json);
         }
 
-        public static async Task<ResDefault> DestroyBillingKey(BootpayObject bootpay, string billingKey)
+        public static async Task<HttpResponseMessage> LookupBillingKey(BootpayObject bootpay, String receiptId)
         {
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing/" + billingKey + ".json", HttpMethod.Delete);
+
+            //string json = JsonConvert.SerializeObject(subsribe,
+            //                Newtonsoft.Json.Formatting.None,
+            //                new JsonSerializerSettings
+            //                {
+            //                    NullValueHandling = NullValueHandling.Ignore
+            //                });
+            return await bootpay.SendAsync("subscribe/billing_key/" + receiptId, HttpMethod.Get);
         }
 
-        public static async Task<ResDefault> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
+        public static async Task<HttpResponseMessage> DestroyBillingKey(BootpayObject bootpay, string billingKey)
+        {
+            return await bootpay.SendAsync("subscribe/billing_key/" + billingKey + ".json", HttpMethod.Delete);
+        }
+
+        public static async Task<HttpResponseMessage> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
@@ -34,12 +46,12 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             });
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("subscribe/payment.json", HttpMethod.Post, json);
         }
 
-        public static async Task<ResDefault> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)
+        public static async Task<HttpResponseMessage> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)
         {
-            payload.schedulerType = "oneshot";
+            //payload.schedulerType = "oneshot";
 
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
@@ -47,12 +59,12 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             });
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("subscribe/payment/reserve.json", HttpMethod.Post, json);
         }
 
-        public static async Task<ResDefault> ReserveCancelSubscribe(BootpayObject bootpay, string reserveId)
+        public static async Task<HttpResponseMessage> ReserveCancelSubscribe(BootpayObject bootpay, string reserveId)
         {
-            return await bootpay.SendAsync<ResDefault>("subscribe/billing/reserve/" + reserveId + ".json", HttpMethod.Delete);
+            return await bootpay.SendAsync("subscribe/payment/reserve/" + reserveId + ".json", HttpMethod.Delete);
         }
     }
 }

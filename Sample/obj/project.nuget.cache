@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "7ucLde17NTJMKODcD3xp77bK+xBB3pP+HkxN3qDGZw0WzFysFs29SD80GFHk+ll0P4lVm8MoKP3bMb9bUvfG7A==",
+  "dgSpecHash": "g7R/B8SfJbGTS7MPnmSmQXNkJbCw0uW65rBKdRZK4SnnzfW6Vty3hGLD7VGLHORRDLkuzJBzB7p+S03nzXjrDA==",
   "success": true,
-  "projectFilePath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/Sample.csproj",
+  "projectFilePath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Sample/Sample.csproj",
   "expectedPackageFiles": [
-    "/Users/bootpay/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
+    "/Users/ehowlsla/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

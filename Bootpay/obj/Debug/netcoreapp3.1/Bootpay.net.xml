@@ -4,7 +4,7 @@
         <name>Bootpay.net</name>
     </assembly>
     <members>
-        <member name="M:Bootpay.service.VerificationService.Verify(Bootpay.BootpayObject,System.String)">
+        <member name="M:Bootpay.service.VerificationService.GetReceipt(Bootpay.BootpayObject,System.String)">
                      * 
                      * 
                     ## 2. 결제 검증 

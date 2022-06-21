@@ -17,57 +17,68 @@ namespace Bootpay
 
 
         /* billing */
-        public async Task<ResBillingKey> getBillingKey(Subscribe subsribe) {
+        public async Task<HttpResponseMessage> GetBillingKey(Subscribe subsribe) {
             return await BillingService.GetBillingKey(this, subsribe);
         }
 
-        public async Task<ResDefault> destroyBillingKey(String billing_key) {
+
+        public async Task<HttpResponseMessage> LookupBillingKey(String receiptId)
+        {
+            return await BillingService.LookupBillingKey(this, receiptId);
+        }
+
+        public async Task<HttpResponseMessage> DestroyBillingKey(String billing_key) {
             return await BillingService.DestroyBillingKey(this, billing_key);
         }
 
-        public async Task<ResDefault> requestSubscribe(SubscribePayload payload) {
+        public async Task<HttpResponseMessage> RequestSubscribe(SubscribePayload payload) {
             return await BillingService.RequestSubscribe(this, payload);
         }
 
-        public async Task<ResDefault> reserveSubscribe(SubscribePayload payload) {
+        public async Task<HttpResponseMessage> ReserveSubscribe(SubscribePayload payload) {
             return await BillingService.ReserveSubscribe(this, payload);
         }
 
-        public async Task<ResDefault> reserveCancelSubscribe(string reserveId) {
+        public async Task<HttpResponseMessage> ReserveCancelSubscribe(string reserveId) {
             return await BillingService.ReserveCancelSubscribe(this, reserveId);
         }
 
         /* cancel */
-        public async Task<ResDefault> receiptCancel(Cancel cancel) {
+        public async Task<HttpResponseMessage> ReceiptCancel(Cancel cancel) {
             return await CancelService.ReceiptCancel(this, cancel);
         }
 
         /* easy */
-        public async Task<ResEasy> getUserToken(UserToken userToken) {
+        public async Task<HttpResponseMessage> GetUserToken(UserToken userToken) {
             return await EasyService.GetUserToken(this, userToken);
         }
 
         /* link */
-        public async Task<ResLink> requestPayment(Payload paylod)
+        public async Task<HttpResponseMessage> RequestPayment(Payload paylod)
         {
             return await LinkService.RequestPayment(this, paylod);
         }
 
         /* submit */
-        public async Task<ResDefault> Submit(string receiptId)
+        public async Task<HttpResponseMessage> Confirm(string receiptId)
         {
-            return await SubmitService.Submit(this, receiptId);
+            return await ConfirmService.Confirm(this, receiptId);
         }
 
         /* verification */
-        public async Task<ResDefault> Verify(string receiptId)
+        public async Task<HttpResponseMessage> GetReceipt(string receiptId)
         {
-            return await VerificationService.Verify(this, receiptId);
+            return await VerificationService.GetReceipt(this, receiptId);
         }
 
-        public async Task<ResDefault> Certificate(string receiptId)
+        public async Task<HttpResponseMessage> Certificate(string receiptId)
         {
             return await VerificationService.Certificate(this, receiptId);
+        }
+
+        public async Task<HttpResponseMessage> PutShippingStart(Shipping shipping)
+        {
+            return await EscrowService.PutShippingStart(this, shipping);
         }
     }
 }

@@ -11,17 +11,17 @@
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
-      "Bootpay.net/1.0.2": {
+      "Bootpay/2.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Newtonsoft.Json": "13.0.1"
         },
         "compile": {
-          "bin/placeholder/Bootpay.net.dll": {}
+          "bin/placeholder/Bootpay.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Bootpay.net.dll": {}
+          "bin/placeholder/Bootpay.dll": {}
         }
       }
     }
@@ -54,7 +54,7 @@
         "packageIcon.png"
       ]
     },
-    "Bootpay.net/1.0.2": {
+    "Bootpay/2.0.0": {
       "type": "project",
       "path": "../Bootpay/Bootpay.csproj",
       "msbuildProject": "../Bootpay/Bootpay.csproj"
@@ -62,23 +62,23 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "Bootpay.net >= 1.0.2"
+      "Bootpay >= 2.0.0"
     ]
   },
   "packageFolders": {
-    "/Users/bootpay/.nuget/packages/": {}
+    "/Users/ehowlsla/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/Sample.csproj",
+      "projectUniqueName": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Sample/Sample.csproj",
       "projectName": "Sample",
-      "projectPath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/Sample.csproj",
-      "packagesPath": "/Users/bootpay/.nuget/packages/",
-      "outputPath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Sample/obj/",
+      "projectPath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Sample/Sample.csproj",
+      "packagesPath": "/Users/ehowlsla/.nuget/packages/",
+      "outputPath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Sample/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/bootpay/.nuget/NuGet/NuGet.Config"
+        "/Users/ehowlsla/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -90,8 +90,8 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj": {
-              "projectPath": "/Users/bootpay/bootpayPlugins/servers/dotnet/Bootpay/Bootpay/Bootpay.csproj"
+            "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj": {
+              "projectPath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj"
             }
           }
         }
@@ -123,7 +123,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.401/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.301/RuntimeIdentifierGraph.json"
       }
     }
   }

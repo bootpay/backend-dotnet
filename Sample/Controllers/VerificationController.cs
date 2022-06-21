@@ -15,13 +15,13 @@ namespace Sample.Controllers
         [HttpGet("verification/verify")]
         public async Task<IActionResult> Verify()
         {
-            string receiptId = "";
+            string receiptId = "62b12ece6262500007629fe6";
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
-            var res = await api.Verify(receiptId);
+            var res = await api.GetReceipt(receiptId);
 
-            string json = JsonConvert.SerializeObject(res,
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {
@@ -36,13 +36,13 @@ namespace Sample.Controllers
         [HttpGet("verification/certificate")]
         public async Task<IActionResult> Certificate()
         {
-            string receiptId = "";
+            string receiptId = "62b12f4b6262500007629fec";
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.Certificate(receiptId);
 
-            string json = JsonConvert.SerializeObject(res,
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {

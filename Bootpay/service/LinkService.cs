@@ -9,7 +9,7 @@ namespace Bootpay.service
 {
     public class LinkService
     {
-        public static async Task<ResLink> RequestPayment(BootpayObject bootpay, Payload payload)
+        public static async Task<HttpResponseMessage> RequestPayment(BootpayObject bootpay, Payload payload)
         {
             string json = JsonConvert.SerializeObject(payload,
                             Newtonsoft.Json.Formatting.None,
@@ -18,7 +18,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync<ResLink>("request/payment.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/payment.json", HttpMethod.Post, json);
         }
     }
 }
