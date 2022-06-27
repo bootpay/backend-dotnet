@@ -1,14 +1,10 @@
 ﻿<Properties StartupConfiguration="{6FFF6D11-82D3-4861-A029-D82E5B5DB183}|Default">
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bootpay/models/request/Shipping.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/Controllers/ConfirmController.cs">
     <Files>
       <File FileName="Bootpay/models/request/Shipping.cs" Line="13" Column="51" />
       <File FileName="Sample/Controllers/CancelController.cs" Line="28" Column="64" />
       <File FileName="Sample/Controllers/VerificationController.cs" Line="18" Column="57" />
-      <File FileName="Bootpay/BootpayApi.cs" Line="71" Column="51" />
+      <File FileName="Bootpay/BootpayApi.cs" Line="27" Column="57" />
       <File FileName="Bootpay/service/VerificationService.cs" Line="32" Column="56" />
       <File FileName="Bootpay/models/request/Cancel.cs" Line="14" Column="42" />
       <File FileName="Bootpay/converter/ReturnNullConverter.cs" Line="7" Column="2" />
@@ -25,24 +21,17 @@
       <File FileName="Bootpay/models/request/Item.cs" Line="1" Column="2" />
       <File FileName="Bootpay/models/request/Token.cs" Line="1" Column="2" />
       <File FileName="Bootpay/models/request/SubscribeExtra.cs" Line="1" Column="2" />
+      <File FileName="Sample/Controllers/ConfirmController.cs" Line="24" Column="52" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Bootpay" expanded="True">
-            <Node name="Bootpay" expanded="True">
-              <Node name="constant" expanded="True" />
-              <Node name="converter" expanded="True" />
-              <Node name="models" expanded="True">
-                <Node name="request" expanded="True">
-                  <Node name="Shipping.cs" selected="True" />
-                </Node>
-                <Node name="response" expanded="True" />
-              </Node>
-              <Node name="service" expanded="True" />
-            </Node>
+            <Node name="Bootpay" expanded="True" />
             <Node name="Sample" expanded="True">
-              <Node name="Controllers" expanded="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="BillingController.cs" selected="True" />
+              </Node>
               <Node name="Models" expanded="True" />
             </Node>
           </Node>
@@ -53,7 +42,11 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.ItemProperties.Sample PreferredExecutionTarget="/Applications/Safari.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Sample PreferredExecutionTarget="/Applications/Safari.app" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
 </Properties>

@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Bootpay.models
 {
     public class User

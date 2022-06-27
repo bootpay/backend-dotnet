@@ -29,6 +29,26 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
+        [HttpGet("billing/lookup")]
+        public async Task<IActionResult> LookupBillingKey()
+        {
+            string receiptId = "62b3cbbecf9f6d001bd20ce8";
+
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.LookupBillingKey(receiptId);
+
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+
+            return Ok(json);
+        }
+
         // 4. 빌링키 발급 
         [HttpGet("billing/get_billing_key")]
         public async Task<IActionResult> GetBillingKey()
@@ -58,6 +78,8 @@ namespace Sample.Controllers
 
             return Ok(json);
         }
+
+
 
 
         // 4-1. 발급된 빌링키로 결제 승인 요청 
