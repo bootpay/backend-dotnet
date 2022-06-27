@@ -1,3 +1,6 @@
+### 2.0.1
+- shipping user model update
+
 ### 2.0.0
 - v1 -> v2 update 
 
