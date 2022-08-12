@@ -21,6 +21,11 @@ namespace Sample.Controllers
         {
             UserToken userToken = new UserToken();
             userToken.userId = "1234";
+            userToken.email = "test@gmail.com";
+            userToken.username = "홍길동";
+            userToken.birth = "861014";
+            userToken.gender = 0;
+
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();

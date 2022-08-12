@@ -80,5 +80,25 @@ namespace Bootpay
         {
             return await EscrowService.PutShippingStart(this, shipping);
         }
+
+        public async Task<HttpResponseMessage> RequestCashReceiptByBootpay(CashReceipt cashReceipt)
+        {
+            return await CashReceiptService.RequestCashReceiptByBootpay(this, cashReceipt);
+        }
+
+        public async Task<HttpResponseMessage> RequestCashReceiptCancelByBootpay(Cancel cancel)
+        {
+            return await CashReceiptService.RequestCashReceiptCancelByBootpay(this, cancel);
+        }
+
+        public async Task<HttpResponseMessage> RequestCashReceipt(CashReceipt cashReceipt)
+        {
+            return await CashReceiptService.RequestCashReceipt(this, cashReceipt);
+        }
+
+        public async Task<HttpResponseMessage> RequestCashReceiptCancel(Cancel cancel)
+        {
+            return await CashReceiptService.RequestCashReceiptCancel(this, cancel);
+        }
     }
 }

@@ -29,7 +29,9 @@ namespace Sample.Controllers
             //cancel.refund = refund;
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            await api.GetAccessToken();
+            var token = await api.GetAccessToken();
+
+
             var res = await api.ReceiptCancel(cancel);
 
             string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
