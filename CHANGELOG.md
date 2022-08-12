@@ -1,3 +1,6 @@
+### 2.0.2
+- 현금영수증 api 추가 
+
 ### 2.0.1
 - shipping user model update
 
