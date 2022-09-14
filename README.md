@@ -30,7 +30,15 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
 6. 서버 승인 요청
 7. 본인 인증 결과 조회
 8. (에스크로 이용시) PG사로 배송정보 보내기
+9. 현금영수증 발행 
+   
+   9-1. 현금영수증 발행 
 
+   9-2. 현금영수증 발행 취소 
+
+   9-3. (별건) 현금영수증 발행
+
+   9-4. (별건) 현금영수증 발행 취소 
 
 ## Nuget 이용하여 설치하기  
 1. 솔루션 탐색기(Solution Explorer) 열기 
@@ -343,7 +351,166 @@ return Ok(json);
 현금 거래에 한해 구매자의 안전거래를 보장하는 방법으로, 판매자와 구매자의 온라인 전자상거래가 원활하게 이루어질 수 있도록 중계해주는 매매보호서비스입니다. 국내법에 따라 전자상거래에서 반드시 적용이 되어 있어야합니다. PG에서도 에스크로 결제를 지원하며, 에스크로 결제 사용을 원하시면 PG사 가맹시에 에스크로결제를 미리 얘기하고나서 진행을 하시는 것이 수월합니다.
 
 PG사로 배송정보( 이니시스, KCP만 지원 )를 보내서 에스크로 상태를 변경하는 API 입니다.
+```cs 
+Shipping shipping = new Shipping();
+shipping.receiptId = "628ae7ffd01c7e001e9b6066";
+shipping.trackingNumber = "123456";
+shipping.deliveryCorp = "CJ대한통운";
+ShippingUser user = new ShippingUser();
+user.username = "홍길동";
+user.phone = "01000000000";
+user.address = "서울특별시 종로구";
+user.zipcode = "08490";
+shipping.user = user;
 
+BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+await api.GetAccessToken();
+
+
+var res = await api.PutShippingStart(shipping);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+return Ok(json);
+```
+
+## 9-1. 현금영수증 발행하기 
+bootpay api를 통해 결제된 건에 대하여 현금영수증을 발행합니다. 
+```cs 
+CashReceipt cashReceipt = new CashReceipt();
+cashReceipt.receiptId = "62e0f11f1fc192036b1b3c92"; 
+
+cashReceipt.username = "테스트";
+cashReceipt.email = "test@bootpay.co.kr";
+cashReceipt.phone = "01000000000";
+
+cashReceipt.identityNo = "01000000000";
+cashReceipt.cashReceiptType = "소득공제";
+
+
+//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+await api.GetAccessToken();
+
+
+var res = await api.RequestCashReceiptByBootpay(cashReceipt);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+
+## 9-2. 현금영수증 발행 취소 
+9-1을 통해 발행한 현금영수증을 취소합니다. 
+```cs 
+Cancel cancel = new Cancel();
+cancel.receiptId = "62e0f11f1fc192036b1b3c92";
+cancel.cancelUsername = "관리자";
+cancel.cancelMessage = "테스트 결제";
+
+//cancel.price = 1000.0; //부분취소 요청시
+//cancel.cancelId = "12342134"; //부분취소 요청시, 중복 부분취소 요청하는 실수를 방지하고자 할때 지정
+//RefundData refund = new RefundData(); // 가상계좌 환불 요청시, 단 CMS 특약이 되어있어야만 환불요청이 가능하다.
+//refund.account = "675601012341234"; //환불계좌
+//refund.accountholder = "홍길동"; //환불계좌주
+//refund.bankcode = BankCode.getCode("국민은행");//은행코드
+//cancel.refund = refund;
+
+//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+var token = await api.GetAccessToken();
+
+
+var res = await api.RequestCashReceiptCancelByBootpay(cancel);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+
+## 9-3. (별건) 현금영수증 발행  
+부트페이 결제와 상관없이 금액, 상품명, 현금영수증 발행정보 등을 보내 현금영수증을 발행하는 API 입니다
+```cs 
+CashReceipt cashReceipt = new CashReceipt();
+cashReceipt.pg = "토스";
+cashReceipt.price = 1000;
+cashReceipt.orderName = "테스트";
+cashReceipt.cashReceiptType = "소득공제";
+cashReceipt.identityNo = "01000000000";
+
+cashReceipt.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+cashReceipt.purchasedAt = DateTime.Now.AddSeconds(100).ToString("yyyy-MM-dd'T'HH:mm:ss zzz");
+
+
+//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+
+await api.GetAccessToken();
+
+
+var res = await api.RequestCashReceipt(cashReceipt);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+
+## 9-4. (별건) 현금영수증 발행 취소 
+9-3을 통해 발행한 현금영수증을 취소합니다.
+```cs 
+Cancel cancel = new Cancel();
+cancel.receiptId = "62f5bbb91fc192036f9f4c05";
+cancel.cancelUsername = "관리자";
+cancel.cancelMessage = "테스트 결제";
+
+//cancel.price = 1000.0; //부분취소 요청시
+//cancel.cancelId = "12342134"; //부분취소 요청시, 중복 부분취소 요청하는 실수를 방지하고자 할때 지정
+//RefundData refund = new RefundData(); // 가상계좌 환불 요청시, 단 CMS 특약이 되어있어야만 환불요청이 가능하다.
+//refund.account = "675601012341234"; //환불계좌
+//refund.accountholder = "홍길동"; //환불계좌주
+//refund.bankcode = BankCode.getCode("국민은행");//은행코드
+//cancel.refund = refund;
+
+//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+var token = await api.GetAccessToken();
+
+
+var res = await api.RequestCashReceiptCancel(cancel);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
 
 ## Example 프로젝트
 

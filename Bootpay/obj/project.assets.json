@@ -220,7 +220,7 @@
     "/Users/ehowlsla/.nuget/packages/": {}
   },
   "project": {
-    "version": "2.0.1",
+    "version": "2.0.2",
     "restore": {
       "projectUniqueName": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj",
       "projectName": "Bootpay",
