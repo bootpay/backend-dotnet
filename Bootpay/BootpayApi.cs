@@ -100,5 +100,21 @@ namespace Bootpay
         {
             return await CashReceiptService.RequestCashReceiptCancel(this, cancel);
         }
+
+        public async Task<HttpResponseMessage> RequestAuthentication(Authentication authentication)
+        {
+            return await AuthService.RequestAuthentication(this, authentication);
+        }
+
+        public async Task<HttpResponseMessage> ConfirmAuthentication(AuthenticationParams authParams)
+        {
+            return await AuthService.ConfirmAuthentication(this, authParams);
+        }
+
+        public async Task<HttpResponseMessage> RealarmAuthentication(AuthenticationParams authParams)
+        {
+            return await AuthService.RealarmAuthentication(this, authParams);
+        }
+
     }
 }
