@@ -206,10 +206,11 @@ namespace Sample.Controllers
             subscribe.subscriptionId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             subscribe.pg = "nicepay";
 
-            subscribe.username = "윤태섭";
+            subscribe.username = "홍길동";
             subscribe.bankName = "국민";
-            subscribe.identityNo = "861014"; 
-            subscribe.phone = "01040334678"; 
+            subscribe.identityNo = "901014"; 
+            subscribe.phone = "01012341234"; 
+            subscribe.bankAccount = "67560123422472";
             
 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
@@ -233,7 +234,7 @@ namespace Sample.Controllers
         { 
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
-            var res = await api.PublishBillingKeyTransfer("66541bc4ca4517e69343e24c");
+            var res = await api.PublishBillingKeyTransfer("6655e139d79bea0da31c05e5");
 
             string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,
