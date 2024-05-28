@@ -49,6 +49,26 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
+        [HttpGet("billing/lookup_by_key")]
+        public async Task<IActionResult> LookupBillingKeyByKey()
+        {
+            string billingKey = "66542dfb4d18d5fc7b43e1b6";
+
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.LookupBillingKeyByKey(billingKey);
+
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+
+            return Ok(json);
+        }
+
         // 4. 빌링키 발급 
         [HttpGet("billing/get_billing_key")]
         public async Task<IActionResult> GetBillingKey()
@@ -165,6 +185,55 @@ namespace Sample.Controllers
             BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
             await api.GetAccessToken();
             var res = await api.DestroyBillingKey(billingKey);
+
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+
+            return Ok(json);
+        }
+
+        //계좌 빌링키 발급 요청 
+        [HttpGet("billing/get_billing_key_transfer")]
+        public async Task<IActionResult> GetBillingKeyTransfer()
+        {
+            Subscribe subscribe = new Subscribe();
+            subscribe.orderName = "정기결제 테스트 아이템";
+            subscribe.subscriptionId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            subscribe.pg = "nicepay";
+
+            subscribe.username = "윤태섭";
+            subscribe.bankName = "국민";
+            subscribe.identityNo = "861014"; 
+            subscribe.phone = "01040334678"; 
+            
+
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.GetBillingKeyTransfer(subscribe);
+
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+
+            return Ok(json);
+        }
+
+        //계좌 출금동의 요청 확인 
+        [HttpGet("billing/publish_transfer_billing_key")]
+        public async Task<IActionResult> publishBillingKeyTransfer()
+        { 
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.PublishBillingKeyTransfer("66541bc4ca4517e69343e24c");
 
             string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
                     Newtonsoft.Json.Formatting.None,

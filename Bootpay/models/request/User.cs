@@ -11,5 +11,6 @@ namespace Bootpay.models
         public int gender { get; set; }
         public string area { get; set; }
         public string birth { get; set; }
+        public string addr { get; set; }
     }
 }

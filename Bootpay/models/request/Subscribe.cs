@@ -40,6 +40,29 @@ namespace Bootpay.models
         public User user { get; set; }
 
         public SubscribeExtra extra { get; set; }
+
+        
+        public string username { get; set; }
+
+        [JsonProperty("auth_type")]
+        public string authType { get; set; }
+
+        [JsonProperty("bank_name")]
+        public string bankName { get; set; }
+
+        [JsonProperty("bank_account")]
+        public string bankAccount { get; set; }
+
+        [JsonProperty("identity_no")]
+        public string identityNo { get; set; }
+
+        [JsonProperty("cash_receipt_type")]
+        public string cashReceiptType { get; set; }
+
+        [JsonProperty("cash_receipt_identity_no")]
+        public string cashReceiptIdentityNo { get; set; }
+
+        public string phone { get; set; }
          
     }
 }

@@ -44,5 +44,10 @@ namespace Bootpay.models
         [JsonProperty("reserve_execute_at")]
         public string reserveExecuteAt { get; set; }
 
+
+
+        [JsonProperty("receipt_id")]
+        public string receiptId { get; set; }
+
     }
 }

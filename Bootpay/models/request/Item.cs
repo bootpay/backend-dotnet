@@ -12,5 +12,18 @@ namespace Bootpay.models
         public string cat1 { get; set; }
         public string cat2 { get; set; }
         public string cat3 { get; set; }
+        
+
+        [JsonProperty("category_type")]
+        public string categoryType;
+
+        [JsonProperty("category_code")]
+        public string categoryCode;
+
+        [JsonProperty("start_date")]
+        public string startDate;
+
+        [JsonProperty("end_date")]
+        public string endDate;
     }
 }

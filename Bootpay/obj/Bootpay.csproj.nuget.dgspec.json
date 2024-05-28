@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj": {}
+    "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj": {}
   },
   "projects": {
-    "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj": {
+    "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj": {
       "version": "2.0.2",
       "restore": {
-        "projectUniqueName": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj",
+        "projectUniqueName": "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj",
         "projectName": "Bootpay",
-        "projectPath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/Bootpay.csproj",
-        "packagesPath": "/Users/ehowlsla/.nuget/packages/",
-        "outputPath": "/Users/ehowlsla/bootpay/server/asp.net/backend-dotnet/Bootpay/obj/",
+        "projectPath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj",
+        "packagesPath": "/Users/taesupyoon/.nuget/packages/",
+        "outputPath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/ehowlsla/.nuget/NuGet/NuGet.Config"
+          "/Users/taesupyoon/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
@@ -55,11 +55,12 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.422/RuntimeIdentifierGraph.json"
         }
       }
     }

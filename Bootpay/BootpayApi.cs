@@ -27,6 +27,13 @@ namespace Bootpay
             return await BillingService.LookupBillingKey(this, receiptId);
         }
 
+        public async Task<HttpResponseMessage> LookupBillingKeyByKey(String billingKey)
+        {
+            return await BillingService.LookupBillingKeyByKey(this, billingKey);
+        }
+
+        
+
         public async Task<HttpResponseMessage> DestroyBillingKey(String billing_key) {
             return await BillingService.DestroyBillingKey(this, billing_key);
         }
@@ -114,6 +121,22 @@ namespace Bootpay
         public async Task<HttpResponseMessage> RealarmAuthentication(AuthenticationParams authParams)
         {
             return await AuthService.RealarmAuthentication(this, authParams);
+        }
+
+        public async Task<HttpResponseMessage> ReserveSubscribeLookup(string reserveId)
+        {
+            return await BillingService.ReserveSubscribeLookup(this, reserveId);
+        }
+        
+
+        public async Task<HttpResponseMessage> GetBillingKeyTransfer(Subscribe subscribe)
+        {
+            return await BillingService.GetBillingKeyTransfer(this, subscribe);
+        }
+
+        public async Task<HttpResponseMessage> PublishBillingKeyTransfer(string receiptId)
+        {
+            return await BillingService.PublishBillingKeyTransfer(this, receiptId);
         }
 
     }

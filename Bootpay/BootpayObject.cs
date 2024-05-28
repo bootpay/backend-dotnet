@@ -21,6 +21,10 @@ namespace Bootpay
         public const int MODE_STAGE = 2;
         public const int MODE_PRODUCTION = 3;
 
+        private const String SDK_VERSION = "5.0.0";
+        private const String API_VERSION = "2.1.0";
+        private const String SDK_TYPE = "307";
+
 
         private readonly Dictionary<int, string> _URL = new Dictionary<int, string>()
         {
@@ -115,6 +119,14 @@ namespace Bootpay
                 }
 
                 if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", getTokenValue()); }
+
+                
+                // client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+                // client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("BOOTPAY-SDK-VERSION", SDK_VERSION);
+                client.DefaultRequestHeaders.Add("BOOTPAY-API-VERSION", API_VERSION);
+                client.DefaultRequestHeaders.Add("BOOTPAY-SDK-TYPE", SDK_TYPE);
 
                 return await client.SendAsync(request); 
             }
