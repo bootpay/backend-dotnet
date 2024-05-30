@@ -154,6 +154,28 @@ namespace Sample.Controllers
             return Ok(json);
         }
 
+         // 예약 결제 조회
+        [HttpGet("billing/reserve_lookup")]
+        public async Task<IActionResult> ReserveLookup()
+        {
+            string reserveId = "6490149ca575b40024f0b70d";
+
+            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            await api.GetAccessToken();
+            var res = await api.ReserveSubscribeLookup(reserveId);
+
+            string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+                    Newtonsoft.Json.Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+
+            return Ok(json);
+        }
+
+
+// ReserveSubscribeLookup
 
         // 4-2-1. 발급된 빌링키로 결제 예약 - 취소 요청 
         [HttpGet("billing/reserve_cancel_subscribe")]

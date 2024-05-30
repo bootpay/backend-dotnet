@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Bootpay</id>
+    <version>2.1.0</version>
+    <authors>Bootpay, ehowlsla</authors>
+    <license type="file">LICENSE</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://github.com/bootpay/backend-dotnet</projectUrl>
+    <iconUrl>https://avatars.githubusercontent.com/u/22757834?v=4</iconUrl>
+    <description>Bootpay server side package for dotnet</description>
+    <tags>bootpay pg payment cards money gateway</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/bin/Release/netstandard2.0/Bootpay.pdb" target="lib/netstandard2.0/Bootpay.pdb" />
+    <file src="/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/bin/Release/netstandard2.0/Bootpay.dll" target="lib/netstandard2.0/Bootpay.dll" />
+    <file src="/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/bin/Release/netstandard2.0/Bootpay.xml" target="lib/netstandard2.0/Bootpay.xml" />
+    <file src="/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/LICENSE" target="LICENSE" />
+    <file src="/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/icon.png" target="icon.png" />
+  </files>
+</package>
