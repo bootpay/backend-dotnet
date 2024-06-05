@@ -22,7 +22,7 @@ namespace Bootpay
         public const int MODE_PRODUCTION = 3;
 
         private const String SDK_VERSION = "5.0.0";
-        private const String API_VERSION = "2.1.0";
+        private const String API_VERSION = "2.1.1";
         private const String SDK_TYPE = "307";
 
 

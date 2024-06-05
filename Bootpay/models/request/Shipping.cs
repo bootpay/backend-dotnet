@@ -7,6 +7,8 @@ namespace Bootpay.models
     {
         [JsonProperty("receipt_id")]
         public string receiptId { get; set; }
+        [JsonProperty("redirect_url")]
+        public string redirectUrl { get; set; }
         [JsonProperty("delivery_corp")]
         public string deliveryCorp { get; set; }
         [JsonProperty("tracking_number")]
