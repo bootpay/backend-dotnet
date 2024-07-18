@@ -12,32 +12,23 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
 1. (부트페이 통신을 위한) 토큰 발급
 2. 결제 단건 조회 
 3. 결제 취소 (전액 취소 / 부분 취소)
-4. 신용카드 자동결제 (빌링결제)
+4. 카드/계좌 자동결제 (빌링결제)
+   4-1. 카드 빌링키 발급
+   4-2. 계좌 빌링키 발급
+   4-3. 결제 요청하기
+   4-4. 결제 예약하기 
+   4-5. 예약 취소하기 
+   4-6. 빌링키 삭제하기 
+   4-7. 빌링키 조회하기 
 
-   4-1. 빌링키 발급
-
-   4-2. 발급된 빌링키로 결제 승인 요청
-
-   4-3. 발급된 빌링키로 결제 예약 요청
-
-   4-4. 발급된 빌링키로 결제 예약 - 취소 요청
-
-   4-5. 빌링키 삭제
-
-   4-6. 빌링키 조회
-
-5. (생체인증, 비밀번호 결제를 위한) 구매자 토큰 발급
+5. (ㅇㅇ페이) 회원 토큰 발급요청 
 6. 서버 승인 요청
 7. 본인 인증 결과 조회
 8. (에스크로 이용시) PG사로 배송정보 보내기
 9. 현금영수증 발행 
-   
    9-1. 현금영수증 발행 
-
    9-2. 현금영수증 발행 취소 
-
    9-3. (별건) 현금영수증 발행
-
    9-4. (별건) 현금영수증 발행 취소 
 
 ## Nuget 이용하여 설치하기  
@@ -135,7 +126,7 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
-## 4-1. 빌링키 발급 
+## 4-1. 카드 빌링키 발급 
 REST API 방식으로 고객으로부터 카드 정보를 전달하여, PG사에게 빌링키를 발급받을 수 있습니다. 
 발급받은 빌링키를 저장하고 있다가, 원하는 시점, 원하는 금액에 결제 승인 요청하여 좀 더 자유로운 결제시나리오에 적용이 가능합니다.
 * 비인증 정기결제(REST API) 방식을 지원하는 PG사만 사용 가능합니다. 
@@ -165,8 +156,58 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
+## 4-2. 계좌 빌링키 발급
+REST API 방식으로 고객의 계좌 정보를 전달하여, PG사에게 빌링키 발급을 요청합니다. 요청 후 빌링키가 바로 발급되진 않고, 출금동의 확인 절차까지 진행해야 빌링키가 발급됩니다.
+먼저 빌링키를 요청합니다.
+```cs 
+Subscribe subscribe = new Subscribe();
+subscribe.orderName = "정기결제 테스트 아이템";
+subscribe.subscriptionId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+subscribe.pg = "nicepay";
+
+subscribe.username = "홍길동";
+subscribe.bankName = "국민";
+subscribe.identityNo = "901014"; 
+subscribe.phone = "01012341234"; 
+subscribe.bankAccount = "67560123422472";
+
+
+BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+await api.GetAccessToken();
+var res = await api.GetBillingKeyTransfer(subscribe);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+
+이후 빌링키 발급 요청시 응답받은 receipt_id로, 출금 동의 확인을 요청합니다. 
+```cs 
+BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+await api.GetAccessToken();
+var res = await api.PublishBillingKeyTransfer("6655e139d79bea0da31c05e5");
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+출금 동의가 확인되면 응답값으로 빌링키가 발급됩니다. 
+
+
  
-## 4-2. 발급된 빌링키로 결제 승인 요청
+## 4-3. 결제 요청하기
 발급된 빌링키로 원하는 시점에 원하는 금액으로 결제 승인 요청을 할 수 있습니다. 잔액이 부족하거나 도난 카드 등의 특별한 건이 아니면 PG사에서 결제를 바로 승인합니다.
 
 ```cs 
@@ -191,7 +232,7 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
-## 4-3. 발급된 빌링키로 결제 예약 요청
+## 4-4. 결제 예약하기 
 원하는 시점에 4-1로 결제 승인 요청을 보내도 되지만, 빌링키 발급 이후에 바로 결제 예약 할 수 있습니다. (빌링키당 최대 10건)
 ```cs 
 SubscribePayload payload = new SubscribePayload();
@@ -215,7 +256,7 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
-## 4-4. 발급된 빌링키로 결제 예약 - 취소 요청
+## 4-5. 예약 취소하기
 빌링키로 예약된 결제건을 취소합니다.
 ```cs 
 string reserveId = "615d08a67b5ba4002011cd41";
@@ -235,7 +276,7 @@ return Ok(json);
 ```
 
 
-## 4-5. 빌링키 삭제 
+## 4-6. 빌링키 삭제하기 
 발급된 빌링키로 더 이상 사용되지 않도록, 삭제 요청합니다.
 ```cs 
 string billingKey = "62b12d7fd01c7e001ebc71de";
@@ -256,7 +297,7 @@ return Ok(json);
 ```
 
 
-## 4-6. 빌링키 조회
+## 4-7. 빌링키 조회하기 
 (빌링키 발급 완료시 리턴받았던 receipt_id에 한정) 어떤 빌링키였는지 조회합니다. 
 ```cs 
 
@@ -518,7 +559,7 @@ return Ok(json);
 
 ## Documentation
 
-[부트페이 개발매뉴얼](https://bootpay.gitbook.io/docs/)을 참조해주세요
+[부트페이 개발매뉴얼](https://developer.bootpay.co.kr/)을 참조해주세요
 
 ## 기술문의
 
