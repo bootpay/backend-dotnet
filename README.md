@@ -10,26 +10,39 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
 
 ## 기능   
 1. (부트페이 통신을 위한) 토큰 발급
-2. 결제 단건 조회 
+2. 결제 단건 조회
 3. 결제 취소 (전액 취소 / 부분 취소)
 4. 카드/계좌 자동결제 (빌링결제)
+
    4-1. 카드 빌링키 발급
+
    4-2. 계좌 빌링키 발급
+
    4-3. 결제 요청하기
-   4-4. 결제 예약하기 
-   4-5. 예약 취소하기 
-   4-6. 빌링키 삭제하기 
-   4-7. 빌링키 조회하기 
+
+   4-4. 결제 예약하기
+
+   4-5. 예약 조회하기 
+
+   4-6. 예약 취소하기
+
+   4-7. 빌링키 삭제하기
+
+   4-8. 빌링키 조회하기
 
 5. (ㅇㅇ페이) 회원 토큰 발급요청 
 6. 서버 승인 요청
 7. 본인 인증 결과 조회
 8. (에스크로 이용시) PG사로 배송정보 보내기
-9. 현금영수증 발행 
-   9-1. 현금영수증 발행 
-   9-2. 현금영수증 발행 취소 
+9. 현금영수증 발행
+
+   9-1. 현금영수증 발행
+
+   9-2. 현금영수증 발행 취소
+
    9-3. (별건) 현금영수증 발행
-   9-4. (별건) 현금영수증 발행 취소 
+
+   9-4. (별건) 현금영수증 발행 취소
 
 ## Nuget 이용하여 설치하기  
 1. 솔루션 탐색기(Solution Explorer) 열기 
@@ -256,7 +269,26 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
-## 4-5. 예약 취소하기
+## 4-5. 예약 조회하기
+빌링키로 예약된 결제건을 취소합니다.
+```cs 
+string reserveId = "6490149ca575b40024f0b70d";
+
+BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+await api.GetAccessToken();
+var res = await api.ReserveSubscribeLookup(reserveId);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+return Ok(json);
+```
+
+## 4-6. 예약 취소하기
 빌링키로 예약된 결제건을 취소합니다.
 ```cs 
 string reserveId = "615d08a67b5ba4002011cd41";
@@ -276,7 +308,7 @@ return Ok(json);
 ```
 
 
-## 4-6. 빌링키 삭제하기 
+## 4-7. 빌링키 삭제하기 
 발급된 빌링키로 더 이상 사용되지 않도록, 삭제 요청합니다.
 ```cs 
 string billingKey = "62b12d7fd01c7e001ebc71de";
@@ -297,10 +329,9 @@ return Ok(json);
 ```
 
 
-## 4-7. 빌링키 조회하기 
+## 4-8. 빌링키 조회하기 
 (빌링키 발급 완료시 리턴받았던 receipt_id에 한정) 어떤 빌링키였는지 조회합니다. 
 ```cs 
-
 string receiptId = "62b12d7fd01c7e001ebc71de";
 
 BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
