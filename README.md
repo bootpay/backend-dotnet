@@ -326,7 +326,8 @@ return Ok(json);
 
 
 ## 4-8. 빌링키 조회하기 
-(빌링키 발급 완료시 리턴받았던 receipt_id에 한정) 어떤 빌링키였는지 조회합니다. 
+클라이언트에서 빌링키 발급시, 보안상 클라이언트 이벤트에 빌링키를 전달해주지 않습니다. 그러므로 이 API를 통해 조회해야 합니다.
+다음은 빌링키 발급 요청했던 receiptId 로 빌링키를 조회합니다.
 ```cs 
 string receiptId = "62b12d7fd01c7e001ebc71de";
 
@@ -345,9 +346,28 @@ string json = JsonConvert.SerializeObject(res,
 return Ok(json);
 ```
 
-5. (ㅇㅇ페이) 회원 토큰 발급요청 
-(부트페이 단독) 부트페이에서 제공하는 간편결제창, 생체인증 기반의 결제 사용을 위해서는 개발사에서 회원 고유번호를 관리해야하며, 해당 회원에 대한 사용자 토큰을 발급합니다.
-이 토큰값을 기반으로 클라이언트에서 결제요청 하시면 되겠습니다.
+아래는 billingKey로 조회합니다.
+```cs 
+string billingKey = "66542dfb4d18d5fc7b43e1b6";
+
+BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+await api.GetAccessToken();
+var res = await api.LookupBillingKeyByKey(billingKey);
+
+string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
+        Newtonsoft.Json.Formatting.None,
+        new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+
+return Ok(json);
+```
+
+## 5. 회원 토큰 발급요청
+ㅇㅇ페이 사용을 위해 가맹점 회원의 토큰을 발급합니다. 가맹점은 회원의 고유번호를 관리해야합니다.
+이 토큰값을 기반으로 클라이언트에서 결제요청(payload.user_token) 하시면 되겠습니다.
 ```cs 
 UserToken userToken = new UserToken();
 userToken.userId = "1234";
