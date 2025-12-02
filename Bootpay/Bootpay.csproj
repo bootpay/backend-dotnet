@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Bootpay server side package for dotnet</Description>
     <AssemblyTitle>Bootpay</AssemblyTitle> 
-    <Version>2.1.1</Version>    
+    <Version>2.2.0</Version>    
     <Authors>Bootpay, ehowlsla</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Bootpay</AssemblyName>
@@ -28,12 +28,18 @@
     <None Remove="Newtonsoft.Json" />
     <None Remove="converter\" />
     <None Remove="constant\" />
+    <None Remove="commerce\" />
+    <None Remove="commerce\models\" />
+    <None Remove="commerce\service\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\request\" />
     <Folder Include="models\response\" />
     <Folder Include="converter\" />
     <Folder Include="constant\" />
+    <Folder Include="commerce\" />
+    <Folder Include="commerce\models\" />
+    <Folder Include="commerce\service\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

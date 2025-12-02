@@ -1,2 +1,40 @@
-Bootpay/bin/
-Bootpay/obj/
+# Build outputs
+bin/
+obj/
+[Bb]uild/
+[Oo]ut/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Visual Studio / VS Code / Rider
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+
+# Environment files
+.env
+.env.*
