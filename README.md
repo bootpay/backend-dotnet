@@ -7,7 +7,7 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
 * PG 결제창 연동은 클라이언트 라이브러리에서 수행됩니다. (Javascript, Android, iOS, React Native, Flutter 등)
 * 결제 검증 및 취소, 빌링키 발급, 본인인증 등의 수행은 서버사이드에서 진행됩니다. (Java, PHP, Python, Ruby, Node.js, Go, ASP.NET 등)
 
-- [사용하기](#사용하기)
+- [PG API 사용하기](#사용하기)
   - [1. 토큰 발급](#1-토큰-발급)
   - [2. 결제 단건 조회](#2-결제-단건-조회)
   - [3. 결제 취소 (전액 취소 / 부분 취소)](#3-결제-취소-전액-취소--부분-취소)
@@ -28,6 +28,13 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
   - [9-2. 현금영수증 발행 취소](#9-2-현금영수증-발행-취소)
   - [9-3. 별건 현금영수증 발행](#9-3-별건-현금영수증-발행)
   - [9-4. 별건 현금영수증 발행 취소](#9-4-별건-현금영수증-발행-취소)
+- [Commerce API 사용하기](#10-commerce-api)
+  - [10-1. Commerce API 초기화](#10-1-commerce-api-초기화)
+  - [10-2. 사용자 관리](#10-2-사용자-관리)
+  - [10-3. 상품 관리](#10-3-상품-관리)
+  - [10-4. 주문 관리](#10-4-주문-관리)
+  - [10-5. 정기구독 관리](#10-5-정기구독-관리)
+  - [10-6. 청구서 관리](#10-6-청구서-관리)
 - [Example 프로젝트](#example-프로젝트)
 - [Documentation](#documentation)
 - [기술문의](#기술문의)
@@ -595,6 +602,134 @@ string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),
 
 return Ok(json);
 ```
+
+## 10. Commerce API
+
+부트페이 Commerce API를 사용하여 사용자, 상품, 주문, 정기구독 등을 관리할 수 있습니다.
+
+### 10-1. Commerce API 초기화
+
+```csharp
+using BootpayCommerce;
+
+var commerce = new BootpayCommerceApi(
+    "hxS-Up--5RvT6oU6QJE0JA",           // client_key
+    "r5zxvDcQJiAP2PBQ0aJjSHQtblNmYFt6uFoEMhti_mg=", // secret_key
+    "development"  // mode: "production", "development", "stage"
+);
+
+// 토큰 발급
+await commerce.GetAccessToken();
+```
+
+### 10-2. 사용자 관리
+
+```csharp
+// 사용자 목록 조회
+var users = await commerce.UserList(new { page = 1, limit = 10 });
+
+// 사용자 상세 조회
+var user = await commerce.UserDetail("USER_ID");
+
+// 회원가입
+var newUser = await commerce.UserJoin(new {
+    login_id = "test@example.com",
+    login_pw = "password123",
+    name = "홍길동",
+    email = "test@example.com",
+    phone = "010-1234-5678"
+});
+
+// 사용자 정보 수정
+var updatedUser = await commerce.UserUpdate(new {
+    user_id = "USER_ID",
+    name = "수정된 이름"
+});
+```
+
+### 10-3. 상품 관리
+
+```csharp
+// 상품 목록 조회
+var products = await commerce.ProductList(new { page = 1, limit = 10 });
+
+// 상품 생성
+var product = await commerce.ProductCreate(new {
+    name = "테스트 상품",
+    price = 10000,
+    description = "상품 설명"
+});
+
+// 상품 상세 조회
+var productDetail = await commerce.ProductDetail("PRODUCT_ID");
+
+// 상품 수정
+var updatedProduct = await commerce.ProductUpdate(new {
+    product_id = "PRODUCT_ID",
+    name = "수정된 상품명",
+    price = 15000
+});
+```
+
+### 10-4. 주문 관리
+
+```csharp
+// 주문 목록 조회
+var orders = await commerce.OrderList(new { page = 1, limit = 10 });
+
+// 주문 상세 조회
+var order = await commerce.OrderDetail("ORDER_ID");
+
+// 월별 주문 조회
+var monthOrders = await commerce.OrderMonth("USER_GROUP_ID", "2024-12");
+```
+
+### 10-5. 정기구독 관리
+
+```csharp
+// 정기구독 목록 조회
+var subscriptions = await commerce.OrderSubscriptionList();
+
+// 정기구독 상세 조회
+var subscription = await commerce.OrderSubscriptionDetail("ORDER_SUBSCRIPTION_ID");
+
+// 정기구독 일시정지
+await commerce.OrderSubscriptionPause(new {
+    order_subscription_id = "ORDER_SUBSCRIPTION_ID",
+    pause_days = 30,
+    reason = "일시정지 사유"
+});
+
+// 정기구독 재개
+await commerce.OrderSubscriptionResume(new {
+    order_subscription_id = "ORDER_SUBSCRIPTION_ID"
+});
+
+// 정기구독 해지
+await commerce.OrderSubscriptionTermination(new {
+    order_subscription_id = "ORDER_SUBSCRIPTION_ID",
+    reason = "해지 사유"
+});
+```
+
+### 10-6. 청구서 관리
+
+```csharp
+// 청구서 목록 조회
+var invoices = await commerce.InvoiceList();
+
+// 청구서 생성
+var invoice = await commerce.InvoiceCreate(new {
+    user_id = "USER_ID",
+    amount = 50000,
+    title = "청구서 제목"
+});
+
+// 청구서 알림 전송
+await commerce.InvoiceNotify("INVOICE_ID", new int[] { 1, 2 }); // 1: SMS, 2: Email
+```
+
+더 자세한 Commerce API 사용 예제는 [Sample/Commerce](./Sample/Commerce) 디렉토리를 참고해주세요.
 
 ## Example 프로젝트
 

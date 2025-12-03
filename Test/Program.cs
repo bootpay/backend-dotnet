@@ -12,24 +12,18 @@ namespace Test
     {
         static BootpayApi bootpay = null!;
 
-        // Development 키
-        const string DEV_APP_ID = "59bfc738e13f337dbd6ca48a";
-        const string DEV_PRIVATE_KEY = "pDc0NwlkEX3aSaHTp/PPL/i8vn5E/CqRChgyEp/gHD0=";
-
-        // Production 키
-        const string PROD_APP_ID = "5b8f6a4d396fa665fdc2b5ea";
-        const string PROD_PRIVATE_KEY = "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=";
-
         static async Task Main(string[] args)
         {
             // === PG API 테스트 ===
-            // bootpay = new BootpayApi(DEV_APP_ID, DEV_PRIVATE_KEY, BootpayObject.MODE_DEVELOPMENT);
-            // bootpay = new BootpayApi(PROD_APP_ID, PROD_PRIVATE_KEY);
+            // Config에서 현재 환경에 맞는 키를 가져옴
+            var mode = Config.CurrentEnv == "development" ? BootpayObject.MODE_DEVELOPMENT : "";
+            bootpay = new BootpayApi(Config.PG.GetApplicationId(), Config.PG.GetPrivateKey(), mode);
 
-            // Console.WriteLine("Bootpay PG API Example");
-            // Console.WriteLine("======================\n");
+            Console.WriteLine("Bootpay PG API Example");
+            Console.WriteLine($"Environment: {Config.CurrentEnv}");
+            Console.WriteLine("======================\n");
 
-            // await GoGetToken();
+            await GoGetToken();
             // await GetReceipt();
             // await ReceiptCancel();
             // await GetBillingKey();
@@ -52,7 +46,7 @@ namespace Test
             // await RequestCashReceiptCancelByBootpay();
 
             // === Commerce API 테스트 ===
-            await CommerceExample.Run();
+            // await CommerceExample.Run();
         }
 
         static async Task GoGetToken()
@@ -78,10 +72,9 @@ namespace Test
 
         static async Task GetReceipt()
         {
-            string receiptId = "62b12f4b6262500007629fec";
             try
             {
-                var res = await bootpay.GetReceipt(receiptId);
+                var res = await bootpay.GetReceipt(Config.TestData.ReceiptId);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -100,10 +93,9 @@ namespace Test
 
         static async Task Confirm()
         {
-            string receiptId = "62876963d01c7e00209b6028";
             try
             {
-                var res = await bootpay.Confirm(receiptId);
+                var res = await bootpay.Confirm(Config.TestData.ReceiptIdConfirm);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -124,7 +116,7 @@ namespace Test
         {
             var userToken = new UserToken
             {
-                userId = "1234" // 개발사에서 관리하는 회원 고유 번호
+                userId = Config.TestData.UserId
             };
             try
             {
@@ -149,18 +141,10 @@ namespace Test
         {
             var cancel = new Cancel
             {
-                receiptId = "664ae6621a10a75af2b4b085",
+                receiptId = Config.TestData.ReceiptId,
                 cancelUsername = "관리자",
-                cancelMessage = "테스트 결제"
-                // cancelPrice = 1000, // 부분취소 요청시
-                // cancelId = "12342134" // 부분취소 요청시, 중복 부분취소 요청하는 실수를 방지하고자 할때 지정
+                cancelMessage = "테스트 결제 취소"
             };
-            // 가상계좌 환불 요청시
-            // cancel.refund = new RefundData {
-            //     bankAccount = "675601012341234",
-            //     bankUsername = "홍길동",
-            //     bankCode = BankCode.KB
-            // };
 
             try
             {
@@ -185,21 +169,14 @@ namespace Test
         {
             var subscribe = new Subscribe
             {
-                // receiptId: 692e8ded4631c7f34f76115b
-                // billingKey: 692e8dee4631c7f34f76115e
                 orderName = "정기결제 테스트 아이템",
                 subscriptionId = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 pg = "나이스페이",
-                // cardNo = "5570**********1074", // 실제 테스트시에는 마스크처리가 아닌 숫자여야 함
-                // cardPw = "**",
-                // cardExpireYear = "**",
-                // cardExpireMonth = "**",
-                // cardIdentityNo = "" // 생년월일 또는 사업자 등록번호
-                 cardNo = "5570420456641074", // 실제 테스트시에는 마스크처리가 아닌 숫자여야 함
-                cardPw = "83",
-                cardExpireYear = "26",
-                cardExpireMonth = "12",
-                cardIdentityNo = "861014" // 생년월일 또는 사업자 등록번호
+                cardNo = "5570**********1074", // 실제 테스트시에는 마스크처리가 아닌 숫자여야 함
+                cardPw = "**",
+                cardExpireYear = "**",
+                cardExpireMonth = "**",
+                cardIdentityNo = "" // 생년월일 또는 사업자 등록번호
             };
 
             try
@@ -258,7 +235,7 @@ namespace Test
         {
             try
             {
-                var res = await bootpay.PublishBillingKeyTransfer("66541bc4ca4517e69343e24c");
+                var res = await bootpay.PublishBillingKeyTransfer(Config.TestData.ReceiptIdTransfer);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -279,7 +256,7 @@ namespace Test
         {
             var payload = new SubscribePayload
             {
-                billingKey = "692e8dee4631c7f34f76115e",
+                billingKey = Config.TestData.BillingKey,
                 orderName = "아이템01",
                 price = 1000,
                 orderId = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
@@ -310,7 +287,7 @@ namespace Test
 
             var payload = new SubscribePayload
             {
-                billingKey = "692e8dee4631c7f34f76115e",
+                billingKey = Config.TestData.BillingKey,
                 orderName = "아이템01",
                 price = 1000,
                 orderId = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
@@ -340,10 +317,9 @@ namespace Test
 
         static async Task ReserveSubscribeLookup()
         {
-            string reserveId = "6490149ca575b40024f0b70d";
             try
             {
-                var res = await bootpay.ReserveSubscribeLookup(reserveId);
+                var res = await bootpay.ReserveSubscribeLookup(Config.TestData.ReserveId);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -362,10 +338,9 @@ namespace Test
 
         static async Task ReserveCancelSubscribe()
         {
-            string reserveId = "692e701288acd62032ef1645";
             try
             {
-                var res = await bootpay.ReserveCancelSubscribe(reserveId);
+                var res = await bootpay.ReserveCancelSubscribe(Config.TestData.ReserveId);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -384,10 +359,9 @@ namespace Test
 
         static async Task LookupBillingKey()
         {
-            string receiptId = "6317e646d01c7e0024170b47";
             try
             {
-                var res = await bootpay.LookupBillingKey(receiptId);
+                var res = await bootpay.LookupBillingKey(Config.TestData.ReceiptIdBilling);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -406,10 +380,9 @@ namespace Test
 
         static async Task LookupBillingKeyByKey()
         {
-            string billingKey = "66542dfb4d18d5fc7b43e1b6";
             try
             {
-                var res = await bootpay.LookupBillingKeyByKey(billingKey);
+                var res = await bootpay.LookupBillingKeyByKey(Config.TestData.BillingKey2);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -428,10 +401,9 @@ namespace Test
 
         static async Task DestroyBillingKey()
         {
-            string billingKey = "628b2644d01c7e00209b6092";
             try
             {
-                var res = await bootpay.DestroyBillingKey(billingKey);
+                var res = await bootpay.DestroyBillingKey(Config.TestData.BillingKey);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -455,7 +427,7 @@ namespace Test
                 pg = "다날",
                 method = "본인인증",
                 username = "사용자명",
-                identityNo = "0000000", // 생년월일 + 주민번호 뒷 1자리
+                identityNo = "0000000",
                 carrier = "SKT",
                 phone = "01010002000",
                 siteUrl = "https://www.bootpay.co.kr",
@@ -535,10 +507,9 @@ namespace Test
 
         static async Task Certificate()
         {
-            string receiptId = "628ae7ffd01c7e001e9b6066";
             try
             {
-                var res = await bootpay.Certificate(receiptId);
+                var res = await bootpay.Certificate(Config.TestData.CertificateReceiptId);
                 var content = await res.Content.ReadAsStringAsync();
                 if (res.IsSuccessStatusCode)
                 {
@@ -559,7 +530,7 @@ namespace Test
         {
             var shipping = new Shipping
             {
-                receiptId = "628ae7ffd01c7e001e9b6066",
+                receiptId = Config.TestData.ReceiptIdEscrow,
                 trackingNumber = "123456",
                 deliveryCorp = "CJ대한통운"
             };
@@ -626,7 +597,7 @@ namespace Test
         {
             var cancel = new Cancel
             {
-                receiptId = "62f48ae41fc192036f9f4b54",
+                receiptId = Config.TestData.ReceiptIdCash,
                 cancelMessage = "테스트 결제",
                 cancelUsername = "테스트 관리자"
             };
@@ -654,7 +625,7 @@ namespace Test
         {
             var cashReceipt = new CashReceipt
             {
-                receiptId = "62e0f11f1fc192036b1b3c92",
+                receiptId = Config.TestData.ReceiptIdCash,
                 username = "테스트",
                 email = "test@bootpay.co.kr",
                 phone = "01000000000",
@@ -685,7 +656,7 @@ namespace Test
         {
             var cancel = new Cancel
             {
-                receiptId = "62e0f11f1fc192036b1b3c92",
+                receiptId = Config.TestData.ReceiptIdCash,
                 cancelMessage = "테스트 결제",
                 cancelUsername = "테스트 관리자"
             };
