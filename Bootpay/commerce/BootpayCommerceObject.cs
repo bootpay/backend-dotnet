@@ -169,6 +169,12 @@ namespace Bootpay.Commerce
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
                 }
+                else
+                {
+                    var credentials = $"{_clientKey}:{_secretKey}";
+                    var encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+                    client.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedCredentials}");
+                }
 
                 client.DefaultRequestHeaders.Add("BOOTPAY-SDK-VERSION", SDK_VERSION);
                 client.DefaultRequestHeaders.Add("BOOTPAY-API-VERSION", API_VERSION);
@@ -265,6 +271,12 @@ namespace Bootpay.Commerce
                 if (!string.IsNullOrEmpty(_token))
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+                }
+                else
+                {
+                    var credentials = $"{_clientKey}:{_secretKey}";
+                    var encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+                    client.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedCredentials}");
                 }
 
                 client.DefaultRequestHeaders.Add("BOOTPAY-SDK-VERSION", SDK_VERSION);
