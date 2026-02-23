@@ -66,6 +66,30 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 회원 로그인 (Mall API alias)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserLoginMall(string loginId, string loginPw)
+        {
+            return await UserLogin(loginId, loginPw);
+        }
+
+        /// <summary>
+        /// 회원가입 (Mall API alias)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserJoinMall(CommerceUser user)
+        {
+            return await UserJoin(user);
+        }
+
+        /// <summary>
+        /// 회원가입 중복 체크 (Mall API alias)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserJoinCheckMall(string key, string value)
+        {
+            return await UserCheckExist(key, value);
+        }
+
+        /// <summary>
         /// 사용자 상세 조회
         /// </summary>
         public async Task<HttpResponseMessage> UserDetail(string userId)
@@ -196,6 +220,22 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 상품 목록 조회 (Mall API alias)
+        /// </summary>
+        public async Task<HttpResponseMessage> Products(ProductListParams listParams = null)
+        {
+            return await ProductList(listParams);
+        }
+
+        /// <summary>
+        /// 상품 상세 조회 (Mall API alias)
+        /// </summary>
+        public async Task<HttpResponseMessage> ProductDetailMall(string productId)
+        {
+            return await ProductDetail(productId);
+        }
+
+        /// <summary>
         /// 상품 수정
         /// </summary>
         public async Task<HttpResponseMessage> ProductUpdate(CommerceProduct product)
@@ -217,6 +257,26 @@ namespace Bootpay.Commerce
         public async Task<HttpResponseMessage> ProductDelete(string productId)
         {
             return await ProductService.Delete(this, productId);
+        }
+
+        #endregion
+
+        #region Store (가맹점)
+
+        /// <summary>
+        /// 가맹점 기본 정보 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> StoreInfo()
+        {
+            return await StoreService.Info(this);
+        }
+
+        /// <summary>
+        /// 가맹점 상세 정보 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> StoreDetail()
+        {
+            return await StoreService.Detail(this);
         }
 
         #endregion
