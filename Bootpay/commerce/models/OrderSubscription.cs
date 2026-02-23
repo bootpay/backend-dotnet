@@ -234,6 +234,57 @@ namespace Bootpay.Commerce.Models
         public string Reason { get; set; }
     }
 
+    public class SupervisorOrderSubscriptionApproveParams
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
+    public class SupervisorOrderSubscriptionRejectParams
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
+    public class SupervisorOrderSubscriptionTerminateParams
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+
+        [JsonProperty("termination_fee")]
+        public int? TerminationFee { get; set; }
+
+        [JsonProperty("last_bill_refund_price")]
+        public int? LastBillRefundPrice { get; set; }
+
+        [JsonProperty("final_fee")]
+        public int? FinalFee { get; set; }
+
+        [JsonProperty("service_end_at")]
+        public string ServiceEndAt { get; set; }
+
+        [JsonProperty("cancel_date")]
+        public string CancelDate { get; set; }
+    }
+
+    public class SupervisorOrderSubscriptionPauseParams
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+
+        [JsonProperty("paused_at")]
+        public string PausedAt { get; set; }
+
+        [JsonProperty("expected_resume_at")]
+        public string ExpectedResumeAt { get; set; }
+    }
+
+    public class SupervisorOrderSubscriptionResumeParams
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
     /// <summary>
     /// 해지 수수료 계산 응답
     /// </summary>

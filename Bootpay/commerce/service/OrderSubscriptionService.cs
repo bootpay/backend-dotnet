@@ -81,6 +81,31 @@ namespace Bootpay.Commerce.Service
             return await bootpay.SendAsync("order_subscriptions/requests/ing/termination", HttpMethod.Post, terminationParams);
         }
 
+        public static async Task<HttpResponseMessage> SupervisorApprove(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null)
+        {
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/approve", HttpMethod.Put, approveParams ?? new SupervisorOrderSubscriptionApproveParams());
+        }
+
+        public static async Task<HttpResponseMessage> SupervisorReject(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null)
+        {
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/reject", HttpMethod.Put, rejectParams ?? new SupervisorOrderSubscriptionRejectParams());
+        }
+
+        public static async Task<HttpResponseMessage> SupervisorTerminate(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null)
+        {
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/terminate", HttpMethod.Put, terminateParams ?? new SupervisorOrderSubscriptionTerminateParams());
+        }
+
+        public static async Task<HttpResponseMessage> SupervisorPause(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams)
+        {
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/pause", HttpMethod.Put, pauseParams);
+        }
+
+        public static async Task<HttpResponseMessage> SupervisorResume(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null)
+        {
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/resume", HttpMethod.Put, resumeParams ?? new SupervisorOrderSubscriptionResumeParams());
+        }
+
         private static string BuildListQuery(OrderSubscriptionListParams listParams)
         {
             if (listParams == null) return "";

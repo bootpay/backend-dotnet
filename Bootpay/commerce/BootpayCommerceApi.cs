@@ -395,6 +395,31 @@ namespace Bootpay.Commerce
             return await OrderSubscriptionService.Termination(this, terminationParams);
         }
 
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorApprove(string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null)
+        {
+            return await OrderSubscriptionService.SupervisorApprove(this, orderSubscriptionId, approveParams);
+        }
+
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorReject(string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null)
+        {
+            return await OrderSubscriptionService.SupervisorReject(this, orderSubscriptionId, rejectParams);
+        }
+
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorTerminate(string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null)
+        {
+            return await OrderSubscriptionService.SupervisorTerminate(this, orderSubscriptionId, terminateParams);
+        }
+
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorPause(string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams)
+        {
+            return await OrderSubscriptionService.SupervisorPause(this, orderSubscriptionId, pauseParams);
+        }
+
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorResume(string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null)
+        {
+            return await OrderSubscriptionService.SupervisorResume(this, orderSubscriptionId, resumeParams);
+        }
+
         #endregion
 
         #region OrderSubscriptionBill (정기구독 청구)
