@@ -12,6 +12,8 @@ namespace Bootpay
     {
         protected string _applicationId;
         protected string _privateKey;
+        protected string _clientKey;
+        protected string _secretKey;
         protected string _baseUrl;
         private string _token;
 
@@ -34,10 +36,12 @@ namespace Bootpay
             { MODE_PRODUCTION, "https://api.bootpay.co.kr/v2/" },
         };
 
-        public BootpayObject(string applicationId, string privateKey, int mode = MODE_PRODUCTION)
+        public BootpayObject(string applicationId = null, string privateKey = null, string clientKey = null, string secretKey = null, int mode = MODE_PRODUCTION)
         {
             _applicationId = applicationId;
             _privateKey = privateKey;
+            _clientKey = clientKey;
+            _secretKey = secretKey;
             _baseUrl = _URL[mode];
         }
 
@@ -118,7 +122,8 @@ namespace Bootpay
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 }
 
-                if (_token != null && _token.Length > 0) { client.DefaultRequestHeaders.Add("Authorization", getTokenValue()); }
+                var authHeader = getAuthorizationValue();
+                if (!string.IsNullOrEmpty(authHeader)) { client.DefaultRequestHeaders.Add("Authorization", authHeader); }
 
                 
                 // client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -135,6 +140,31 @@ namespace Bootpay
         private String getTokenValue()
         {
             return "Bearer " + _token;
+        }
+
+        private String getBasicAuthValue()
+        {
+            if (!string.IsNullOrEmpty(_clientKey) && !string.IsNullOrEmpty(_secretKey))
+            {
+                return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_clientKey + ":" + _secretKey));
+            }
+
+            if (!string.IsNullOrEmpty(_applicationId) && !string.IsNullOrEmpty(_privateKey))
+            {
+                return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_applicationId + ":" + _privateKey));
+            }
+
+            return null;
+        }
+
+        private String getAuthorizationValue()
+        {
+            if (!string.IsNullOrEmpty(_token))
+            {
+                return getTokenValue();
+            }
+
+            return getBasicAuthValue();
         }
     }
 }
