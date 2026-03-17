@@ -149,22 +149,23 @@ namespace Bootpay
                 return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_clientKey + ":" + _secretKey));
             }
 
-            if (!string.IsNullOrEmpty(_applicationId) && !string.IsNullOrEmpty(_privateKey))
-            {
-                return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_applicationId + ":" + _privateKey));
-            }
-
             return null;
         }
 
         private String getAuthorizationValue()
         {
-            if (!string.IsNullOrEmpty(_token))
+            var clientBasic = getBasicAuthValue();
+            if (!string.IsNullOrEmpty(clientBasic))
+            {
+                return clientBasic;
+            }
+
+            if (!string.IsNullOrEmpty(_applicationId) && !string.IsNullOrEmpty(_token))
             {
                 return getTokenValue();
             }
 
-            return getBasicAuthValue();
+            return null;
         }
     }
 }
