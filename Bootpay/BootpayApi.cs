@@ -11,7 +11,7 @@ namespace Bootpay
     public class BootpayApi : BootpayObject
     {
 
-        public BootpayApi(string applicationId, string privateKey, int mode = MODE_PRODUCTION) : base(applicationId, privateKey, mode) { }
+        public BootpayApi(string applicationId, string privateKey, int mode = MODE_PRODUCTION) : base(applicationId: applicationId, privateKey: privateKey, mode: mode) { }
 
      
 
