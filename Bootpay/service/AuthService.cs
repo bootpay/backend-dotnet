@@ -18,7 +18,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("request/authentication.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/authentication", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> ConfirmAuthentication(BootpayObject bootpay, AuthenticationParams authParams)
@@ -30,7 +30,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("authenticate/confirm.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("authenticate/confirm", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> RealarmAuthentication(BootpayObject bootpay, AuthenticationParams authParams)
@@ -42,7 +42,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("authenticate/realarm.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("authenticate/realarm", HttpMethod.Post, json);
         }
     }
 }

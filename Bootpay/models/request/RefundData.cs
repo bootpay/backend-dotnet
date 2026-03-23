@@ -10,6 +10,7 @@ namespace Bootpay.models
         public string bankAccount { get; set; }
         [JsonProperty("bank_username")]
         public string bankUsername { get; set; } 
+        [JsonProperty("bank_code")]
         public string bankcode { get; set; }
     }
 }

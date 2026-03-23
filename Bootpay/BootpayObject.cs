@@ -67,7 +67,7 @@ namespace Bootpay
                         });
 
 
-            var res = await SendAsync("request/token.json", HttpMethod.Post, json);
+            var res = await SendAsync("request/token", HttpMethod.Post, json);
             if (res.IsSuccessStatusCode) {
                 string resJson = await res.Content.ReadAsStringAsync();
                 var resToken = JsonConvert.DeserializeObject<ResToken>(resJson);

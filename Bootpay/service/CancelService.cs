@@ -17,7 +17,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("cancel.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("cancel", HttpMethod.Post, json);
         }
     }
 }

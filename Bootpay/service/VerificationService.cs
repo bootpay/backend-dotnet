@@ -16,7 +16,7 @@ namespace Bootpay.service
 
         public static async Task<HttpResponseMessage> GetReceipt(BootpayObject bootpay, string receiptId)
         {
-            return await bootpay.SendAsync("receipt/" + receiptId + ".json", HttpMethod.Get);
+            return await bootpay.SendAsync("receipt/" + receiptId + "", HttpMethod.Get);
         }
 
 
@@ -29,7 +29,7 @@ namespace Bootpay.service
          */
         public static async Task<HttpResponseMessage> Certificate(BootpayObject bootpay, string receiptId)
         {
-            return await bootpay.SendAsync("certificate/" + receiptId + ".json", HttpMethod.Get);
+            return await bootpay.SendAsync("certificate/" + receiptId + "", HttpMethod.Get);
         }
     }
 }

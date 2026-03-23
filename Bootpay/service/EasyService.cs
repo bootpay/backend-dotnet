@@ -18,7 +18,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("request/user/token.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/user/token", HttpMethod.Post, json);
         }
     }
 }

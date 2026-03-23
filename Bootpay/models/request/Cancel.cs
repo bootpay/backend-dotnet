@@ -14,7 +14,7 @@ namespace Bootpay.models
         [JsonProperty("cancel_tax_free")]
         public double cancelTaxFree { get; set; }
 
-        [JsonProperty("cancel_uername")]
+        [JsonProperty("cancel_username")]
         public string cancelUsername { get; set; }
 
         [JsonProperty("cancel_message")]

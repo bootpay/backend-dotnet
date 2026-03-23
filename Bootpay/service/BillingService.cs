@@ -18,7 +18,7 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             }); 
-            return await bootpay.SendAsync("request/subscribe.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/subscribe", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> LookupBillingKey(BootpayObject bootpay, String receiptId)
@@ -43,7 +43,7 @@ namespace Bootpay.service
 
         public static async Task<HttpResponseMessage> DestroyBillingKey(BootpayObject bootpay, String billingKey)
         {
-            return await bootpay.SendAsync("subscribe/billing_key/" + billingKey + ".json", HttpMethod.Delete);
+            return await bootpay.SendAsync("subscribe/billing_key/" + billingKey + "", HttpMethod.Delete);
         }
 
         public static async Task<HttpResponseMessage> RequestSubscribe(BootpayObject bootpay, SubscribePayload payload)
@@ -54,7 +54,7 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             });
-            return await bootpay.SendAsync("subscribe/payment.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("subscribe/payment", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> ReserveSubscribe(BootpayObject bootpay, SubscribePayload payload)
@@ -67,17 +67,17 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             });
-            return await bootpay.SendAsync("subscribe/payment/reserve.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("subscribe/payment/reserve", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> ReserveCancelSubscribe(BootpayObject bootpay, string reserveId)
         {
-            return await bootpay.SendAsync("subscribe/payment/reserve/" + reserveId + ".json", HttpMethod.Delete);
+            return await bootpay.SendAsync("subscribe/payment/reserve/" + reserveId + "", HttpMethod.Delete);
         }
 
         public static async Task<HttpResponseMessage> ReserveSubscribeLookup(BootpayObject bootpay, string reserveId)
         {
-            return await bootpay.SendAsync("subscribe/payment/reserve/" + reserveId + ".json", HttpMethod.Get);
+            return await bootpay.SendAsync("subscribe/payment/reserve/" + reserveId + "", HttpMethod.Get);
         }
 
 
@@ -90,7 +90,7 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             }); 
-            return await bootpay.SendAsync("request/subscribe/automatic-transfer.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/subscribe/automatic-transfer", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> PublishBillingKeyTransfer(BootpayObject bootpay, String receiptId)
@@ -104,7 +104,7 @@ namespace Bootpay.service
                             {
                                 NullValueHandling = NullValueHandling.Ignore
                             }); 
-            return await bootpay.SendAsync("request/subscribe/automatic-transfer/publish.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/subscribe/automatic-transfer/publish", HttpMethod.Post, json);
         }
     }
 }

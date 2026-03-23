@@ -16,7 +16,7 @@ namespace Bootpay.models
         [JsonProperty("shipping_prepayment")]
         public bool shippingPrepayment;
         [JsonProperty("shipping_day")]
-        public bool shippingDay;
+        public int shippingDay;
 
         public ShippingUser user;
         public ShippingCompany company;

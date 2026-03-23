@@ -22,7 +22,7 @@ namespace Bootpay.service
                                 NullValueHandling = NullValueHandling.Ignore
                             });
 
-            return await bootpay.SendAsync("confirm.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("confirm", HttpMethod.Post, json);
         }
     }
 }

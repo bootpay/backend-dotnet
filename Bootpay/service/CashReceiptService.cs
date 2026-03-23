@@ -17,7 +17,7 @@ namespace Bootpay.service
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-            return await bootpay.SendAsync("request/receipt/cash/publish.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/receipt/cash/publish", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> RequestCashReceiptCancelByBootpay(BootpayObject bootpay, Cancel cancel)
@@ -29,7 +29,7 @@ namespace Bootpay.service
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-            return await bootpay.SendAsync("request/receipt/cash/cancel/" + cancel.receiptId + ".json", HttpMethod.Delete, json);
+            return await bootpay.SendAsync("request/receipt/cash/cancel/" + cancel.receiptId + "", HttpMethod.Delete, json);
         }
 
         public static async Task<HttpResponseMessage> RequestCashReceipt(BootpayObject bootpay, CashReceipt cashReceipt)
@@ -41,7 +41,7 @@ namespace Bootpay.service
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-            return await bootpay.SendAsync("request/cash/receipt.json", HttpMethod.Post, json);
+            return await bootpay.SendAsync("request/cash/receipt", HttpMethod.Post, json);
         }
 
         public static async Task<HttpResponseMessage> RequestCashReceiptCancel(BootpayObject bootpay, Cancel cancel)
@@ -53,7 +53,7 @@ namespace Bootpay.service
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-            return await bootpay.SendAsync("request/cash/receipt/" + cancel.receiptId + ".json", HttpMethod.Delete, json);
+            return await bootpay.SendAsync("request/cash/receipt/" + cancel.receiptId + "", HttpMethod.Delete, json);
         }
     }
 }
