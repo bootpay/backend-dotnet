@@ -16,7 +16,7 @@ namespace Test
         {
             // === PG API 테스트 ===
             // Config에서 현재 환경에 맞는 키를 가져옴
-            var mode = Config.CurrentEnv == "development" ? BootpayObject.MODE_DEVELOPMENT : "";
+            var mode = Config.CurrentEnv == "development" ? BootpayObject.MODE_DEVELOPMENT : BootpayObject.MODE_PRODUCTION;
             bootpay = new BootpayApi(Config.PG.GetApplicationId(), Config.PG.GetPrivateKey(), mode);
 
             Console.WriteLine("Bootpay PG API Example");
