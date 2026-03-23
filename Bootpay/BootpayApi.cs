@@ -139,5 +139,16 @@ namespace Bootpay
             return await BillingService.PublishBillingKeyTransfer(this, receiptId);
         }
 
+        /* wallet */
+        public async Task<HttpResponseMessage> GetUserWallets(string userId, bool sandbox)
+        {
+            return await WalletService.GetUserWallets(this, userId, sandbox);
+        }
+
+        public async Task<HttpResponseMessage> RequestWalletPayment(WalletRequest walletRequest)
+        {
+            return await WalletService.RequestWalletPayment(this, walletRequest);
+        }
+
     }
 }

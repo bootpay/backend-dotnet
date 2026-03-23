@@ -15,7 +15,7 @@
           }
         }
       },
-      "Bootpay/2.1.1": {
+      "Bootpay/2.2.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
@@ -58,7 +58,7 @@
         "packageIcon.png"
       ]
     },
-    "Bootpay/2.1.1": {
+    "Bootpay/2.2.0": {
       "type": "project",
       "path": "../Bootpay/Bootpay.csproj",
       "msbuildProject": "../Bootpay/Bootpay.csproj"
@@ -66,7 +66,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "Bootpay >= 2.1.1"
+      "Bootpay >= 2.2.0"
     ]
   },
   "packageFolders": {
@@ -75,11 +75,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/taesupyoon/bootpay/server/backend-dotnet/Sample/Sample.csproj",
+      "projectUniqueName": "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/Sample.csproj",
       "projectName": "Sample",
-      "projectPath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Sample/Sample.csproj",
+      "projectPath": "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/Sample.csproj",
       "packagesPath": "/Users/taesupyoon/.nuget/packages/",
-      "outputPath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Sample/obj/",
+      "outputPath": "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/taesupyoon/.nuget/NuGet/NuGet.Config"
@@ -88,14 +88,15 @@
         "net6.0"
       ],
       "sources": {
+        "/opt/homebrew/Cellar/dotnet/9.0.101/libexec/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj": {
-              "projectPath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Bootpay/Bootpay.csproj"
+            "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Bootpay/Bootpay.csproj": {
+              "projectPath": "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Bootpay/Bootpay.csproj"
             }
           }
         }
@@ -104,7 +105,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net6.0": {
@@ -120,6 +127,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[6.0.36, 6.0.36]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.osx-arm64",
+            "version": "[6.0.36, 6.0.36]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[6.0.36, 6.0.36]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -128,7 +149,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.422/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/9.0.101/libexec/sdk/9.0.101/RuntimeIdentifierGraph.json"
       }
     }
   }

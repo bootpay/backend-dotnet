@@ -27,3 +27,6 @@
 /Users/taesupyoon/bootpay/server/backend-dotnet/Sample/obj/Debug/net6.0/Sample.pdb
 /Users/taesupyoon/bootpay/server/backend-dotnet/Sample/obj/Debug/net6.0/Sample.genruntimeconfig.cache
 /Users/taesupyoon/bootpay/server/backend-dotnet/Sample/obj/Debug/net6.0/ref/Sample.dll
+/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/obj/Debug/net6.0/Sample.dll
+/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/obj/Debug/net6.0/refint/Sample.dll
+/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/obj/Debug/net6.0/Sample.pdb

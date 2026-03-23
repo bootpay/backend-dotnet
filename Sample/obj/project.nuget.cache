@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "+vcut+OOnpnJK57mkhvkn+PMBIwyL1Rhw/ZlIy8HsRTRfSSq08aJPEOKao4MzO2f3j5MvbhMKLb/3NSZeriCbg==",
+  "dgSpecHash": "Cj+hC3cS6vU=",
   "success": true,
-  "projectFilePath": "/Users/taesupyoon/bootpay/server/backend-dotnet/Sample/Sample.csproj",
+  "projectFilePath": "/Users/taesupyoon/bootpay-commerce/multi-sdk/server/dotnet/Sample/Sample.csproj",
   "expectedPackageFiles": [
-    "/Users/taesupyoon/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
+    "/Users/taesupyoon/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/Users/taesupyoon/.nuget/packages/microsoft.netcore.app.ref/6.0.36/microsoft.netcore.app.ref.6.0.36.nupkg.sha512",
+    "/Users/taesupyoon/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.36/microsoft.aspnetcore.app.ref.6.0.36.nupkg.sha512",
+    "/Users/taesupyoon/.nuget/packages/microsoft.netcore.app.host.osx-arm64/6.0.36/microsoft.netcore.app.host.osx-arm64.6.0.36.nupkg.sha512"
   ],
   "logs": []
 }
