@@ -24,7 +24,7 @@ namespace Sample.Controllers
             shipping.trackingNumber = "214234";
             shipping.receiptId = "62b12f4b6262500007629fec";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.PutShippingStart(shipping);
 

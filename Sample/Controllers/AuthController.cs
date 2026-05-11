@@ -16,7 +16,7 @@ namespace Sample.Controllers
         public async Task<IActionResult> RequestAuth()
         { 
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
 
             Authentication authentication = new Authentication();
@@ -52,7 +52,7 @@ namespace Sample.Controllers
         public async Task<IActionResult> Confirm()
         {
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
 
             AuthenticationParams authParams = new AuthenticationParams();
@@ -75,7 +75,7 @@ namespace Sample.Controllers
         [HttpGet("auth/realarm")]
         public async Task<IActionResult> Realarm()
         { 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
 
             AuthenticationParams authParams = new AuthenticationParams();

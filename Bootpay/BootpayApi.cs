@@ -8,10 +8,35 @@ using Bootpay.service;
 
 namespace Bootpay
 {
+    /// <summary>
+    /// Bootpay PG API client.
+    /// </summary>
     public class BootpayApi : BootpayObject
     {
-
+        /// <summary>
+        /// Creates a Bootpay PG API client using legacy application_id/private_key credentials.
+        /// </summary>
+        /// <param name="applicationId">Legacy application_id credential.</param>
+        /// <param name="privateKey">Legacy private_key credential.</param>
+        /// <param name="mode">Bootpay environment mode.</param>
         public BootpayApi(string applicationId, string privateKey, int mode = MODE_PRODUCTION) : base(applicationId: applicationId, privateKey: privateKey, mode: mode) { }
+
+        private BootpayApi(string clientKey, string secretKey, int mode, bool useClientKey) : base(clientKey: clientKey, secretKey: secretKey, mode: mode) { }
+
+        /// <summary>
+        /// Creates a Bootpay PG API client using client_key/secret_key credentials.
+        /// </summary>
+        /// <remarks>
+        /// Prefer this factory for new integrations. The legacy constructor remains supported for existing users.
+        /// </remarks>
+        /// <param name="clientKey">PG client_key credential.</param>
+        /// <param name="secretKey">PG secret_key credential.</param>
+        /// <param name="mode">Bootpay environment mode.</param>
+        /// <returns>A Bootpay PG API client configured with client_key/secret_key credentials.</returns>
+        public static BootpayApi WithClientKey(string clientKey, string secretKey, int mode = MODE_PRODUCTION)
+        {
+            return new BootpayApi(clientKey, secretKey, mode, true);
+        }
 
      
 
@@ -140,14 +165,13 @@ namespace Bootpay
         }
 
         /* wallet */
+        /// <summary>
+        /// 사용자 지갑 목록 조회.
+        /// </summary>
+        [Obsolete("다음 메이저 버전에서 제거 예정. wallet 엔드포인트는 폐기 예정이며, 결제는 Request::PaymentController#create 의 wallet_id + user_token 으로 처리됩니다.")]
         public async Task<HttpResponseMessage> GetUserWallets(string userId, bool sandbox)
         {
             return await WalletService.GetUserWallets(this, userId, sandbox);
-        }
-
-        public async Task<HttpResponseMessage> RequestWalletPayment(WalletRequest walletRequest)
-        {
-            return await WalletService.RequestWalletPayment(this, walletRequest);
         }
 
     }

@@ -15,9 +15,8 @@ namespace Test
         static async Task Main(string[] args)
         {
             // === PG API 테스트 ===
-            // Config에서 현재 환경에 맞는 키를 가져옴
-            var mode = Config.CurrentEnv == "development" ? BootpayObject.MODE_DEVELOPMENT : BootpayObject.MODE_PRODUCTION;
-            bootpay = new BootpayApi(Config.PG.GetApplicationId(), Config.PG.GetPrivateKey(), mode);
+            // BOOTPAY_AUTH_MODE=new (default) → client_key/secret_key, =legacy → application_id/private_key.
+            bootpay = Config.PG.CreateBootpay();
 
             Console.WriteLine("Bootpay PG API Example");
             Console.WriteLine($"Environment: {Config.CurrentEnv}");

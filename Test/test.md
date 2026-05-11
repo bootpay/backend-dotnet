@@ -30,7 +30,7 @@ dotnet run --project Test/Test.csproj
 ```csharp
 static async Task Main(string[] args)
 {
-    bootpay = new Bootpay(Config.PG.GetApplicationId(), Config.PG.GetPrivateKey());
+    bootpay = BootpayApi.WithClientKey(Config.PG.GetClientKey(), Config.PG.GetSecretKey());
 
     await GetAccessToken();              // 토큰 발급 (필수)
     // await ReceiptPayment();           // 결제 조회
@@ -79,8 +79,8 @@ public static class TestData
 
 ```csharp
 // PG API 키 가져오기
-string applicationId = Config.PG.GetApplicationId();
-string privateKey = Config.PG.GetPrivateKey();
+string clientKey = Config.PG.GetClientKey();
+string secretKey = Config.PG.GetSecretKey();
 
 // Commerce API 키 가져오기
 string clientKey = Config.Commerce.GetClientKey();
@@ -143,3 +143,71 @@ Test/
     ├── Order.cs
     └── ...
 ```
+
+## PG 인증 방식 토글 (BOOTPAY_AUTH_MODE)
+
+PG 테스트는 기본적으로 신규 `client_key/secret_key` 방식으로 동작한다. 매 실행 시 환경변수로 레거시 `application_id/private_key` 방식으로 전환할 수 있다.
+
+### 토글 contract
+
+| `BOOTPAY_AUTH_MODE` | 동작 |
+|---|---|
+| `new` (기본, 미설정 시 동일) | `BootpayApi.WithClientKey(clientKey, secretKey, mode)` 로 인스턴스 생성. Basic Auth 헤더 자동 부착. |
+| `legacy` | `new BootpayApi(applicationId, privateKey, mode)` 로 인스턴스 생성. `GetAccessToken()` 호출 후 `Bearer` 헤더 사용. |
+
+키 값은 모두 `.env` (또는 환경변수) 로 주입한다 — `.env.example` 참고.
+
+### 사용법
+
+```bash
+# (1) 기본 — env var 생략 (= new)
+dotnet run --project Test/Test.csproj
+
+# (2) 한 번만 legacy 로 전환
+BOOTPAY_AUTH_MODE=legacy dotnet run --project Test/Test.csproj
+
+# (3) xUnit 통합 테스트도 동일하게 환경변수로 토글
+BOOTPAY_AUTH_MODE=legacy dotnet test Bootpay.Tests/Bootpay.Tests.csproj
+
+# (4) 셸 세션 동안 legacy 고정
+export BOOTPAY_AUTH_MODE=legacy
+dotnet run --project Test/Test.csproj
+dotnet test
+unset BOOTPAY_AUTH_MODE
+
+# (5) 영구 전환 — .env 의 BOOTPAY_AUTH_MODE 값을 legacy 로 바꾸면 셸 export 없이도 동작
+```
+
+### 진입 헬퍼 — 어디서 토글이 흡수되는가
+
+| 테스트 종류 | 위치 | 헬퍼 |
+|---|---|---|
+| Example 콘솔 (`Test/Program.cs`) | `Test/Config.cs` | `Config.PG.CreateBootpay()` |
+| xUnit 통합 테스트 (`Bootpay.Tests/Pg/*Test.cs`) | `Bootpay.Tests/TestConfig.cs` | `TestConfig.PG.CreateBootpay()` |
+
+xUnit 테스트의 `CreateAuthenticatedApi()` 는 어느 모드든 동일한 코드로 동작한다. `GetAccessToken()` 은 ck/sk 모드에서 SDK 내부 합성 응답을 즉시 반환하고, legacy 모드에서만 실제 토큰 요청을 보낸다:
+
+```csharp
+private async Task<BootpayApi> CreateAuthenticatedApi()
+{
+    var api = TestConfig.PG.CreateBootpay();
+    await api.GetAccessToken();
+    return api;
+}
+```
+
+### 실행 시 인증 모드 표시
+
+`CreateBootpay()` 호출 시마다 stdout 에 한 줄로 어떤 모드가 활성화됐는지 표시된다 (`dotnet test --logger "console;verbosity=detailed"` 또는 `dotnet run` 출력에서 확인):
+
+```
+[BOOTPAY_AUTH_MODE=new] PG: client_key/secret_key (Basic Auth) | env=production
+[BOOTPAY_AUTH_MODE=legacy] PG: application_id/private_key (Bearer) | env=production
+```
+
+### 토글의 영향을 받지 않는 파일
+
+다음 테스트는 두 모드를 한 함수 안에서 모두 검증하므로 환경변수에 무관하게 동일한 동작을 한다:
+
+- `Bootpay.Tests/Pg/PgTokenTest.cs`
+- `Bootpay.Tests/Pg/PgLegacyCompatibilityTest.cs`

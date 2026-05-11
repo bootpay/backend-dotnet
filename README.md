@@ -1,8 +1,12 @@
 # Bootpay ASP.NET 패키지
 
 Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임워크 등에서 사용가능합니다.
-.net standart 2.0 이상부터 지원합니다. 
+.NET Standard 2.0 이상부터 지원합니다.
 
+> 개발/테스트 프로젝트는 .NET 9 SDK 기준으로 검증합니다. 패키지 본체(`Bootpay`)는 `netstandard2.0` 타겟을 유지하므로 기존 .NET Framework/.NET Core 사용자 호환성을 보존합니다.
+
+
+> 권장 인증 방식은 `client_key/secret_key`입니다. 기존 `application_id/private_key` 생성자도 하위 호환을 위해 계속 동작합니다.
 
 * PG 결제창 연동은 클라이언트 라이브러리에서 수행됩니다. (Javascript, Android, iOS, React Native, Flutter 등)
 * 결제 검증 및 취소, 빌링키 발급, 본인인증 등의 수행은 서버사이드에서 진행됩니다. (Java, PHP, Python, Ruby, Node.js, Go, ASP.NET 등)
@@ -48,6 +52,32 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
 4. Bootpay 검색 
 5. Bootpay 클릭 후 설치 
  
+
+## 환경변수 설정
+
+예제와 테스트는 각 SDK 루트의 `.env` 파일을 우선 읽습니다. 먼저 `.env.example`을 복사한 뒤 필요한 키만 변경하세요. `.env`는 gitignore 처리되어 커밋되지 않습니다.
+
+```bash
+cp .env.example .env
+# BOOTPAY_ENV=production 또는 development
+```
+
+주요 변수:
+
+```env
+BOOTPAY_ENV=production
+BOOTPAY_PG_CLIENT_KEY_PROD=...
+BOOTPAY_PG_SECRET_KEY_PROD=...
+BOOTPAY_PG_CLIENT_KEY_DEV=...
+BOOTPAY_PG_SECRET_KEY_DEV=...
+BOOTPAY_COMMERCE_CLIENT_KEY_PROD=...
+BOOTPAY_COMMERCE_SECRET_KEY_PROD=...
+BOOTPAY_COMMERCE_CLIENT_KEY_PROD=...
+BOOTPAY_COMMERCE_SECRET_KEY_PROD=...
+```
+
+변수가 없으면 SDK 테스트용 기본값(NodeJS 기준 ck/sk)으로 fallback 합니다.
+
 # 사용하기 
 BootpayExample.java
 ```cs
@@ -57,7 +87,8 @@ using Bootpay;
 using Microsoft.AspNetCore.Mvc;
 
 String getToken() {
-  BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+  BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+  // Legacy: new BootpayApi(Constants.application_id, Constants.private_key)도 계속 지원됩니다.
   var res = await api.GetAccessToken();
 
   string json = JsonConvert.SerializeObject(res,
@@ -77,7 +108,7 @@ String getToken() {
 부트페이와 서버간 통신을 하기 위해서는 부트페이 서버로부터 토큰을 발급받아야 합니다.  
 발급된 토큰은 30분간 유효하며, 최초 발급일로부터 30분이 지날 경우 토큰 발급 함수를 재호출 해주셔야 합니다.
 ```java 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 var res = await api.GetAccessToken();
 
 string json = JsonConvert.SerializeObject(res,
@@ -95,7 +126,7 @@ return Ok(json);
 ```cs 
 string receiptId = "62b12d7fd01c7e001ebc71de";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.GetReceipt(receiptId);
 
@@ -121,7 +152,7 @@ price를 지정하지 않으면 전액취소 됩니다.
 
 간혹 개발사에서 실수로 여러번 부분취소를 보내서 여러번 취소되는 경우가 있기때문에, 부트페이에서는 부분취소 중복 요청을 막기 위해 cancel_id 라는 필드를 추가했습니다. cancel_id를 지정하시면, 해당 건에 대해 중복 요청방지가 가능합니다.  
 ```cs 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.receiptCancel(cancel);
 
@@ -154,7 +185,7 @@ subscribe.expireYear = "**"; //실제 테스트시에는 *** 마스크처리가 
 subscribe.expireMonth = "**"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
 subscribe.identifyNumber = ""; //주민등록번호 또는 사업자 등록번호 (- 없이 입력)
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.getBillingKey(subscribe);
 
@@ -184,7 +215,7 @@ subscribe.phone = "01012341234";
 subscribe.bankAccount = "67560123422472";
 
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.GetBillingKeyTransfer(subscribe);
 
@@ -201,7 +232,7 @@ return Ok(json);
 
 이후 빌링키 발급 요청시 응답받은 receipt_id로, 출금 동의 확인을 요청합니다. 
 ```cs 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.PublishBillingKeyTransfer("6655e139d79bea0da31c05e5");
 
@@ -230,7 +261,7 @@ payload.price = 1000;
 payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.requestSubscribe(payload);
 
@@ -254,7 +285,7 @@ payload.price = 1000;
 payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 payload.executeAt = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000) + 10;
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.reserveSubscribe(payload);
 
@@ -273,7 +304,7 @@ return Ok(json);
 ```cs 
 string reserveId = "6490149ca575b40024f0b70d";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.ReserveSubscribeLookup(reserveId);
 
@@ -292,7 +323,7 @@ return Ok(json);
 ```cs 
 string reserveId = "615d08a67b5ba4002011cd41";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.reserveCancelSubscribe(reserveId);
 
@@ -312,7 +343,7 @@ return Ok(json);
 ```cs 
 string billingKey = "62b12d7fd01c7e001ebc71de";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.DestroyBillingKey(billingKey);
 
@@ -334,7 +365,7 @@ return Ok(json);
 ```cs 
 string receiptId = "62b12d7fd01c7e001ebc71de";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.LookupBillingKey(receiptId);
 
@@ -353,7 +384,7 @@ return Ok(json);
 ```cs 
 string billingKey = "66542dfb4d18d5fc7b43e1b6";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.LookupBillingKeyByKey(billingKey);
 
@@ -375,7 +406,7 @@ return Ok(json);
 UserToken userToken = new UserToken();
 userToken.userId = "1234";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.getUserToken(userToken);
 
@@ -401,7 +432,7 @@ return Ok(json);
 ```cs 
 string receiptId = "62b13138d01c7e001bbc71d9";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.Confirm(receiptId);
 
@@ -422,7 +453,7 @@ return Ok(json);
 ```cs 
 string receiptId = "";
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 var res = await api.Certificate(receiptId);
 
@@ -454,7 +485,7 @@ user.address = "서울특별시 종로구";
 user.zipcode = "08490";
 shipping.user = user;
 
-BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 
 
@@ -484,8 +515,8 @@ cashReceipt.identityNo = "01000000000";
 cashReceipt.cashReceiptType = "소득공제";
 
 
-//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+//BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 await api.GetAccessToken();
 
 
@@ -518,8 +549,8 @@ cancel.cancelMessage = "테스트 결제";
 //refund.bankcode = BankCode.getCode("국민은행");//은행코드
 //cancel.refund = refund;
 
-//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+//BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 var token = await api.GetAccessToken();
 
 
@@ -550,8 +581,8 @@ cashReceipt.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 cashReceipt.purchasedAt = DateTime.Now.AddSeconds(100).ToString("yyyy-MM-dd'T'HH:mm:ss zzz");
 
 
-//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+//BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 
 await api.GetAccessToken();
 
@@ -585,8 +616,8 @@ cancel.cancelMessage = "테스트 결제";
 //refund.bankcode = BankCode.getCode("국민은행");//은행코드
 //cancel.refund = refund;
 
-//BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+//BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 var token = await api.GetAccessToken();
 
 
@@ -613,9 +644,9 @@ return Ok(json);
 using BootpayCommerce;
 
 var commerce = new BootpayCommerceApi(
-    "hxS-Up--5RvT6oU6QJE0JA",           // client_key
-    "r5zxvDcQJiAP2PBQ0aJjSHQtblNmYFt6uFoEMhti_mg=", // secret_key
-    "development"  // mode: "production", "development", "stage"
+    Environment.GetEnvironmentVariable("BOOTPAY_COMMERCE_CLIENT_KEY_PROD"),
+    Environment.GetEnvironmentVariable("BOOTPAY_COMMERCE_SECRET_KEY_PROD"),
+    "production"  // mode: "production", "development", "stage"
 );
 
 // 토큰 발급

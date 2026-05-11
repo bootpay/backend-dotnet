@@ -38,3 +38,10 @@ TestResults/
 # Environment files
 .env
 .env.*
+!.env.example
+
+# Tool runtime dirs
+.omj/
+
+# Local SDK pin (per-machine .NET SDK selection)
+global.json

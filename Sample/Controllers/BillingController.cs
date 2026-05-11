@@ -17,7 +17,7 @@ namespace Sample.Controllers
         // GET: /<controller>/
         public async Task<IActionResult> IndexAsync()
         {
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             var res = await api.GetAccessToken();
             string json = JsonConvert.SerializeObject(res,
                  Newtonsoft.Json.Formatting.None,
@@ -34,7 +34,7 @@ namespace Sample.Controllers
         {
             string receiptId = "62b3cbbecf9f6d001bd20ce8";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.LookupBillingKey(receiptId);
 
@@ -54,7 +54,7 @@ namespace Sample.Controllers
         {
             string billingKey = "66542dfb4d18d5fc7b43e1b6";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.LookupBillingKeyByKey(billingKey);
 
@@ -84,7 +84,7 @@ namespace Sample.Controllers
             subscribe.cardExpireMonth = "**"; //실제 테스트시에는 *** 마스크처리가 아닌 숫자여야 함
             subscribe.cardIdentityNo = ""; //주민등록번호 또는 사업자 등록번호 (- 없이 입력) 
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.GetBillingKey(subscribe);
              
@@ -115,7 +115,7 @@ namespace Sample.Controllers
             payload.user.phone = "01012345678";
 
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.RequestSubscribe(payload);
 
@@ -140,7 +140,7 @@ namespace Sample.Controllers
             payload.orderId = "" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             payload.reserveExecuteAt = DateTime.Now.AddSeconds(100).ToString("yyyy-MM-dd'T'HH:mm:ss zzz");
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.ReserveSubscribe(payload);
 
@@ -160,7 +160,7 @@ namespace Sample.Controllers
         {
             string reserveId = "6490149ca575b40024f0b70d";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.ReserveSubscribeLookup(reserveId);
 
@@ -183,7 +183,7 @@ namespace Sample.Controllers
         {
             string reserveId = "62b12ed4d01c7e001dbc71e5";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.ReserveCancelSubscribe(reserveId);
 
@@ -204,7 +204,7 @@ namespace Sample.Controllers
         {
             string billingKey = "62b12d7fd01c7e001ebc71de";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.DestroyBillingKey(billingKey);
 
@@ -235,7 +235,7 @@ namespace Sample.Controllers
             subscribe.bankAccount = "67560123422472";
             
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.GetBillingKeyTransfer(subscribe);
 
@@ -254,7 +254,7 @@ namespace Sample.Controllers
         [HttpGet("billing/publish_transfer_billing_key")]
         public async Task<IActionResult> publishBillingKeyTransfer()
         { 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.PublishBillingKeyTransfer("6655e139d79bea0da31c05e5");
 

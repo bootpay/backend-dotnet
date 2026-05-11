@@ -52,7 +52,19 @@ namespace Bootpay
          *   발급된 토큰은 30분간 유효하며, 최초 발급일로부터 30분이 지날 경우 토큰 발급 함수를 재호출 해주셔야 합니다.
          */
         public async Task<HttpResponseMessage> GetAccessToken()
-        { 
+        {
+            // client_key/secret_key 인증은 매 요청에 Basic Auth 헤더가 자동 부착된다.
+            // request/token 호출이 불필요하므로 합성 응답을 즉시 반환한다.
+            if (!string.IsNullOrEmpty(_clientKey) && !string.IsNullOrEmpty(_secretKey))
+            {
+                _token = null;
+                var synthetic = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"access_token\":\"\",\"expire_in\":0}", Encoding.UTF8, "application/json")
+                };
+                return await Task.FromResult(synthetic);
+            }
+
             Token token = new Token()
             {
                 applicationId = _applicationId,
@@ -73,10 +85,6 @@ namespace Bootpay
                 var resToken = JsonConvert.DeserializeObject<ResToken>(resJson);
                 _token = resToken.access_token;
             }
-            //res.Is
-            //if(res.)
-            //if(res.)
-            //_token = res.access_token;
             return res;
         }
          

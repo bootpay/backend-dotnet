@@ -17,7 +17,7 @@ namespace Sample.Controllers
         {
             string receiptId = "62b12ece6262500007629fe6";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.GetReceipt(receiptId);
 
@@ -38,7 +38,7 @@ namespace Sample.Controllers
         {
             string receiptId = "62b12f4b6262500007629fec";
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
             var res = await api.Certificate(receiptId);
 

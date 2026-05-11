@@ -31,7 +31,7 @@ namespace Sample.Controllers
             user.zipcode = "08490";
             shipping.user = user;
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
 
 

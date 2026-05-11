@@ -26,8 +26,8 @@ namespace Sample.Controllers
             cashReceipt.purchasedAt = DateTime.Now.AddSeconds(100).ToString("yyyy-MM-dd'T'HH:mm:ss zzz");
 
 
-            //BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+            //BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
 
             await api.GetAccessToken();
 
@@ -61,8 +61,8 @@ namespace Sample.Controllers
             //refund.bankcode = BankCode.getCode("국민은행");//은행코드
             //cancel.refund = refund;
 
-            //BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+            //BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             var token = await api.GetAccessToken();
 
 
@@ -94,8 +94,8 @@ namespace Sample.Controllers
             cashReceipt.cashReceiptType = "소득공제";
 
 
-            //BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+            //BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             await api.GetAccessToken();
 
 
@@ -128,8 +128,8 @@ namespace Sample.Controllers
             //refund.bankcode = BankCode.getCode("국민은행");//은행코드
             //cancel.refund = refund;
 
-            //BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
-            BootpayApi api = new BootpayApi(Constants.dev_application_id, Constants.dev_private_key, BootpayObject.MODE_DEVELOPMENT);
+            //BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             var token = await api.GetAccessToken();
 
 

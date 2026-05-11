@@ -28,7 +28,7 @@ namespace Sample.Controllers
             //refund.bankcode = BankCode.getCode("국민은행");//은행코드
             //cancel.refund = refund;
 
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             var token = await api.GetAccessToken();
 
 

@@ -12,13 +12,15 @@ namespace Test
     {
         static BootpayCommerceApi bootpay = null!;
 
-        // Development 키
-        const string DEV_CLIENT_KEY = "hxS-Up--5RvT6oU6QJE0JA";
-        const string DEV_SECRET_KEY = "r5zxvDcQJiAP2PBQ0aJjSHQtblNmYFt6uFoEMhti_mg=";
-
         public static async Task Run()
         {
-            bootpay = new BootpayCommerceApi(DEV_CLIENT_KEY, DEV_SECRET_KEY, BootpayCommerceObject.MODE_DEVELOPMENT);
+            bootpay = new BootpayCommerceApi(
+                Config.Commerce.GetClientKey(),
+                Config.Commerce.GetSecretKey(),
+                Config.CurrentEnv == "production"
+                    ? BootpayCommerceObject.MODE_PRODUCTION
+                    : BootpayCommerceObject.MODE_DEVELOPMENT
+            );
 
             Console.WriteLine("Bootpay Commerce API Example");
             Console.WriteLine("============================\n");

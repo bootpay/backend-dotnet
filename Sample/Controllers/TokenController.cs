@@ -20,7 +20,7 @@ namespace Sample.Controllers
         [HttpGet("token")]
         public async Task<IActionResult> IndexAsync()
         {
-            BootpayApi api = new BootpayApi(Constants.application_id, Constants.private_key);
+            BootpayApi api = BootpayApi.WithClientKey(Constants.client_key, Constants.secret_key);
             var res = await api.GetAccessToken();
 
             string json = JsonConvert.SerializeObject(await res.Content.ReadAsStringAsync(),

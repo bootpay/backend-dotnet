@@ -19,13 +19,9 @@ namespace Bootpay.Tests
 
         private async Task<BootpayApi> CreateAuthenticatedApi()
         {
-            var api = new BootpayApi(
-                TestConfig.PG.ApplicationId,
-                TestConfig.PG.PrivateKey,
-                TestConfig.PG.Mode
-            );
-            var tokenRes = await api.GetAccessToken();
-            Assert.True(tokenRes.IsSuccessStatusCode, "Token issuance failed");
+            var api = TestConfig.PG.CreateBootpay();
+            // BOOTPAY_AUTH_MODE=legacy 일 때만 토큰 발급이 실제로 일어남 (ck/sk 모드는 합성 응답 반환).
+            await api.GetAccessToken();
             return api;
         }
 
