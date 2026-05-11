@@ -49,7 +49,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> UserCreate(BootpayCommerceObject bootpay, string userGroupId, string userId)
         {
             var data = new { user_id = userId };
-            return await bootpay.SendAsync($"user-groups/{userGroupId}/add_user", HttpMethod.Post, data);
+            return await bootpay.SendAsync($"user-groups/{userGroupId}/user", HttpMethod.Post, data);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> UserDelete(BootpayCommerceObject bootpay, string userGroupId, string userId)
         {
-            return await bootpay.SendAsync($"user-groups/{userGroupId}/remove_user?user_id={userId}", HttpMethod.Delete);
+            return await bootpay.SendAsync($"user-groups/{userGroupId}/user/{userId}", HttpMethod.Delete);
         }
 
         /// <summary>

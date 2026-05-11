@@ -510,6 +510,138 @@ namespace Bootpay.Commerce
 
         #endregion
 
+        #region Category (카테고리)
+
+        /// <summary>
+        /// 카테고리 트리 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> CategoryList()
+        {
+            return await CategoryService.List(this);
+        }
+
+        /// <summary>
+        /// 카테고리 단건 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> CategoryDetail(string categoryId)
+        {
+            return await CategoryService.Detail(this, categoryId);
+        }
+
+        /// <summary>
+        /// 카테고리 생성
+        /// </summary>
+        public async Task<HttpResponseMessage> CategoryCreate(CategoryCreateParams createParams)
+        {
+            return await CategoryService.Create(this, createParams);
+        }
+
+        /// <summary>
+        /// 카테고리 수정
+        /// </summary>
+        public async Task<HttpResponseMessage> CategoryUpdate(CategoryUpdateParams updateParams)
+        {
+            return await CategoryService.Update(this, updateParams);
+        }
+
+        /// <summary>
+        /// 카테고리 삭제
+        /// </summary>
+        public async Task<HttpResponseMessage> CategoryDestroy(string categoryId)
+        {
+            return await CategoryService.Destroy(this, categoryId);
+        }
+
+        #endregion
+
+        #region Coupon (쿠폰)
+
+        /// <summary>
+        /// 사용자 보유 쿠폰 목록
+        /// </summary>
+        public async Task<HttpResponseMessage> CouponList(CouponListParams listParams = null)
+        {
+            return await CouponService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 다운로드 가능한 쿠폰 목록
+        /// </summary>
+        public async Task<HttpResponseMessage> CouponAvailable()
+        {
+            return await CouponService.Available(this);
+        }
+
+        /// <summary>
+        /// 쿠폰 다운로드
+        /// </summary>
+        public async Task<HttpResponseMessage> CouponDownload(CouponDownloadParams downloadParams)
+        {
+            return await CouponService.Download(this, downloadParams);
+        }
+
+        #endregion
+
+        #region Point (적립금)
+
+        /// <summary>
+        /// 적립금 잔액 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> PointBalance()
+        {
+            return await PointService.Balance(this);
+        }
+
+        /// <summary>
+        /// 적립금 내역 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> PointTransactions(PointTransactionsParams listParams = null)
+        {
+            return await PointService.Transactions(this, listParams);
+        }
+
+        #endregion
+
+        #region Cart (주문 미리보기)
+
+        /// <summary>
+        /// 주문 미리보기 (배송비/할인 권위적 계산)
+        /// </summary>
+        public async Task<HttpResponseMessage> CartOrderPreview(OrderPreviewParams previewParams = null)
+        {
+            return await CartService.OrderPreview(this, previewParams);
+        }
+
+        #endregion
+
+        #region OrderSubscriptionRequest (정기구독 요청 조회/승인)
+
+        /// <summary>
+        /// 정기구독 요청 목록 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestList(OrderSubscriptionRequestListParams listParams = null)
+        {
+            return await OrderSubscriptionRequestService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 정기구독 요청 단건 조회
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestDetail(string orderSubscriptionRequestHistoryId, string projectId = null)
+        {
+            return await OrderSubscriptionRequestService.Detail(this, orderSubscriptionRequestHistoryId, projectId);
+        }
+
+        /// <summary>
+        /// 정기구독 요청 승인/거절 (supervisor 전용)
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestUpdate(OrderSubscriptionRequestUpdateParams updateParams)
+        {
+            return await OrderSubscriptionRequestService.Update(this, updateParams);
+        }
+
+        #endregion
+
         #region OrderSubscriptionAdjustment (정기구독 조정)
 
         /// <summary>
