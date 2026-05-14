@@ -44,12 +44,7 @@ namespace Test
         /// </summary>
         public static class PG
         {
-            // Legacy application_id/private_key (SDK 내부 보존)
-            public const string ProductionApplicationId = "5b8f6a4d396fa665fdc2b5ea";
-            public const string ProductionPrivateKey = "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=";
-            public const string DevApplicationId = "59bfc738e13f337dbd6ca48a";
-            public const string DevPrivateKey = "pDc0NwlkEX3aSaHTp/PPL/i8vn5E/CqRChgyEp/gHD0=";
-
+            // ck/sk 와 legacy application_id/private_key 모두 .env / 환경변수 로 주입 (.env.example 참고)
             public static string GetClientKey() =>
                 CurrentEnv == "production" ? EnvValue("BOOTPAY_PG_CLIENT_KEY_PROD", "") : EnvValue("BOOTPAY_PG_CLIENT_KEY_DEV", "");
 
@@ -57,10 +52,10 @@ namespace Test
                 CurrentEnv == "production" ? EnvValue("BOOTPAY_PG_SECRET_KEY_PROD", "") : EnvValue("BOOTPAY_PG_SECRET_KEY_DEV", "");
 
             public static string GetApplicationId() =>
-                CurrentEnv == "production" ? ProductionApplicationId : DevApplicationId;
+                CurrentEnv == "production" ? EnvValue("BOOTPAY_PG_APPLICATION_ID_PROD", "") : EnvValue("BOOTPAY_PG_APPLICATION_ID_DEV", "");
 
             public static string GetPrivateKey() =>
-                CurrentEnv == "production" ? ProductionPrivateKey : DevPrivateKey;
+                CurrentEnv == "production" ? EnvValue("BOOTPAY_PG_PRIVATE_KEY_PROD", "") : EnvValue("BOOTPAY_PG_PRIVATE_KEY_DEV", "");
 
             public static int GetMode() =>
                 CurrentEnv == "development" ? Bootpay.BootpayObject.MODE_DEVELOPMENT : Bootpay.BootpayObject.MODE_PRODUCTION;

@@ -30,15 +30,15 @@ namespace Sample.Models
             return DotEnv.TryGetValue(key, out value) && !string.IsNullOrEmpty(value) ? value : fallback;
         }
 
-        // PG ck/sk 는 .env / 환경변수 로 주입 (.env.example 참고)
+        // PG ck/sk 와 legacy application_id/private_key 모두 .env / 환경변수 로 주입 (.env.example 참고)
         public static readonly string client_key = EnvValue("BOOTPAY_PG_CLIENT_KEY_PROD", "");
         public static readonly string secret_key = EnvValue("BOOTPAY_PG_SECRET_KEY_PROD", "");
-        public const string application_id = "5b8f6a4d396fa665fdc2b5ea";
-        public const string private_key = "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=";
+        public static readonly string application_id = EnvValue("BOOTPAY_PG_APPLICATION_ID_PROD", "");
+        public static readonly string private_key = EnvValue("BOOTPAY_PG_PRIVATE_KEY_PROD", "");
 
         public static readonly string dev_client_key = EnvValue("BOOTPAY_PG_CLIENT_KEY_DEV", "");
         public static readonly string dev_secret_key = EnvValue("BOOTPAY_PG_SECRET_KEY_DEV", "");
-        public const string dev_application_id = "59bfc738e13f337dbd6ca48a";
-        public const string dev_private_key = "pDc0NwlkEX3aSaHTp/PPL/i8vn5E/CqRChgyEp/gHD0=";
+        public static readonly string dev_application_id = EnvValue("BOOTPAY_PG_APPLICATION_ID_DEV", "");
+        public static readonly string dev_private_key = EnvValue("BOOTPAY_PG_PRIVATE_KEY_DEV", "");
     }
 }

@@ -50,16 +50,11 @@ namespace Bootpay.Tests
 
         public static class PG
         {
-            // Legacy application_id/private_key (SDK 내부 보존). ck/sk 는 .env / 환경변수 로 주입 (.env.example 참고)
-            public const string DevApplicationId = "59bfc738e13f337dbd6ca48a";
-            public const string DevPrivateKey = "pDc0NwlkEX3aSaHTp/PPL/i8vn5E/CqRChgyEp/gHD0=";
-            public const string ProdApplicationId = "5b8f6a4d396fa665fdc2b5ea";
-            public const string ProdPrivateKey = "rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw=";
-
+            // ck/sk 와 legacy application_id/private_key 모두 .env / 환경변수 로 주입 (.env.example 참고)
             public static string ClientKey => IsProduction ? EnvValue("BOOTPAY_PG_CLIENT_KEY_PROD", "") : EnvValue("BOOTPAY_PG_CLIENT_KEY_DEV", "");
             public static string SecretKey => IsProduction ? EnvValue("BOOTPAY_PG_SECRET_KEY_PROD", "") : EnvValue("BOOTPAY_PG_SECRET_KEY_DEV", "");
-            public static string ApplicationId => IsProduction ? ProdApplicationId : DevApplicationId;
-            public static string PrivateKey => IsProduction ? ProdPrivateKey : DevPrivateKey;
+            public static string ApplicationId => IsProduction ? EnvValue("BOOTPAY_PG_APPLICATION_ID_PROD", "") : EnvValue("BOOTPAY_PG_APPLICATION_ID_DEV", "");
+            public static string PrivateKey => IsProduction ? EnvValue("BOOTPAY_PG_PRIVATE_KEY_PROD", "") : EnvValue("BOOTPAY_PG_PRIVATE_KEY_DEV", "");
 
             public static int Mode => IsProduction
                 ? BootpayObject.MODE_PRODUCTION
