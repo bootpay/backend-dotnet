@@ -17,7 +17,7 @@ namespace Bootpay.Tests
             _output = output;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task GetAccessToken_ShouldReturnToken()
         {
             var api = new BootpayCommerceApi(

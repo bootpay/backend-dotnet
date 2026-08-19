@@ -17,7 +17,9 @@ namespace Bootpay.Tests
             _output = output;
         }
 
-        [Fact]
+        // 합성 응답 자체는 오프라인이지만, TestConfig 키 미주입 시 빈 ck/sk 가 legacy 분기로 빠져
+        // 실제 request/token 호출이 발생하므로 development 게이트가 필요하다.
+        [LiveFact]
         public async Task GetAccessToken_CkSk_ReturnsSyntheticEmptyResponse()
         {
             // ck/sk 모드는 매 요청 Basic Auth 로 인증하므로 GetAccessToken 은 HTTP 호출 없이 합성 응답을 돌려준다.
@@ -39,7 +41,7 @@ namespace Bootpay.Tests
             Assert.Equal(0, (int)parsed["expire_in"]);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task GetAccessToken_Legacy_IssuesRealAccessToken()
         {
             // legacy application_id/private_key 모드는 request/token 호출 후 실제 토큰을 발급받는다.

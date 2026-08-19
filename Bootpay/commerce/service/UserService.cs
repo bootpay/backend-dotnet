@@ -54,6 +54,81 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
+        /// 회원 로그인 (V1 Mall API — POST /v1/users/login)
+        /// ⚠️ 서버(LoginService)는 login_id/password 만 읽는다. corporate_type 은 미지정시 0 으로 전송된다.
+        /// </summary>
+        public static async Task<HttpResponseMessage> MallLogin(BootpayCommerceObject bootpay, MallUserLoginParams loginParams, string idempotencyKey = null)
+        {
+            var payload = new MallUserLoginParams
+            {
+                LoginId = loginParams.LoginId,
+                Password = loginParams.Password,
+                CorporateType = loginParams.CorporateType ?? 0
+            };
+            return await bootpay.SendAsync("users/login", HttpMethod.Post, payload, CommerceRequestHeaders.Mall(null, idempotencyKey));
+        }
+
+        /// <summary>
+        /// 회원 세션 조회 (V1 Mall API — GET /v1/users/session)
+        /// 회원 JWT 는 Bootpay-User-JWT 헤더로 전달된다 (값이 있을 때만 부착).
+        /// </summary>
+        public static async Task<HttpResponseMessage> Session(BootpayCommerceObject bootpay, string userJwt = null, string idempotencyKey = null)
+        {
+            return await bootpay.SendAsync("users/session", HttpMethod.Get, null, CommerceRequestHeaders.Mall(userJwt, idempotencyKey));
+        }
+
+        /// <summary>
+        /// 회원 로그아웃 (V1 Mall API — DELETE /v1/users/session)
+        /// </summary>
+        public static async Task<HttpResponseMessage> Logout(BootpayCommerceObject bootpay, string userJwt, string idempotencyKey = null)
+        {
+            return await bootpay.SendAsync("users/session", HttpMethod.Delete, null, CommerceRequestHeaders.Mall(userJwt, idempotencyKey));
+        }
+
+        /// <summary>
+        /// 회원가입 (V1 Mall API — POST /v1/users/join) — 일반 회원가입용
+        /// ⚠️ Join(user) 과 같은 엔드포인트를 부르지만 용도가 다르다 —
+        ///    이쪽은 password/corporate_type/group 을 쓰는 일반 회원가입, 저쪽은 uid 연동 가입이다.
+        ///    corporate_type 미지정시 0, 나머지 null 값은 전송하지 않는다.
+        /// </summary>
+        public static async Task<HttpResponseMessage> MallJoin(BootpayCommerceObject bootpay, MallUserJoinParams joinParams, string idempotencyKey = null)
+        {
+            var payload = new MallUserJoinParams
+            {
+                LoginId = joinParams.LoginId,
+                Password = joinParams.Password,
+                Name = joinParams.Name,
+                Email = joinParams.Email,
+                Phone = joinParams.Phone,
+                Nickname = joinParams.Nickname,
+                Gender = joinParams.Gender,
+                Birth = joinParams.Birth,
+                CorporateType = joinParams.CorporateType ?? 0,
+                Group = joinParams.Group
+            };
+            return await bootpay.SendAsync("users/join", HttpMethod.Post, payload, CommerceRequestHeaders.Mall(null, idempotencyKey));
+        }
+
+        /// <summary>
+        /// 회원가입 중복 확인 (V1 Mall API — GET /v1/users/join/{type}?pk={pk})
+        /// type: email-exist, id-exist, phone-exist, uid-exist, group-business-number-exist
+        /// </summary>
+        public static async Task<HttpResponseMessage> JoinCheck(BootpayCommerceObject bootpay, string type, string pk, string idempotencyKey = null)
+        {
+            var encodedValue = HttpUtility.UrlEncode(pk);
+            return await bootpay.SendAsync($"users/join/{type}?pk={encodedValue}", HttpMethod.Get, null, CommerceRequestHeaders.Mall(null, idempotencyKey));
+        }
+
+        /// <summary>
+        /// 외부 uid(ex_uid) 중복 검사 (GET /v1/users/join/uid-exist?pk={uid}) — user scope
+        /// </summary>
+        public static async Task<HttpResponseMessage> UidExist(BootpayCommerceObject bootpay, string uid, string idempotencyKey = null)
+        {
+            var encodedValue = HttpUtility.UrlEncode(uid);
+            return await bootpay.SendAsync($"users/join/uid-exist?pk={encodedValue}", HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
+        }
+
+        /// <summary>
         /// 사용자 목록 조회
         /// </summary>
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, UserListParams listParams = null)

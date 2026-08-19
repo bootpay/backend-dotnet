@@ -205,9 +205,37 @@ namespace Bootpay.Commerce.Models
 
     /// <summary>
     /// 청구서 목록 조회 파라미터
+    /// limit 미지정시 서버 기본값과 동일한 24 를 보낸다.
     /// </summary>
     public class InvoiceListParams : ListParams
     {
+        [JsonProperty("cs_type")]
+        public string CsType { get; set; }
+
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("product_type")]
+        public int? ProductType { get; set; }
+
+        [JsonProperty("css_at")]
+        public string CssAt { get; set; }
+
+        [JsonProperty("cse_at")]
+        public string CseAt { get; set; }
+    }
+
+    /// <summary>
+    /// 청구서 목록 조회 응답 (GET /v1/invoices)
+    /// ⚠️ { items, total } 이 아니라 { list, count } 다.
+    /// </summary>
+    public class InvoiceListResponse
+    {
+        [JsonProperty("list")]
+        public List<CommerceInvoice> List { get; set; }
+
+        [JsonProperty("count")]
+        public int? Count { get; set; }
     }
 
     /// <summary>

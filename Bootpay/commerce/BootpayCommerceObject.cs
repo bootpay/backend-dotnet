@@ -140,8 +140,10 @@ namespace Bootpay.Commerce
 
         /// <summary>
         /// HTTP 요청 전송
+        /// 요청별 헤더(BOOTPAY-ROLE, Idempotency-Key 등)는 기본 헤더를 덮어쓰지 않고 해당 요청에만 적용된다.
+        /// DELETE 요청도 data 가 있으면 body 로 전송한다 (charge 해지, 조정항목 삭제 등).
         /// </summary>
-        public async Task<HttpResponseMessage> SendAsync(string url, HttpMethod method, object data = null)
+        public async Task<HttpResponseMessage> SendAsync(string url, HttpMethod method, object data = null, Dictionary<string, string> headers = null)
         {
             string json = "";
             if (data != null)
@@ -160,9 +162,17 @@ namespace Bootpay.Commerce
                 request.Method = method;
                 request.RequestUri = new Uri(_baseUrl + url);
 
-                if (!string.IsNullOrEmpty(json) && method != HttpMethod.Get && method != HttpMethod.Delete)
+                if (!string.IsNullOrEmpty(json) && method != HttpMethod.Get)
                 {
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                }
+
+                if (headers != null)
+                {
+                    foreach (var header in headers)
+                    {
+                        request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
                 }
 
                 var credentials = $"{_clientKey}:{_secretKey}";
@@ -210,9 +220,11 @@ namespace Bootpay.Commerce
 
         /// <summary>
         /// Multipart/form-data HTTP 요청 전송 (파일 업로드용)
+        /// Content-Type 은 MultipartFormDataContent 가 생성한 boundary 포함 값을 그대로 사용한다.
         /// </summary>
-        public async Task<HttpResponseMessage> SendMultipartAsync(string url, object data, List<string> imagePaths = null)
+        public async Task<HttpResponseMessage> SendMultipartAsync(string url, object data, List<string> imagePaths = null, Dictionary<string, string> headers = null)
         {
+            using (HttpRequestMessage request = new HttpRequestMessage())
             using (HttpClient client = new HttpClient())
             using (var content = new MultipartFormDataContent())
             {
@@ -240,15 +252,17 @@ namespace Bootpay.Commerce
                             }
                             else
                             {
-                                content.Add(new StringContent(value.ToString()), fieldName);
+                                content.Add(new StringContent(MultipartValue(value)), fieldName);
                             }
                         }
                     }
                 }
 
                 // 이미지 파일 추가
+                // ⚠️ 서버(Rails)는 반복된 `images` 를 배열로 받지 않는다. images[0], images[1] ... 로 인덱싱해야 한다.
                 if (imagePaths != null && imagePaths.Count > 0)
                 {
+                    var imageIndex = 0;
                     foreach (var imagePath in imagePaths)
                     {
                         if (File.Exists(imagePath))
@@ -256,8 +270,21 @@ namespace Bootpay.Commerce
                             var fileName = Path.GetFileName(imagePath);
                             var fileContent = new ByteArrayContent(File.ReadAllBytes(imagePath));
                             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(GetMimeType(imagePath));
-                            content.Add(fileContent, "images", fileName);
+                            content.Add(fileContent, $"images[{imageIndex}]", fileName);
+                            imageIndex++;
                         }
+                    }
+                }
+
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri(_baseUrl + url);
+                request.Content = content;
+
+                if (headers != null)
+                {
+                    foreach (var header in headers)
+                    {
+                        request.Headers.TryAddWithoutValidation(header.Key, header.Value);
                     }
                 }
 
@@ -270,8 +297,26 @@ namespace Bootpay.Commerce
                 client.DefaultRequestHeaders.Add("BOOTPAY-SDK-TYPE", SDK_TYPE);
                 client.DefaultRequestHeaders.Add("BOOTPAY-ROLE", _role ?? "user");
 
-                return await client.PostAsync(_baseUrl + url, content);
+                return await client.SendAsync(request);
             }
+        }
+
+        /// <summary>
+        /// multipart form 스칼라 값 직렬화.
+        /// bool 은 소문자 "true"/"false" — .NET 기본 ToString() 의 "True"/"False" 는 Rails 가 false 를 true 로 캐스팅한다.
+        /// 숫자는 InvariantCulture — 로케일에 따라 소수점이 콤마로 직렬화되는 것을 방지.
+        /// </summary>
+        private static string MultipartValue(object value)
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? "true" : "false";
+            }
+            if (value is IFormattable formattable)
+            {
+                return formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            return value.ToString();
         }
 
         /// <summary>

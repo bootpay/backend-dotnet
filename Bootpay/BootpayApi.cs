@@ -57,6 +57,17 @@ namespace Bootpay
             return await BillingService.LookupBillingKeyByKey(this, billingKey);
         }
 
+        /// <summary>
+        /// 우선순위(순차) 결제 빌링키 조회
+        /// </summary>
+        /// <param name="widgetKey">위젯 키</param>
+        /// <param name="billingKey">빌링키</param>
+        /// <param name="userId">조회 대상 회원 ID (서버가 빌링키 소유자 검증에 사용한다)</param>
+        public async Task<HttpResponseMessage> LookupSequentialBillingKey(String widgetKey, String billingKey, String userId)
+        {
+            return await BillingService.LookupSequentialBillingKey(this, widgetKey, billingKey, userId);
+        }
+
         
 
         public async Task<HttpResponseMessage> DestroyBillingKey(String billing_key) {

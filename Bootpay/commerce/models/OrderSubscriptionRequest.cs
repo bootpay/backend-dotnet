@@ -49,6 +49,15 @@ namespace Bootpay.Commerce.Models
         [JsonProperty("project_id")]
         public string ProjectId { get; set; }
 
+        [JsonProperty("order_subscription_id")]
+        public string OrderSubscriptionId { get; set; }
+
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("user_group_id")]
+        public string UserGroupId { get; set; }
+
         [JsonProperty("page")]
         public int? Page { get; set; }
 
@@ -87,5 +96,23 @@ namespace Bootpay.Commerce.Models
 
         [JsonProperty("reason")]
         public string Reason { get; set; }
+
+        [JsonProperty("price")]
+        public int? Price { get; set; }
+
+        [JsonProperty("tax_free_price")]
+        public int? TaxFreePrice { get; set; }
+
+        [JsonProperty("termination_fee")]
+        public int? TerminationFee { get; set; }
+
+        [JsonProperty("last_bill_refund_price")]
+        public int? LastBillRefundPrice { get; set; }
+
+        [JsonProperty("final_fee")]
+        public int? FinalFee { get; set; }
+
+        [JsonProperty("service_end_at")]
+        public string ServiceEndAt { get; set; }
     }
 }

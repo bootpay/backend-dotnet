@@ -38,6 +38,22 @@ namespace Bootpay.service
             return await bootpay.SendAsync("billing_key/" + billingKey, HttpMethod.Get);
         }
 
+        /// <summary>
+        /// 우선순위(순차) 결제 빌링키 조회
+        /// GET subscribe/sequential_billing_key/{billing_key}?widget_key={widget_key}&amp;user_id={user_id}
+        /// </summary>
+        /// <param name="widgetKey">위젯 키</param>
+        /// <param name="billingKey">빌링키</param>
+        /// <param name="userId">조회 대상 회원 ID (서버가 빌링키 소유자 검증에 사용한다)</param>
+        public static async Task<HttpResponseMessage> LookupSequentialBillingKey(BootpayObject bootpay, String widgetKey, String billingKey, String userId)
+        {
+            return await bootpay.SendAsync(
+                "subscribe/sequential_billing_key/" + billingKey +
+                "?widget_key=" + Uri.EscapeDataString(widgetKey ?? "") +
+                "&user_id=" + Uri.EscapeDataString(userId ?? ""),
+                HttpMethod.Get);
+        }
+
 
 
 

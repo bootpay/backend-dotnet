@@ -49,6 +49,8 @@ namespace Bootpay.Commerce.Service
             if (!string.IsNullOrEmpty(listParams.UserId)) queryParams["user_id"] = listParams.UserId;
             if (!string.IsNullOrEmpty(listParams.UserGroupId)) queryParams["user_group_id"] = listParams.UserGroupId;
             if (!string.IsNullOrEmpty(listParams.CsType)) queryParams["cs_type"] = listParams.CsType;
+            if (!string.IsNullOrEmpty(listParams.SearchDateFrom)) queryParams["search_date_from"] = listParams.SearchDateFrom;
+            if (!string.IsNullOrEmpty(listParams.SearchDateTo)) queryParams["search_date_to"] = listParams.SearchDateTo;
             if (!string.IsNullOrEmpty(listParams.CssAt)) queryParams["css_at"] = listParams.CssAt;
             if (!string.IsNullOrEmpty(listParams.CseAt)) queryParams["cse_at"] = listParams.CseAt;
             if (listParams.SubscriptionBillingType.HasValue)

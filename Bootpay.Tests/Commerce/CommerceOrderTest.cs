@@ -30,7 +30,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -51,7 +51,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderDetail_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -66,7 +66,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderMonth_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -81,7 +81,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderCancelList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -98,7 +98,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderSubscriptionList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -119,7 +119,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderSubscriptionDetail_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -134,7 +134,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task OrderSubscriptionBillList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

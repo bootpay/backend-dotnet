@@ -61,19 +61,20 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
-        /// 그룹 제한 설정
+        /// 그룹 구매 한도 설정 (PUT /v1/user-groups/{user_group_id}/limit) — manager scope
+        /// ⚠️ 한도는 이 전용 라우트로만 바뀐다 (update 로는 반영되지 않는다).
         /// </summary>
-        public static async Task<HttpResponseMessage> Limit(BootpayCommerceObject bootpay, UserGroupLimitParams limitParams)
+        public static async Task<HttpResponseMessage> Limit(BootpayCommerceObject bootpay, UserGroupLimitParams limitParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"user-groups/{limitParams.UserGroupId}/limit", HttpMethod.Put, limitParams);
+            return await bootpay.SendAsync($"user-groups/{limitParams.UserGroupId}/limit", HttpMethod.Put, limitParams, CommerceRequestHeaders.Manager(idempotencyKey));
         }
 
         /// <summary>
-        /// 그룹 거래 집계 설정
+        /// 그룹 구독 합산청구(정산주기) 설정 (PUT /v1/user-groups/{user_group_id}/aggregate-transaction) — manager scope
         /// </summary>
-        public static async Task<HttpResponseMessage> AggregateTransaction(BootpayCommerceObject bootpay, UserGroupAggregateTransactionParams aggregateParams)
+        public static async Task<HttpResponseMessage> AggregateTransaction(BootpayCommerceObject bootpay, UserGroupAggregateTransactionParams aggregateParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"user-groups/{aggregateParams.UserGroupId}/aggregate-transaction", HttpMethod.Put, aggregateParams);
+            return await bootpay.SendAsync($"user-groups/{aggregateParams.UserGroupId}/aggregate-transaction", HttpMethod.Put, aggregateParams, CommerceRequestHeaders.Manager(idempotencyKey));
         }
 
         private static string BuildListQuery(UserGroupListParams listParams)

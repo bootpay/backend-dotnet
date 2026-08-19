@@ -26,7 +26,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task RequestCashReceipt_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -52,7 +52,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task RequestCashReceiptCancel_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -74,7 +74,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task RequestCashReceiptByBootpay_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -99,7 +99,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task RequestCashReceiptCancelByBootpay_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

@@ -195,4 +195,77 @@ namespace Bootpay.Commerce.Models
         [JsonProperty("exists")]
         public bool Exists { get; set; }
     }
+
+    /// <summary>
+    /// 회원 로그인 파라미터 (V1 Mall API — POST /v1/users/login)
+    /// </summary>
+    public class MallUserLoginParams
+    {
+        [JsonProperty("login_id")]
+        public string LoginId { get; set; }
+
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// 0: 개인, 1: 사업자 (미지정시 0 으로 전송된다)
+        /// </summary>
+        [JsonProperty("corporate_type")]
+        public int? CorporateType { get; set; }
+    }
+
+    /// <summary>
+    /// 회원가입 파라미터 (V1 Mall API — POST /v1/users/join)
+    /// null 값은 전송하지 않는다.
+    /// </summary>
+    public class MallUserJoinParams
+    {
+        [JsonProperty("login_id")]
+        public string LoginId { get; set; }
+
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("phone")]
+        public string Phone { get; set; }
+
+        [JsonProperty("nickname")]
+        public string Nickname { get; set; }
+
+        [JsonProperty("gender")]
+        public int? Gender { get; set; }
+
+        [JsonProperty("birth")]
+        public string Birth { get; set; }
+
+        /// <summary>
+        /// 0: 개인, 1: 사업자 (미지정시 0 으로 전송된다)
+        /// </summary>
+        [JsonProperty("corporate_type")]
+        public int? CorporateType { get; set; }
+
+        [JsonProperty("group")]
+        public Dictionary<string, object> Group { get; set; }
+    }
+
+    /// <summary>
+    /// 회원 세션 조회 응답 (V1 Mall API — GET /v1/users/session)
+    /// </summary>
+    public class MallUserSessionResponse
+    {
+        [JsonProperty("user")]
+        public CommerceUser User { get; set; }
+
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+
+        [JsonProperty("expired_at")]
+        public string ExpiredAt { get; set; }
+    }
 }

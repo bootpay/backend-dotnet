@@ -158,11 +158,20 @@ namespace Bootpay.Commerce.Models
     /// </summary>
     public class UserGroupLimitParams
     {
-        [JsonProperty("user_group_id")]
+        /// <summary>
+        /// user_group_id 는 URL 로만 전송된다. 한도는 이 전용 라우트로만 바뀐다 (update 로는 반영되지 않는다). manager scope.
+        /// </summary>
+        [JsonIgnore]
         public string UserGroupId { get; set; }
 
         [JsonProperty("use_limit")]
         public bool? UseLimit { get; set; }
+
+        [JsonProperty("limit_month_purchase")]
+        public int? LimitMonthPurchase { get; set; }
+
+        [JsonProperty("limit_week_purchase")]
+        public int? LimitWeekPurchase { get; set; }
 
         [JsonProperty("purchase_limit")]
         public int? PurchaseLimit { get; set; }
@@ -179,7 +188,10 @@ namespace Bootpay.Commerce.Models
     /// </summary>
     public class UserGroupAggregateTransactionParams
     {
-        [JsonProperty("user_group_id")]
+        /// <summary>
+        /// user_group_id 는 URL 로만 전송된다. manager scope.
+        /// </summary>
+        [JsonIgnore]
         public string UserGroupId { get; set; }
 
         [JsonProperty("use_subscription_aggregate_transaction")]

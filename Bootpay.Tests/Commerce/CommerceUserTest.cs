@@ -31,7 +31,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserJoin_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -55,7 +55,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserToken_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -71,7 +71,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserCheckExist_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -86,7 +86,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -107,7 +107,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserDetail_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -122,7 +122,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserUpdate_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -144,7 +144,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task UserDelete_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

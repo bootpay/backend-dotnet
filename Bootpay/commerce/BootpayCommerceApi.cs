@@ -66,11 +66,43 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 회원 로그인 (Mall API alias)
+        /// 회원 로그인 (V1 Mall API — POST /v1/users/login)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserLoginMall(MallUserLoginParams loginParams, string idempotencyKey = null)
+        {
+            return await UserService.MallLogin(this, loginParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 회원 로그인 (V1 Mall API alias) — corporate_type 미지정시 0 으로 전송된다
         /// </summary>
         public async Task<HttpResponseMessage> UserLoginMall(string loginId, string loginPw)
         {
-            return await UserLogin(loginId, loginPw);
+            return await UserService.MallLogin(this, new MallUserLoginParams { LoginId = loginId, Password = loginPw });
+        }
+
+        /// <summary>
+        /// 회원 세션 조회 (V1 Mall API — GET /v1/users/session)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserSession(string userJwt = null, string idempotencyKey = null)
+        {
+            return await UserService.Session(this, userJwt, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 회원 로그아웃 (V1 Mall API — DELETE /v1/users/session)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserLogout(string userJwt, string idempotencyKey = null)
+        {
+            return await UserService.Logout(this, userJwt, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 회원가입 (V1 Mall API — POST /v1/users/join)
+        /// </summary>
+        public async Task<HttpResponseMessage> UserJoinMall(MallUserJoinParams joinParams, string idempotencyKey = null)
+        {
+            return await UserService.MallJoin(this, joinParams, idempotencyKey);
         }
 
         /// <summary>
@@ -82,11 +114,20 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 회원가입 중복 체크 (Mall API alias)
+        /// 회원가입 중복 체크 (V1 Mall API — GET /v1/users/join/{type}?pk={pk})
+        /// type: email-exist, id-exist, phone-exist, uid-exist, group-business-number-exist
         /// </summary>
-        public async Task<HttpResponseMessage> UserJoinCheckMall(string key, string value)
+        public async Task<HttpResponseMessage> UserJoinCheckMall(string key, string value, string idempotencyKey = null)
         {
-            return await UserCheckExist(key, value);
+            return await UserService.JoinCheck(this, key, value, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 외부 uid(ex_uid) 중복 검사 (GET /v1/users/join/uid-exist?pk={uid})
+        /// </summary>
+        public async Task<HttpResponseMessage> UidExist(string uid, string idempotencyKey = null)
+        {
+            return await UserService.UidExist(this, uid, idempotencyKey);
         }
 
         /// <summary>
@@ -166,19 +207,20 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 그룹 제한 설정
+        /// 그룹 구매 한도 설정 — manager scope
+        /// ⚠️ 한도는 이 전용 라우트로만 바뀐다 (update 로는 반영되지 않는다).
         /// </summary>
-        public async Task<HttpResponseMessage> UserGroupLimit(UserGroupLimitParams limitParams)
+        public async Task<HttpResponseMessage> UserGroupLimit(UserGroupLimitParams limitParams, string idempotencyKey = null)
         {
-            return await UserGroupService.Limit(this, limitParams);
+            return await UserGroupService.Limit(this, limitParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 그룹 거래 집계 설정
+        /// 그룹 구독 합산청구(정산주기) 설정 — manager scope
         /// </summary>
-        public async Task<HttpResponseMessage> UserGroupAggregateTransaction(UserGroupAggregateTransactionParams aggregateParams)
+        public async Task<HttpResponseMessage> UserGroupAggregateTransaction(UserGroupAggregateTransactionParams aggregateParams, string idempotencyKey = null)
         {
-            return await UserGroupService.AggregateTransaction(this, aggregateParams);
+            return await UserGroupService.AggregateTransaction(this, aggregateParams, idempotencyKey);
         }
 
         #endregion
@@ -194,21 +236,23 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 생성
+        /// 상품 생성 — manager scope
         /// </summary>
-        public async Task<HttpResponseMessage> ProductCreate(CommerceProduct product)
+        public async Task<HttpResponseMessage> ProductCreate(CommerceProduct product, string idempotencyKey = null)
         {
-            return await ProductService.Create(this, product);
+            return await ProductService.Create(this, product, idempotencyKey);
         }
 
         /// <summary>
-        /// 상품 생성 (이미지 파일 포함)
+        /// 상품 생성 (이미지 파일 포함) — manager scope
+        /// 이미지가 있으면 multipart/form-data (images[0], images[1] ... 인덱싱), 없으면 JSON 으로 전송된다.
         /// </summary>
         /// <param name="product">상품 정보</param>
         /// <param name="imagePaths">이미지 파일 경로 리스트</param>
-        public async Task<HttpResponseMessage> ProductCreateWithImages(CommerceProduct product, List<string> imagePaths)
+        /// <param name="idempotencyKey">미지정시 자동 생성</param>
+        public async Task<HttpResponseMessage> ProductCreateWithImages(CommerceProduct product, List<string> imagePaths, string idempotencyKey = null)
         {
-            return await ProductService.CreateWithImages(this, product, imagePaths);
+            return await ProductService.CreateWithImages(this, product, imagePaths, idempotencyKey);
         }
 
         /// <summary>
@@ -220,43 +264,44 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 목록 조회 (Mall API alias)
+        /// 상품 목록 조회 (V1 Mall API — GET /v1/products)
+        /// page/limit 미지정시 각각 1 / 20 이 적용된다. MallProductListParams 로 category_id/sort/user_jwt 지정 가능.
         /// </summary>
-        public async Task<HttpResponseMessage> Products(ProductListParams listParams = null)
+        public async Task<HttpResponseMessage> Products(ProductListParams listParams = null, string idempotencyKey = null)
         {
-            return await ProductList(listParams);
+            return await ProductService.Products(this, listParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 상품 상세 조회 (Mall API alias)
+        /// 상품 상세 조회 (V1 Mall API — GET /v1/products/{product_id})
         /// </summary>
-        public async Task<HttpResponseMessage> ProductDetailMall(string productId)
+        public async Task<HttpResponseMessage> ProductDetailMall(string productId, string userJwt = null, string idempotencyKey = null)
         {
-            return await ProductDetail(productId);
+            return await ProductService.ProductDetail(this, productId, userJwt, idempotencyKey);
         }
 
         /// <summary>
-        /// 상품 수정
+        /// 상품 수정 — manager scope
         /// </summary>
-        public async Task<HttpResponseMessage> ProductUpdate(CommerceProduct product)
+        public async Task<HttpResponseMessage> ProductUpdate(CommerceProduct product, string idempotencyKey = null)
         {
-            return await ProductService.Update(this, product);
+            return await ProductService.Update(this, product, idempotencyKey);
         }
 
         /// <summary>
-        /// 상품 상태 변경
+        /// 상품 상태 변경 — manager scope
         /// </summary>
-        public async Task<HttpResponseMessage> ProductStatus(ProductStatusParams statusParams)
+        public async Task<HttpResponseMessage> ProductStatus(ProductStatusParams statusParams, string idempotencyKey = null)
         {
-            return await ProductService.Status(this, statusParams);
+            return await ProductService.Status(this, statusParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 상품 삭제
+        /// 상품 삭제 — manager scope
         /// </summary>
-        public async Task<HttpResponseMessage> ProductDelete(string productId)
+        public async Task<HttpResponseMessage> ProductDelete(string productId, string idempotencyKey = null)
         {
-            return await ProductService.Delete(this, productId);
+            return await ProductService.Delete(this, productId, idempotencyKey);
         }
 
         #endregion
@@ -266,17 +311,67 @@ namespace Bootpay.Commerce
         /// <summary>
         /// 가맹점 기본 정보 조회
         /// </summary>
-        public async Task<HttpResponseMessage> StoreInfo()
+        public async Task<HttpResponseMessage> StoreInfo(string idempotencyKey = null)
         {
-            return await StoreService.Info(this);
+            return await StoreService.Info(this, idempotencyKey);
         }
 
         /// <summary>
         /// 가맹점 상세 정보 조회
         /// </summary>
-        public async Task<HttpResponseMessage> StoreDetail()
+        public async Task<HttpResponseMessage> StoreDetail(string idempotencyKey = null)
         {
-            return await StoreService.Detail(this);
+            return await StoreService.Detail(this, idempotencyKey);
+        }
+
+        #endregion
+
+        #region MallSetting (몰 설정)
+
+        /// <summary>
+        /// 몰 설정 조회 (GET /v1/mall-setting) — supervisor scope
+        /// </summary>
+        public async Task<HttpResponseMessage> GetMallSetting(string idempotencyKey = null)
+        {
+            return await MallSettingService.GetMallSetting(this, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 몰 설정 조회 alias
+        /// </summary>
+        public async Task<HttpResponseMessage> MallSettingDetail(string idempotencyKey = null)
+        {
+            return await GetMallSetting(idempotencyKey);
+        }
+
+        /// <summary>
+        /// 몰 설정 수정 (PUT /v1/mall-setting) — supervisor scope
+        /// 요청 바디는 flatten 형식이며, null 값은 전송되지 않는다.
+        /// </summary>
+        public async Task<HttpResponseMessage> UpdateMallSetting(MallSettingUpdateParams updateParams, string idempotencyKey = null)
+        {
+            return await MallSettingService.UpdateMallSetting(this, updateParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 몰 설정 수정 alias
+        /// </summary>
+        public async Task<HttpResponseMessage> MallSettingUpdate(MallSettingUpdateParams updateParams, string idempotencyKey = null)
+        {
+            return await UpdateMallSetting(updateParams, idempotencyKey);
+        }
+
+        #endregion
+
+        #region Webhook (웹훅)
+
+        /// <summary>
+        /// 테스트 웹훅 발송 (POST /v1/webhook/test)
+        /// 등록된 웹훅 URL 로 테스트 페이로드를 보내 연동을 확인할 때 쓴다.
+        /// </summary>
+        public async Task<HttpResponseMessage> WebhookSendTest(SendTestWebhookParams sendParams = null, string idempotencyKey = null)
+        {
+            return await WebhookService.SendTest(this, sendParams, idempotencyKey);
         }
 
         #endregion
@@ -284,11 +379,13 @@ namespace Bootpay.Commerce
         #region Invoice (청구서)
 
         /// <summary>
-        /// 청구서 목록 조회
+        /// 청구서 목록 조회 (GET /v1/invoices)
+        /// 응답은 { list, count } 구조다 ({ items, total } 아님). limit 미지정시 24 를 보낸다.
+        /// InvoiceListParams 로 cs_type/user_id/product_type/css_at/cse_at 지정 가능.
         /// </summary>
-        public async Task<HttpResponseMessage> InvoiceList(ListParams listParams = null)
+        public async Task<HttpResponseMessage> InvoiceList(ListParams listParams = null, string idempotencyKey = null)
         {
-            return await InvoiceService.List(this, listParams);
+            return await InvoiceService.List(this, listParams, idempotencyKey);
         }
 
         /// <summary>
@@ -300,19 +397,20 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 청구서 알림 발송
+        /// 청구서 알림 재발송 — sendTypes 미전달시 서버가 빈 배열로 처리한다.
+        /// ⚠️ 실제 고객에게 알림이 발송되므로 테스트 호출 주의.
         /// </summary>
-        public async Task<HttpResponseMessage> InvoiceNotify(string invoiceId, List<int> sendTypes)
+        public async Task<HttpResponseMessage> InvoiceNotify(string invoiceId, List<int> sendTypes = null, string idempotencyKey = null)
         {
-            return await InvoiceService.Notify(this, invoiceId, sendTypes);
+            return await InvoiceService.Notify(this, invoiceId, sendTypes, idempotencyKey);
         }
 
         /// <summary>
         /// 청구서 상세 조회
         /// </summary>
-        public async Task<HttpResponseMessage> InvoiceDetail(string invoiceId)
+        public async Task<HttpResponseMessage> InvoiceDetail(string invoiceId, string idempotencyKey = null)
         {
-            return await InvoiceService.Detail(this, invoiceId);
+            return await InvoiceService.Detail(this, invoiceId, idempotencyKey);
         }
 
         #endregion
@@ -348,11 +446,11 @@ namespace Bootpay.Commerce
         #region OrderCancel (주문 취소)
 
         /// <summary>
-        /// 취소 요청 목록 조회
+        /// 취소 요청 목록 조회 — approve / reject / withdraw 에 넘길 order_cancellation_request_id 를 여기서 얻는다.
         /// </summary>
-        public async Task<HttpResponseMessage> OrderCancelList(OrderCancelListParams listParams = null)
+        public async Task<HttpResponseMessage> OrderCancelList(OrderCancelListParams listParams = null, string idempotencyKey = null)
         {
-            return await OrderCancelService.List(this, listParams);
+            return await OrderCancelService.List(this, listParams, idempotencyKey);
         }
 
         /// <summary>
@@ -364,27 +462,27 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 취소 요청 철회
+        /// (구매자) 취소 요청 철회 — 정식 인자명은 order_cancellation_request_id (구 이름과 같은 값이다)
         /// </summary>
-        public async Task<HttpResponseMessage> OrderCancelWithdraw(string orderCancelRequestHistoryId)
+        public async Task<HttpResponseMessage> OrderCancelWithdraw(string orderCancelRequestHistoryId, string idempotencyKey = null)
         {
-            return await OrderCancelService.Withdraw(this, orderCancelRequestHistoryId);
+            return await OrderCancelService.Withdraw(this, orderCancelRequestHistoryId, idempotencyKey);
         }
 
         /// <summary>
-        /// 취소 승인
+        /// (관리자) 취소 승인 — supervisor scope
         /// </summary>
-        public async Task<HttpResponseMessage> OrderCancelApprove(OrderCancelActionParams actionParams)
+        public async Task<HttpResponseMessage> OrderCancelApprove(OrderCancelActionParams actionParams, string idempotencyKey = null)
         {
-            return await OrderCancelService.Approve(this, actionParams);
+            return await OrderCancelService.Approve(this, actionParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 취소 거절
+        /// (관리자) 취소 거절 — supervisor scope
         /// </summary>
-        public async Task<HttpResponseMessage> OrderCancelReject(OrderCancelActionParams actionParams)
+        public async Task<HttpResponseMessage> OrderCancelReject(OrderCancelActionParams actionParams, string idempotencyKey = null)
         {
-            return await OrderCancelService.Reject(this, actionParams);
+            return await OrderCancelService.Reject(this, actionParams, idempotencyKey);
         }
 
         #endregion
@@ -408,35 +506,51 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 정기구독 수정
+        /// 구독 계약 내용 변경 — supervisor scope. 바뀐 값만 보내면 된다.
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionUpdate(OrderSubscriptionUpdateParams updateParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionUpdate(OrderSubscriptionUpdateParams updateParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.Update(this, updateParams);
+            return await OrderSubscriptionService.Update(this, updateParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 일시정지
+        /// 정기구독 일시정지 요청
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionPause(OrderSubscriptionPauseParams pauseParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionPause(OrderSubscriptionPauseParams pauseParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.Pause(this, pauseParams);
+            return await OrderSubscriptionService.Pause(this, pauseParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 재개
+        /// 정기구독 재개 요청
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionResume(OrderSubscriptionResumeParams resumeParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionResume(OrderSubscriptionResumeParams resumeParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.Resume(this, resumeParams);
+            return await OrderSubscriptionService.Resume(this, resumeParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 중도인수 요청 (POST /v1/order_subscriptions/requests/ing/purchase)
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionPurchase(OrderSubscriptionPurchaseParams purchaseParams, string idempotencyKey = null)
+        {
+            return await OrderSubscriptionService.Purchase(this, purchaseParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 구독 이전/승계 요청 (POST /v1/order_subscriptions/requests/ing/transfer)
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionTransfer(OrderSubscriptionTransferParams transferParams, string idempotencyKey = null)
+        {
+            return await OrderSubscriptionService.Transfer(this, transferParams, idempotencyKey);
         }
 
         /// <summary>
         /// 해지 수수료 계산
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionCalculateTerminationFee(string orderSubscriptionId = null, string orderNumber = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionCalculateTerminationFee(string orderSubscriptionId = null, string orderNumber = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.CalculateTerminationFee(this, orderSubscriptionId, orderNumber);
+            return await OrderSubscriptionService.CalculateTerminationFee(this, orderSubscriptionId, orderNumber, idempotencyKey);
         }
 
         /// <summary>
@@ -448,11 +562,29 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 정기구독 해지
+        /// 정기구독 해지 요청
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionTermination(OrderSubscriptionTerminationParams terminationParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionTermination(OrderSubscriptionTerminationParams terminationParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.Termination(this, terminationParams);
+            return await OrderSubscriptionService.Termination(this, terminationParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 수시결제(온디맨드) charge_key 즉시 결제 (POST /v1/order_subscriptions/charge) — supervisor scope
+        /// charge_key 는 body 로만 전송된다 (URL/query 금지)
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorCharge(SupervisorOrderSubscriptionChargeParams chargeParams, string idempotencyKey = null)
+        {
+            return await OrderSubscriptionService.SupervisorCharge(this, chargeParams, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 수시결제(온디맨드) charge_key 해지 (DELETE /v1/order_subscriptions/charge) — supervisor scope
+        /// 해지 이후 해당 키로의 재결제는 불가능하다
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorChargeRevoke(SupervisorOrderSubscriptionChargeRevokeParams revokeParams, string idempotencyKey = null)
+        {
+            return await OrderSubscriptionService.SupervisorChargeRevoke(this, revokeParams, idempotencyKey);
         }
 
         public async Task<HttpResponseMessage> OrderSubscriptionSupervisorApprove(string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null)
@@ -485,11 +617,11 @@ namespace Bootpay.Commerce
         #region OrderSubscriptionBill (정기구독 청구)
 
         /// <summary>
-        /// 정기구독 청구 목록 조회
+        /// 정기구독 빌(회차) 목록 조회 — page/limit 미지정시 각각 1 / 20 이 적용된다.
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionBillList(OrderSubscriptionBillListParams listParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionBillList(OrderSubscriptionBillListParams listParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionBillService.List(this, listParams);
+            return await OrderSubscriptionBillService.List(this, listParams, idempotencyKey);
         }
 
         /// <summary>
@@ -617,27 +749,27 @@ namespace Bootpay.Commerce
         #region OrderSubscriptionRequest (정기구독 요청 조회/승인)
 
         /// <summary>
-        /// 정기구독 요청 목록 조회
+        /// 정기구독 요청 목록 조회 — project_id 가 있으면 supervisor, 없으면 user scope
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionRequestList(OrderSubscriptionRequestListParams listParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestList(OrderSubscriptionRequestListParams listParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionRequestService.List(this, listParams);
+            return await OrderSubscriptionRequestService.List(this, listParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 요청 단건 조회
+        /// 정기구독 요청 단건 조회 — project_id 가 있으면 supervisor, 없으면 user scope
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionRequestDetail(string orderSubscriptionRequestHistoryId, string projectId = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestDetail(string orderSubscriptionRequestHistoryId, string projectId = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionRequestService.Detail(this, orderSubscriptionRequestHistoryId, projectId);
+            return await OrderSubscriptionRequestService.Detail(this, orderSubscriptionRequestHistoryId, projectId, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 요청 승인/거절 (supervisor 전용)
+        /// 정기구독 요청 승인/거절 (supervisor 전용) — approval: "approve" | "reject"
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionRequestUpdate(OrderSubscriptionRequestUpdateParams updateParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionRequestUpdate(OrderSubscriptionRequestUpdateParams updateParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionRequestService.Update(this, updateParams);
+            return await OrderSubscriptionRequestService.Update(this, updateParams, idempotencyKey);
         }
 
         #endregion
@@ -645,27 +777,27 @@ namespace Bootpay.Commerce
         #region OrderSubscriptionAdjustment (정기구독 조정)
 
         /// <summary>
-        /// 정기구독 조정 생성
+        /// 정기구독 조정 생성 — supervisor scope
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentCreate(string orderSubscriptionId, CommerceOrderSubscriptionAdjustment adjustment)
+        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentCreate(string orderSubscriptionId, CommerceOrderSubscriptionAdjustment adjustment, string idempotencyKey = null)
         {
-            return await OrderSubscriptionAdjustmentService.Create(this, orderSubscriptionId, adjustment);
+            return await OrderSubscriptionAdjustmentService.Create(this, orderSubscriptionId, adjustment, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 조정 수정
+        /// 정기구독 조정 수정 — supervisor scope. 서버는 duration(회차) 단위로 adjustments 배열을 통째로 교체한다.
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentUpdate(OrderSubscriptionAdjustmentUpdateParams updateParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentUpdate(OrderSubscriptionAdjustmentUpdateParams updateParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionAdjustmentService.Update(this, updateParams);
+            return await OrderSubscriptionAdjustmentService.Update(this, updateParams, idempotencyKey);
         }
 
         /// <summary>
-        /// 정기구독 조정 삭제
+        /// 정기구독 조정 삭제 — supervisor scope. ⚠️ 대상 ID 는 query 가 아니라 body 로 전송된다.
         /// </summary>
-        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentDelete(string orderSubscriptionId, string orderSubscriptionAdjustmentId)
+        public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentDelete(string orderSubscriptionId, string orderSubscriptionAdjustmentId, string idempotencyKey = null)
         {
-            return await OrderSubscriptionAdjustmentService.Delete(this, orderSubscriptionId, orderSubscriptionAdjustmentId);
+            return await OrderSubscriptionAdjustmentService.Delete(this, orderSubscriptionId, orderSubscriptionAdjustmentId, idempotencyKey);
         }
 
         #endregion

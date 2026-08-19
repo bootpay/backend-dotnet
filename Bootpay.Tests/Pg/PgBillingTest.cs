@@ -26,7 +26,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task GetBillingKey_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -53,7 +53,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task GetBillingKeyTransfer_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -80,7 +80,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task PublishBillingKeyTransfer_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -95,7 +95,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task LookupBillingKey_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -110,7 +110,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task LookupBillingKeyByKey_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -125,7 +125,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task RequestSubscribe_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -148,7 +148,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ReserveSubscribe_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -174,7 +174,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ReserveSubscribeLookup_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -189,7 +189,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ReserveCancelSubscribe_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -204,7 +204,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task DestroyBillingKey_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

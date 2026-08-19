@@ -83,11 +83,25 @@ namespace Bootpay.Commerce.Models
 
     /// <summary>
     /// 주문 취소 액션 파라미터
+    /// 대상 ID 는 URL 로만 전송된다. 정식 이름은 order_cancellation_request_id 이며,
+    /// 구 이름 OrderCancelRequestHistoryId 도 계속 지원한다. 승인/반려는 supervisor scope.
     /// </summary>
     public class OrderCancelActionParams
     {
-        [JsonProperty("order_cancel_request_history_id")]
+        [JsonIgnore]
+        public string OrderCancellationRequestId { get; set; }
+
+        /// <summary>
+        /// deprecated — OrderCancellationRequestId 를 사용할 것 (하위호환으로 계속 지원한다)
+        /// </summary>
+        [JsonIgnore]
         public string OrderCancelRequestHistoryId { get; set; }
+
+        /// <summary>
+        /// 서버가 읽는 값은 message 다.
+        /// </summary>
+        [JsonProperty("message")]
+        public string Message { get; set; }
 
         [JsonProperty("cancel_reason")]
         public string CancelReason { get; set; }

@@ -343,11 +343,34 @@ namespace Bootpay.Commerce.Models
     }
 
     /// <summary>
+    /// 상품 목록 조회 파라미터 (V1 Mall API)
+    /// page/limit 미지정시 각각 1 / 20 이 적용된다.
+    /// ⚠️ keyword 는 서버가 읽지 않는다 (하위호환으로 인자는 유지).
+    /// </summary>
+    public class MallProductListParams : ProductListParams
+    {
+        [JsonProperty("category_id")]
+        public string CategoryId { get; set; }
+
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+
+        /// <summary>
+        /// 회원 JWT — Bootpay-User-JWT 헤더로 전송된다 (query 에는 포함되지 않는다)
+        /// </summary>
+        [JsonIgnore]
+        public string UserJwt { get; set; }
+    }
+
+    /// <summary>
     /// 상품 상태 변경 파라미터
     /// </summary>
     public class ProductStatusParams
     {
-        [JsonProperty("product_id")]
+        /// <summary>
+        /// product_id 는 URL 로만 전송된다.
+        /// </summary>
+        [JsonIgnore]
         public string ProductId { get; set; }
 
         [JsonProperty("status")]
@@ -358,5 +381,29 @@ namespace Bootpay.Commerce.Models
 
         [JsonProperty("status_sale")]
         public bool? StatusSale { get; set; }
+
+        [JsonProperty("status_frozen")]
+        public bool? StatusFrozen { get; set; }
+
+        [JsonProperty("status_review")]
+        public bool? StatusReview { get; set; }
+
+        [JsonProperty("use_display_period")]
+        public bool? UseDisplayPeriod { get; set; }
+
+        [JsonProperty("display_start_at")]
+        public string DisplayStartAt { get; set; }
+
+        [JsonProperty("display_end_at")]
+        public string DisplayEndAt { get; set; }
+
+        [JsonProperty("use_sale_period")]
+        public bool? UseSalePeriod { get; set; }
+
+        [JsonProperty("sale_start_at")]
+        public string SaleStartAt { get; set; }
+
+        [JsonProperty("sale_end_at")]
+        public string SaleEndAt { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task StoreInfo_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -44,7 +44,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task StoreDetail_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

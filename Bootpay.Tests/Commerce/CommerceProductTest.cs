@@ -30,7 +30,7 @@ namespace Bootpay.Tests
             return api;
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductCreate_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -52,7 +52,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductList_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -73,7 +73,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductDetail_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -89,7 +89,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductUpdate_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -111,7 +111,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductStatus_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();
@@ -132,7 +132,7 @@ namespace Bootpay.Tests
             Assert.NotNull(content);
         }
 
-        [Fact]
+        [LiveFact]
         public async Task ProductDelete_ShouldReturnResponse()
         {
             var api = await CreateAuthenticatedApi();

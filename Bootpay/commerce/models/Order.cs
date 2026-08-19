@@ -159,6 +159,12 @@ namespace Bootpay.Commerce.Models
         [JsonProperty("cs_type")]
         public string CsType { get; set; }
 
+        [JsonProperty("search_date_from")]
+        public string SearchDateFrom { get; set; }
+
+        [JsonProperty("search_date_to")]
+        public string SearchDateTo { get; set; }
+
         [JsonProperty("css_at")]
         public string CssAt { get; set; }
 

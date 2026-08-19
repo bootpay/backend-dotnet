@@ -11,27 +11,27 @@ namespace Bootpay.Commerce.Service
         /// <summary>
         /// 가맹점 기본 정보 조회
         /// </summary>
-        public static async Task<HttpResponseMessage> GetStore(BootpayCommerceObject bootpay)
+        public static async Task<HttpResponseMessage> GetStore(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("store", HttpMethod.Get);
+            return await bootpay.SendAsync("store", HttpMethod.Get, null, CommerceRequestHeaders.Idempotency(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> Info(BootpayCommerceObject bootpay)
+        public static async Task<HttpResponseMessage> Info(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await GetStore(bootpay);
+            return await GetStore(bootpay, idempotencyKey);
         }
 
         /// <summary>
         /// 가맹점 상세 정보 조회
         /// </summary>
-        public static async Task<HttpResponseMessage> GetStoreDetail(BootpayCommerceObject bootpay)
+        public static async Task<HttpResponseMessage> GetStoreDetail(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("store/detail", HttpMethod.Get);
+            return await bootpay.SendAsync("store/detail", HttpMethod.Get, null, CommerceRequestHeaders.Idempotency(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay)
+        public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await GetStoreDetail(bootpay);
+            return await GetStoreDetail(bootpay, idempotencyKey);
         }
     }
 }
