@@ -14,7 +14,7 @@ namespace Bootpay.Tests
         private static System.Collections.Generic.Dictionary<string, string> LoadDotEnv()
         {
             var values = new System.Collections.Generic.Dictionary<string, string>();
-            foreach (var file in new[] { ".env", "../.env" })
+            foreach (var file in DotEnvCandidates())
             {
                 if (!System.IO.File.Exists(file)) continue;
                 foreach (var raw in System.IO.File.ReadAllLines(file))
@@ -27,6 +27,27 @@ namespace Bootpay.Tests
                 }
             }
             return values;
+        }
+
+        /// <summary>
+        /// .env 후보 경로.
+        ///
+        /// 26-08-24: 이전에는 상대경로 ".env" / "../.env" 만 봤는데, 테스트 프로세스의
+        /// 작업 디렉터리는 Bootpay.Tests/bin/Debug/net9.0 이라 둘 다 리포의 .env 에
+        /// 닿지 않았다. 그래서 라이브 테스트가 자격증명을 못 읽고
+        /// "Provide clientKey/secretKey or applicationId/privateKey credentials." 로 전부
+        /// 실패했다. 실행 디렉터리와 어셈블리 위치 양쪽에서 위로 올라가며 찾는다.
+        /// </summary>
+        private static System.Collections.Generic.IEnumerable<string> DotEnvCandidates()
+        {
+            foreach (var start in new[] { System.IO.Directory.GetCurrentDirectory(), AppContext.BaseDirectory })
+            {
+                var dir = new System.IO.DirectoryInfo(start);
+                for (var depth = 0; dir != null && depth < 8; depth++, dir = dir.Parent)
+                {
+                    yield return System.IO.Path.Combine(dir.FullName, ".env");
+                }
+            }
         }
 
         private static string EnvValue(string key, string fallback)
