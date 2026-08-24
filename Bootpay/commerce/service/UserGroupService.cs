@@ -46,18 +46,18 @@ namespace Bootpay.Commerce.Service
         /// <summary>
         /// 그룹에 사용자 추가
         /// </summary>
-        public static async Task<HttpResponseMessage> UserCreate(BootpayCommerceObject bootpay, string userGroupId, string userId)
+        public static async Task<HttpResponseMessage> UserCreate(BootpayCommerceObject bootpay, string userGroupId, string userId, string idempotencyKey = null)
         {
             var data = new { user_id = userId };
-            return await bootpay.SendAsync($"user-groups/{userGroupId}/user", HttpMethod.Post, data);
+            return await bootpay.SendAsync($"user-groups/{userGroupId}/user", HttpMethod.Post, data, CommerceRequestHeaders.Manager(idempotencyKey));
         }
 
         /// <summary>
         /// 그룹에서 사용자 제거
         /// </summary>
-        public static async Task<HttpResponseMessage> UserDelete(BootpayCommerceObject bootpay, string userGroupId, string userId)
+        public static async Task<HttpResponseMessage> UserDelete(BootpayCommerceObject bootpay, string userGroupId, string userId, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"user-groups/{userGroupId}/user/{userId}", HttpMethod.Delete);
+            return await bootpay.SendAsync($"user-groups/{userGroupId}/user/{userId}", HttpMethod.Delete, null, CommerceRequestHeaders.Manager(idempotencyKey));
         }
 
         /// <summary>

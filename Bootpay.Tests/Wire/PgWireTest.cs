@@ -21,6 +21,10 @@ namespace Bootpay.Tests.Wire
         [Fact]
         public async Task LookupSequentialBillingKey_SendsWidgetKeyAndUserIdEscaped()
         {
+            _server.ResponseBody = "{\"access_token\":\"legacy_token\",\"expire_in\":1800}";
+            await _api.GetAccessToken();
+            _server.ResponseBody = "{\"success\":true,\"data\":{}}";
+
             await _api.LookupSequentialBillingKey("widget/key 1", "bk_123", "user id@1");
             var req = _server.LastRequest;
 

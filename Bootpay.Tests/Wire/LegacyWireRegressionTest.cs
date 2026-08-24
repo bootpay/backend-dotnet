@@ -1,3 +1,4 @@
+using Bootpay.Commerce;
 using Bootpay.Commerce.Models;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -35,6 +36,29 @@ namespace Bootpay.Tests.Wire
             var body = JObject.Parse(req.Body);
             Assert.Equal("test_client_key", (string?)body["client_key"]);
             Assert.Equal("test_secret_key", (string?)body["secret_key"]);
+        }
+
+        [Fact]
+        public async Task StoredCommerceToken_DoesNotReplaceBasicAuthorization()
+        {
+            _server.ResponseBody = "{\"access_token\":\"stored_token\",\"expired_at\":\"2099-01-01T00:00:00Z\"}";
+            await _api.GetAccessToken();
+
+            await _api.UserList();
+
+            var authorization = _server.LastRequest.Headers["Authorization"];
+            Assert.Equal("Basic dGVzdF9jbGllbnRfa2V5OnRlc3Rfc2VjcmV0X2tleQ==", authorization);
+        }
+
+        [Theory]
+        [InlineData(null, "secret_key")]
+        [InlineData("client_key", null)]
+        [InlineData("", "secret_key")]
+        [InlineData("client_key", "")]
+        public void Constructor_RejectsPartialClientCredentials(string? clientKey, string? secretKey)
+        {
+            Assert.Throws<ArgumentException>(() => new BootpayCommerceApi(clientKey!, secretKey!));
+            Assert.Empty(_server.Requests);
         }
 
         [Fact]
@@ -184,6 +208,7 @@ namespace Bootpay.Tests.Wire
         [Fact]
         public async Task GetAccessToken_Legacy_PostsApplicationIdAndPrivateKey()
         {
+            _server.ResponseBody = "{\"access_token\":\"legacy_token\",\"expire_in\":1800}";
             await _api.GetAccessToken();
             var req = _server.LastRequest;
 
@@ -193,11 +218,54 @@ namespace Bootpay.Tests.Wire
             var body = JObject.Parse(req.Body);
             Assert.Equal("test_application_id", (string?)body["application_id"]);
             Assert.Equal("test_private_key", (string?)body["private_key"]);
+
+            await _api.GetReceipt("r1");
+            Assert.Equal("Bearer legacy_token", _server.LastRequest.Headers["Authorization"]);
+        }
+
+        [Fact]
+        public async Task ClientCredentials_UseBasicAuthorizationWithoutTokenRequest()
+        {
+            var api = new WireClientKeyBootpayObject(_server.BaseUrl);
+
+            var tokenResponse = await api.GetAccessToken();
+            await api.SendAsync("receipt/r1", HttpMethod.Get);
+
+            Assert.True(tokenResponse.IsSuccessStatusCode);
+            Assert.Single(_server.Requests);
+            Assert.Equal("/receipt/r1", _server.LastRequest.PathAndQuery);
+            Assert.Equal("Basic dGVzdF9jbGllbnRfa2V5OnRlc3Rfc2VjcmV0X2tleQ==", _server.LastRequest.Headers["Authorization"]);
+        }
+
+        [Theory]
+        [InlineData(null, "private_key")]
+        [InlineData("application_id", null)]
+        [InlineData("", "private_key")]
+        [InlineData("application_id", "")]
+        public void LegacyConstructor_RejectsPartialCredentials(string? applicationId, string? privateKey)
+        {
+            Assert.Throws<ArgumentException>(() => new BootpayApi(applicationId!, privateKey!));
+            Assert.Empty(_server.Requests);
+        }
+
+        [Theory]
+        [InlineData(null, "secret_key")]
+        [InlineData("client_key", null)]
+        [InlineData("", "secret_key")]
+        [InlineData("client_key", "")]
+        public void ClientKeyFactory_RejectsPartialCredentials(string? clientKey, string? secretKey)
+        {
+            Assert.Throws<ArgumentException>(() => BootpayApi.WithClientKey(clientKey!, secretKey!));
+            Assert.Empty(_server.Requests);
         }
 
         [Fact]
         public async Task PaymentAndBillingEndpoints_KeepPaths()
         {
+            _server.ResponseBody = "{\"access_token\":\"legacy_token\",\"expire_in\":1800}";
+            await _api.GetAccessToken();
+            _server.ResponseBody = "{\"success\":true,\"data\":{}}";
+
             await _api.GetReceipt("r1");
             Assert.Equal("GET", _server.LastRequest.Method);
             Assert.Equal("/receipt/r1", _server.LastRequest.PathAndQuery);

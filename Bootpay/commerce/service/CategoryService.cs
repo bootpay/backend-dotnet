@@ -26,27 +26,30 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
-        /// 카테고리 생성
+        /// 카테고리 생성 (POST /v1/categories) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
         /// </summary>
-        public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CategoryCreateParams createParams)
+        public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CategoryCreateParams createParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("categories", HttpMethod.Post, createParams);
+            return await bootpay.SendAsync("categories", HttpMethod.Post, createParams, CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
         /// <summary>
-        /// 카테고리 수정
+        /// 카테고리 수정 (PUT /v1/categories/{category_id}) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
         /// </summary>
-        public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CategoryUpdateParams updateParams)
+        public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CategoryUpdateParams updateParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"categories/{updateParams.CategoryId}", HttpMethod.Put, updateParams);
+            return await bootpay.SendAsync($"categories/{updateParams.CategoryId}", HttpMethod.Put, updateParams, CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
         /// <summary>
-        /// 카테고리 삭제
+        /// 카테고리 삭제 (DELETE /v1/categories/{category_id}) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
         /// </summary>
-        public static async Task<HttpResponseMessage> Destroy(BootpayCommerceObject bootpay, string categoryId)
+        public static async Task<HttpResponseMessage> Destroy(BootpayCommerceObject bootpay, string categoryId, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"categories/{categoryId}", HttpMethod.Delete);
+            return await bootpay.SendAsync($"categories/{categoryId}", HttpMethod.Delete, null, CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
     }
 }

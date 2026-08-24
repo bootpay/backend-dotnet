@@ -38,11 +38,41 @@ namespace Bootpay
 
         public BootpayObject(string applicationId = null, string privateKey = null, string clientKey = null, string secretKey = null, int mode = MODE_PRODUCTION)
         {
+            ValidateCredentialPair(applicationId, privateKey, "applicationId", "privateKey");
+            ValidateCredentialPair(clientKey, secretKey, "clientKey", "secretKey");
+
             _applicationId = applicationId;
             _privateKey = privateKey;
             _clientKey = clientKey;
             _secretKey = secretKey;
             _baseUrl = _URL[mode];
+        }
+
+        private static void ValidateCredentialPair(string first, string second, string firstName, string secondName)
+        {
+            if (string.IsNullOrWhiteSpace(first) != string.IsNullOrWhiteSpace(second))
+            {
+                throw new ArgumentException($"{firstName} and {secondName} must be provided together.");
+            }
+        }
+
+        private void ValidateConfiguredCredentialPairs()
+        {
+            ValidateCredentialPair(_applicationId, _privateKey, "applicationId", "privateKey");
+            ValidateCredentialPair(_clientKey, _secretKey, "clientKey", "secretKey");
+        }
+
+        private void RequireRequestAuthentication()
+        {
+            ValidateConfiguredCredentialPairs();
+            if (!string.IsNullOrWhiteSpace(_clientKey) && !string.IsNullOrWhiteSpace(_secretKey)) return;
+            if (!string.IsNullOrWhiteSpace(_applicationId) && !string.IsNullOrWhiteSpace(_privateKey)
+                && !string.IsNullOrWhiteSpace(_token)) return;
+            if (!string.IsNullOrWhiteSpace(_applicationId) && !string.IsNullOrWhiteSpace(_privateKey))
+            {
+                throw new InvalidOperationException("legacy applicationId/privateKey authentication requires GetAccessToken() before requests.");
+            }
+            throw new ArgumentException("Provide clientKey/secretKey or applicationId/privateKey credentials.");
         }
 
         /***
@@ -53,6 +83,7 @@ namespace Bootpay
          */
         public async Task<HttpResponseMessage> GetAccessToken()
         {
+            ValidateConfiguredCredentialPairs();
             // client_key/secret_key 인증은 매 요청에 Basic Auth 헤더가 자동 부착된다.
             // request/token 호출이 불필요하므로 합성 응답을 즉시 반환한다.
             if (!string.IsNullOrEmpty(_clientKey) && !string.IsNullOrEmpty(_secretKey))
@@ -63,6 +94,11 @@ namespace Bootpay
                     Content = new StringContent("{\"access_token\":\"\",\"expire_in\":0}", Encoding.UTF8, "application/json")
                 };
                 return await Task.FromResult(synthetic);
+            }
+
+            if (string.IsNullOrWhiteSpace(_applicationId) || string.IsNullOrWhiteSpace(_privateKey))
+            {
+                throw new ArgumentException("Provide clientKey/secretKey or applicationId/privateKey credentials.");
             }
 
             Token token = new Token()
@@ -118,6 +154,7 @@ namespace Bootpay
         public async Task<HttpResponseMessage> SendAsync(string url, HttpMethod method, string json = "")
         //public async Task<string> SendAsync(string url, HttpMethod method, string json = "")
         {
+            if (url != "request/token") RequireRequestAuthentication();
             using (HttpRequestMessage request = new HttpRequestMessage())
             using (HttpClient client = new HttpClient())
             {

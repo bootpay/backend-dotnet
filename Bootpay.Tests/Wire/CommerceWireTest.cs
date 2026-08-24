@@ -205,13 +205,19 @@ namespace Bootpay.Tests.Wire
             await _api.ProductCreate(new CommerceProduct { Name = "상품" });
             Assert.Equal("manager", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
 
-            // scope 미지정 endpoint 는 기본 role 을 그대로 쓴다 (nodejs supervisorApprove 와 동일)
-            await _api.OrderSubscriptionSupervisorApprove("sub1");
+            // scope 미지정 endpoint 는 기본 role 을 그대로 쓴다
+            // (26-08-24: 예전엔 supervisorApprove 를 예시로 썼지만, 그 endpoint 는
+            //  서버가 supervisor 를 요구해 이제 요청 단위로 role 을 고정한다.)
+            await _api.UserList();
             Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
 
             _api.ClearRole();
-            await _api.OrderSubscriptionSupervisorApprove("sub1");
+            await _api.UserList();
             Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+
+            // 반대로 supervisor scope endpoint 는 기본 role 이 user 여도 supervisor 로 나간다
+            await _api.OrderSubscriptionSupervisorApprove("sub1");
+            Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
         }
 
         [Fact]

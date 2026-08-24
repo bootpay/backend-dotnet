@@ -38,6 +38,11 @@ namespace Bootpay.Commerce
 
         public BootpayCommerceObject(string clientKey, string secretKey, int mode = MODE_PRODUCTION)
         {
+            if (string.IsNullOrWhiteSpace(clientKey) || string.IsNullOrWhiteSpace(secretKey))
+            {
+                throw new ArgumentException("clientKey and secretKey must be provided together.");
+            }
+
             _clientKey = clientKey;
             _secretKey = secretKey;
             _baseUrl = _URL[mode];

@@ -16,6 +16,7 @@ namespace Bootpay.Tests.Wire
         private readonly CancellationTokenSource _cts = new();
         public string BaseUrl { get; }
         public List<RecordedRequest> Requests { get; } = new();
+        public string ResponseBody { get; set; } = "{\"success\":true,\"data\":{}}";
 
         public MockServer()
         {
@@ -77,7 +78,7 @@ namespace Bootpay.Tests.Wire
                     });
                 }
 
-                var payload = Encoding.UTF8.GetBytes("{\"success\":true,\"data\":{}}");
+                var payload = Encoding.UTF8.GetBytes(ResponseBody);
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "application/json";
                 context.Response.ContentLength64 = payload.Length;
@@ -119,6 +120,17 @@ namespace Bootpay.Tests.Wire
     public sealed class WireBootpayApi : BootpayApi
     {
         public WireBootpayApi(string baseUrl) : base("test_application_id", "test_private_key")
+        {
+            _baseUrl = baseUrl;
+        }
+    }
+
+    /// <summary>
+    /// client_key/secret_key PG 요청의 공통 인증 헤더를 검증하는 wire 테스트 전용 객체.
+    /// </summary>
+    public sealed class WireClientKeyBootpayObject : BootpayObject
+    {
+        public WireClientKeyBootpayObject(string baseUrl) : base(clientKey: "test_client_key", secretKey: "test_secret_key")
         {
             _baseUrl = baseUrl;
         }

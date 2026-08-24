@@ -1,3 +1,24 @@
+### 2.5.0
+
+#### Commerce scope(BOOTPAY-ROLE) 정합성 (동작 변경)
+
+서버(commerce-api)가 `scope_invalid!` 로 supervisor / manager scope 를 요구하는 10개 엔드포인트가 `BOOTPAY-ROLE: user` 로 나가고 있었다. 요청 단위로 올바른 scope 를 붙인다. Java SDK 3.3.0 · Ruby SDK 와 같은 규약이다.
+
+- `OrderSubscriptionSupervisorApprove` / `...Reject` / `...Terminate` / `...Pause` / `...Resume` → **supervisor**
+- `CategoryCreate` / `CategoryUpdate` / `CategoryDestroy` → **supervisor**
+- `UserGroupUserCreate` / `UserGroupUserDelete` → **manager**
+
+부수 효과로 이 10개 호출에 `Idempotency-Key` 가 자동 부착된다 (다른 supervisor 메서드·Ruby SDK 와 동일). 요청 경로·바디는 변경 없다.
+⚠️ 그동안 이 API 들은 올바른 키로도 scope 오류로 거절됐다. 우회하려고 role 을 직접 조작하던 코드가 있다면 제거해도 된다.
+
+- 위 메서드에 `string idempotencyKey = null` 선택 인자를 추가했다 (`OrderSubscriptionSupervisorCharge` 와 같은 방식). 지정하면 그 값이 `Idempotency-Key` 헤더로 나간다.
+
+#### 테스트
+
+- `Bootpay.Tests/Wire/LegacyWireRegressionTest.cs` 에 `using Bootpay.Commerce;` 가 빠져 있어 **테스트 프로젝트가 컴파일되지 않았다** (2.4.0 작업 환경에 요구 SDK 가 없어 실행 검증이 누락된 결과). 정정 후 전체 스위트가 돈다.
+- `Bootpay.Tests/Wire/CommerceScopeTest.cs` 신설 — 10개 엔드포인트의 scope·Idempotency-Key 회귀.
+- `CommerceWireTest.PerRequestRole_...` 이 "scope 미지정 endpoint" 예시로 `OrderSubscriptionSupervisorApprove` 를 쓰고 있어 `UserList` 로 교체했다.
+
 ### 2.4.0
 - NodeJS SDK 2.9.0 parity.
 - PG: 우선순위(순차) 결제 빌링키 조회 `LookupSequentialBillingKey(widgetKey, billingKey, userId)` 추가 — `GET subscribe/sequential_billing_key/{billing_key}?widget_key=&user_id=`.

@@ -193,17 +193,17 @@ namespace Bootpay.Commerce
         /// <summary>
         /// 그룹에 사용자 추가
         /// </summary>
-        public async Task<HttpResponseMessage> UserGroupUserCreate(string userGroupId, string userId)
+        public async Task<HttpResponseMessage> UserGroupUserCreate(string userGroupId, string userId, string idempotencyKey = null)
         {
-            return await UserGroupService.UserCreate(this, userGroupId, userId);
+            return await UserGroupService.UserCreate(this, userGroupId, userId, idempotencyKey);
         }
 
         /// <summary>
         /// 그룹에서 사용자 제거
         /// </summary>
-        public async Task<HttpResponseMessage> UserGroupUserDelete(string userGroupId, string userId)
+        public async Task<HttpResponseMessage> UserGroupUserDelete(string userGroupId, string userId, string idempotencyKey = null)
         {
-            return await UserGroupService.UserDelete(this, userGroupId, userId);
+            return await UserGroupService.UserDelete(this, userGroupId, userId, idempotencyKey);
         }
 
         /// <summary>
@@ -587,29 +587,29 @@ namespace Bootpay.Commerce
             return await OrderSubscriptionService.SupervisorChargeRevoke(this, revokeParams, idempotencyKey);
         }
 
-        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorApprove(string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorApprove(string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.SupervisorApprove(this, orderSubscriptionId, approveParams);
+            return await OrderSubscriptionService.SupervisorApprove(this, orderSubscriptionId, approveParams, idempotencyKey);
         }
 
-        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorReject(string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorReject(string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.SupervisorReject(this, orderSubscriptionId, rejectParams);
+            return await OrderSubscriptionService.SupervisorReject(this, orderSubscriptionId, rejectParams, idempotencyKey);
         }
 
-        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorTerminate(string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorTerminate(string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.SupervisorTerminate(this, orderSubscriptionId, terminateParams);
+            return await OrderSubscriptionService.SupervisorTerminate(this, orderSubscriptionId, terminateParams, idempotencyKey);
         }
 
-        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorPause(string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams)
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorPause(string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.SupervisorPause(this, orderSubscriptionId, pauseParams);
+            return await OrderSubscriptionService.SupervisorPause(this, orderSubscriptionId, pauseParams, idempotencyKey);
         }
 
-        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorResume(string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null)
+        public async Task<HttpResponseMessage> OrderSubscriptionSupervisorResume(string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null, string idempotencyKey = null)
         {
-            return await OrderSubscriptionService.SupervisorResume(this, orderSubscriptionId, resumeParams);
+            return await OrderSubscriptionService.SupervisorResume(this, orderSubscriptionId, resumeParams, idempotencyKey);
         }
 
         #endregion
@@ -663,25 +663,25 @@ namespace Bootpay.Commerce
         /// <summary>
         /// 카테고리 생성
         /// </summary>
-        public async Task<HttpResponseMessage> CategoryCreate(CategoryCreateParams createParams)
+        public async Task<HttpResponseMessage> CategoryCreate(CategoryCreateParams createParams, string idempotencyKey = null)
         {
-            return await CategoryService.Create(this, createParams);
+            return await CategoryService.Create(this, createParams, idempotencyKey);
         }
 
         /// <summary>
         /// 카테고리 수정
         /// </summary>
-        public async Task<HttpResponseMessage> CategoryUpdate(CategoryUpdateParams updateParams)
+        public async Task<HttpResponseMessage> CategoryUpdate(CategoryUpdateParams updateParams, string idempotencyKey = null)
         {
-            return await CategoryService.Update(this, updateParams);
+            return await CategoryService.Update(this, updateParams, idempotencyKey);
         }
 
         /// <summary>
         /// 카테고리 삭제
         /// </summary>
-        public async Task<HttpResponseMessage> CategoryDestroy(string categoryId)
+        public async Task<HttpResponseMessage> CategoryDestroy(string categoryId, string idempotencyKey = null)
         {
-            return await CategoryService.Destroy(this, categoryId);
+            return await CategoryService.Destroy(this, categoryId, idempotencyKey);
         }
 
         #endregion

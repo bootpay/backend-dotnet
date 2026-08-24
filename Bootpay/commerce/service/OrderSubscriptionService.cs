@@ -99,29 +99,49 @@ namespace Bootpay.Commerce.Service
             return await bootpay.SendAsync("order_subscriptions/requests/ing/termination", HttpMethod.Post, terminationParams, CommerceRequestHeaders.User(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> SupervisorApprove(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null)
+        /// <summary>
+        /// 구독 관리자 승인 (PUT /v1/order_subscriptions/{order_subscription_id}/approve) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
+        /// </summary>
+        public static async Task<HttpResponseMessage> SupervisorApprove(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionApproveParams approveParams = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/approve", HttpMethod.Put, approveParams ?? new SupervisorOrderSubscriptionApproveParams());
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/approve", HttpMethod.Put, approveParams ?? new SupervisorOrderSubscriptionApproveParams(), CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> SupervisorReject(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null)
+        /// <summary>
+        /// 구독 관리자 반려 (PUT /v1/order_subscriptions/{order_subscription_id}/reject) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
+        /// </summary>
+        public static async Task<HttpResponseMessage> SupervisorReject(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionRejectParams rejectParams = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/reject", HttpMethod.Put, rejectParams ?? new SupervisorOrderSubscriptionRejectParams());
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/reject", HttpMethod.Put, rejectParams ?? new SupervisorOrderSubscriptionRejectParams(), CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> SupervisorTerminate(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null)
+        /// <summary>
+        /// 구독 관리자 해지 (PUT /v1/order_subscriptions/{order_subscription_id}/terminate) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
+        /// </summary>
+        public static async Task<HttpResponseMessage> SupervisorTerminate(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionTerminateParams terminateParams = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/terminate", HttpMethod.Put, terminateParams ?? new SupervisorOrderSubscriptionTerminateParams());
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/terminate", HttpMethod.Put, terminateParams ?? new SupervisorOrderSubscriptionTerminateParams(), CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> SupervisorPause(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams)
+        /// <summary>
+        /// 구독 관리자 일시정지 (PUT /v1/order_subscriptions/{order_subscription_id}/pause) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
+        /// </summary>
+        public static async Task<HttpResponseMessage> SupervisorPause(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionPauseParams pauseParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/pause", HttpMethod.Put, pauseParams);
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/pause", HttpMethod.Put, pauseParams, CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
-        public static async Task<HttpResponseMessage> SupervisorResume(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null)
+        /// <summary>
+        /// 구독 관리자 재개 (PUT /v1/order_subscriptions/{order_subscription_id}/resume) — supervisor scope
+        /// ⚠️ 서버가 supervisor scope 를 요구한다 (scope_invalid!).
+        /// </summary>
+        public static async Task<HttpResponseMessage> SupervisorResume(BootpayCommerceObject bootpay, string orderSubscriptionId, SupervisorOrderSubscriptionResumeParams resumeParams = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/resume", HttpMethod.Put, resumeParams ?? new SupervisorOrderSubscriptionResumeParams());
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/resume", HttpMethod.Put, resumeParams ?? new SupervisorOrderSubscriptionResumeParams(), CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
         /// <summary>
