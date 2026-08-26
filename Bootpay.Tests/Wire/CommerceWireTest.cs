@@ -197,6 +197,101 @@ namespace Bootpay.Tests.Wire
             Assert.Equal("jwt-abc", req.Headers["Bootpay-User-JWT"]);
         }
 
+        // ── 누락 파라미터 보강 (Ruby SDK d4c8989 parity) ──
+
+        [Fact]
+        public async Task UserList_SendsMembershipTypeNotMemberType()
+        {
+            await _api.UserList(new UserListParams { MembershipType = 1 });
+            var req = _server.LastRequest;
+
+            Assert.Equal("GET", req.Method);
+            Assert.Contains("membership_type=1", req.PathAndQuery);
+            // 서버(v1/users_controller#index)가 읽지 않는 키는 보내지 않는다
+            Assert.DoesNotContain("member_type=1", req.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task UserList_LegacyMemberType_IsMappedToMembershipType()
+        {
+#pragma warning disable CS0618
+            await _api.UserList(new UserListParams { MemberType = 2 });
+#pragma warning restore CS0618
+            Assert.Contains("membership_type=2", _server.LastRequest.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task UserList_MembershipTypeWins_WhenBothGiven()
+        {
+#pragma warning disable CS0618
+            await _api.UserList(new UserListParams { MembershipType = 1, MemberType = 2 });
+#pragma warning restore CS0618
+            Assert.Contains("membership_type=1", _server.LastRequest.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task OrderSubscriptionList_SendsOrderNumber()
+        {
+            await _api.OrderSubscriptionList(new OrderSubscriptionListParams { OrderNumber = "ORD-20260826-001" });
+            Assert.Contains("order_number=ORD-20260826-001", _server.LastRequest.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task OrderSubscriptionUpdate_SendsMemoAsChangeReason()
+        {
+            await _api.OrderSubscriptionUpdate(new OrderSubscriptionUpdateParams
+            {
+                OrderSubscriptionId = "sub1",
+                Price = 12000,
+                Memo = "고객 요청 금액 변경"
+            });
+            var body = JObject.Parse(_server.LastRequest.Body);
+
+            Assert.Equal("고객 요청 금액 변경", (string?)body["memo"]);
+            Assert.Equal(12000, (int?)body["price"]);
+        }
+
+        [Fact]
+        public async Task ProductList_SendsServerReadFilters()
+        {
+            // 서버(v1/products_controller#index)가 읽는 category_id / ex_uid / sort 를 실어야 한다
+            await _api.ProductList(new ProductListParams
+            {
+                Page = 1,
+                Limit = 10,
+                Keyword = "coffee",
+                CategoryId = "cat-1",
+                ExUid = "EX-1",
+                Sort = "-price"
+            });
+            var query = _server.LastRequest.PathAndQuery;
+
+            Assert.Contains("category_id=cat-1", query);
+            Assert.Contains("ex_uid=EX-1", query);
+            Assert.Contains("sort=-price", query);
+            Assert.Contains("keyword=coffee", query);
+            Assert.Contains("page=1", query);
+            Assert.Contains("limit=10", query);
+        }
+
+        [Fact]
+        public async Task Products_SendsExUid()
+        {
+            await _api.Products(new MallProductListParams { ExUid = "EXT-1" });
+            Assert.Contains("ex_uid=EXT-1", _server.LastRequest.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task ProductDetail_AttachesJwtHeaderWhenGiven()
+        {
+            await _api.ProductDetail("prod1", "jwt-abc");
+            var req = _server.LastRequest;
+
+            Assert.Equal("GET", req.Method);
+            Assert.Equal("/products/prod1", req.PathAndQuery);
+            Assert.Equal("jwt-abc", req.Headers["Bootpay-User-JWT"]); // ProductDetailMall 과 동작이 같다
+        }
+
         [Fact]
         public async Task PerRequestRole_DoesNotOverwriteAndIsNotOverwritten()
         {
@@ -379,6 +474,113 @@ namespace Bootpay.Tests.Wire
             Assert.Equal(1, (int?)body["duration"]);
             Assert.Equal(0, (int?)body["tax_free_price"]);
             Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+        }
+
+        // ── 구독 기준금액 변경 · 범위 회차조정 (Ruby SDK 9832af9 parity) ──
+
+        [Fact]
+        public async Task OrderSubscriptionUpdate_SendsPriceAsBaseAmount()
+        {
+            await _api.OrderSubscriptionUpdate(new OrderSubscriptionUpdateParams
+            {
+                OrderSubscriptionId = "sub1",
+                Price = 12000
+            });
+            var req = _server.LastRequest;
+
+            Assert.Equal("PUT", req.Method);
+            Assert.Equal("/order_subscriptions/sub1", req.PathAndQuery);
+            Assert.Equal("supervisor", req.Headers["BOOTPAY-ROLE"]);
+
+            var body = JObject.Parse(req.Body);
+            Assert.Equal(12000, (int?)body["price"]);
+            Assert.False(body.ContainsKey("order_subscription_id"));
+        }
+
+        [Fact]
+        public async Task OrderSubscriptionUpdate_OmitsUnsetPrice()
+        {
+            await _api.OrderSubscriptionUpdate(new OrderSubscriptionUpdateParams
+            {
+                OrderSubscriptionId = "sub1",
+                OrderName = "변경구독"
+            });
+            var body = JObject.Parse(_server.LastRequest.Body);
+
+            Assert.False(body.ContainsKey("price")); // 지정하지 않은 price 는 전송되지 않는다
+        }
+
+        [Fact]
+        public async Task AdjustmentCreate_SingleDuration_OmitsRangeFields()
+        {
+            await _api.OrderSubscriptionAdjustmentCreate("sub1", new CommerceOrderSubscriptionAdjustment
+            {
+                Name = "5회차 할인",
+                Price = -1000,
+                Duration = 5
+            });
+            var body = JObject.Parse(_server.LastRequest.Body);
+
+            Assert.Equal(5, (int?)body["duration"]);
+            Assert.False(body.ContainsKey("duration_from"));
+            Assert.False(body.ContainsKey("duration_to"));
+            Assert.False(body.ContainsKey("is_unlimited"));
+        }
+
+        [Fact]
+        public async Task AdjustmentCreate_DurationRange_SendsFromAndTo()
+        {
+            await _api.OrderSubscriptionAdjustmentCreate("sub1", new CommerceOrderSubscriptionAdjustment
+            {
+                Name = "3~7회차 할인",
+                Price = -1000,
+                DurationFrom = 3,
+                DurationTo = 7
+            });
+            var req = _server.LastRequest;
+
+            Assert.Equal("POST", req.Method);
+            Assert.Equal("/order_subscriptions/sub1/adjustments", req.PathAndQuery);
+            Assert.Equal("supervisor", req.Headers["BOOTPAY-ROLE"]);
+
+            var body = JObject.Parse(req.Body);
+            Assert.Equal(3, (int?)body["duration_from"]);
+            Assert.Equal(7, (int?)body["duration_to"]);
+            Assert.Equal(1, (int?)body["duration"]); // 기준 SDK 와 동일하게 기본값 1 이 항상 실린다
+            Assert.False(body.ContainsKey("is_unlimited"));
+        }
+
+        [Fact]
+        public async Task AdjustmentCreate_Unlimited_SendsFromAndFlagOnly()
+        {
+            await _api.OrderSubscriptionAdjustmentCreate("sub1", new CommerceOrderSubscriptionAdjustment
+            {
+                Name = "3회차부터 추가금",
+                Price = 500,
+                DurationFrom = 3,
+                IsUnlimited = true
+            });
+            var body = JObject.Parse(_server.LastRequest.Body);
+
+            Assert.Equal(3, (int?)body["duration_from"]);
+            Assert.True((bool?)body["is_unlimited"]);
+            Assert.False(body.ContainsKey("duration_to")); // 지정하지 않으면 전송하지 않는다
+        }
+
+        [Fact]
+        public async Task AdjustmentCreate_ExplicitFalseIsUnlimited_IsSent()
+        {
+            await _api.OrderSubscriptionAdjustmentCreate("sub1", new CommerceOrderSubscriptionAdjustment
+            {
+                Name = "할인",
+                Price = -1000,
+                DurationFrom = 3,
+                DurationTo = 7,
+                IsUnlimited = false
+            });
+            var body = JObject.Parse(_server.LastRequest.Body);
+
+            Assert.False((bool?)body["is_unlimited"]); // bool? 이므로 명시적 false 는 구분되어 전송된다
         }
 
         [Fact]

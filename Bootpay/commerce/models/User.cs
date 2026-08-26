@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -150,7 +151,18 @@ namespace Bootpay.Commerce.Models
     /// </summary>
     public class UserListParams : ListParams
     {
+        /// <summary>
+        /// 회원등급 필터. 서버(<c>v1/users_controller#index</c>)가 읽는 정식 키는 <c>membership_type</c> 이다.
+        /// </summary>
+        [JsonProperty("membership_type")]
+        public int? MembershipType { get; set; }
+
+        /// <summary>
+        /// <c>MembershipType</c> 의 구 이름. 서버가 읽지 않는 <c>member_type</c> 으로 나가고 있었다.
+        /// 값을 채우면 <c>membership_type</c> 으로 대신 전송된다 (하위호환 별칭).
+        /// </summary>
         [JsonProperty("member_type")]
+        [Obsolete("서버가 읽지 않는 이름이었다. MembershipType 을 쓸 것 — 값을 채우면 membership_type 으로 전송된다.")]
         public int? MemberType { get; set; }
 
         [JsonProperty("type")]

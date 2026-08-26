@@ -1,3 +1,47 @@
+### 2.7.0
+
+#### `product.list` 의 조회 필터를 서버 실제 계약에 맞춤
+
+서버(`v1/products_controller#index`)가 읽는 것은 **page · limit · keyword · category_id · ex_uid · sort** 뿐인데,
+``ProductList()`` 은 정작 그중 `category_id` · `ex_uid` · `sort` 를 **보내지 않고**, 서버가 읽지 않는
+`type` · `period_type` · `s_at` · `e_at` · `category_code` 만 보내고 있었다.
+필터가 걸린 줄 알았는데 전체 목록이 돌아오는, `member_type` → `membership_type` 과 같은 조용한 실패였다.
+
+- ``ProductListParams`` 에 **`CategoryId` / `ExUid` / `Sort`** 추가 — 서버가 읽는 값이라 이제 실제로 필터가 걸린다.
+- 서버가 읽지 않는 `type` / `period_type` / `s_at` / `e_at` / `category_code` 는 **전송은 그대로 유지**하되(기존 호출 보호) 무시된다는 경고를 문서에 달았다.
+  `type` 은 서버의 상품 타입 필터가 문자열(`subscription`/`discount`/`normal`)이라 이 숫자 필드와 값 체계 자체가 다르다.
+- ⚠️ `keyword` 는 **26-08-26 서버 변경부터** 실제로 적용된다 (그 이전 배포본에서는 무시된다).
+  같은 라운드에서 `GET /v1/products` 의 `sort` 가 항상 무시되던 서버 버그도 함께 고쳤다 — SDK 쪽 변경은 없다.
+
+
+#### 누락 파라미터 보강 (Ruby SDK `d4c8989` parity)
+
+동기화 봇이 dotnet 에는 이 변경도 내보내지 않아 손으로 맞춘다. 서버는 이미 읽고 있었는데 SDK 가 보내지 않아 쓸 수 없던 값들이다. **제거된 메서드·파라미터 없음.**
+
+- ⚠️ **`UserList` 의 회원등급 필터 키 정정 (동작 변경).** 서버(`v1/users_controller#index`)가 읽는 이름은 `membership_type` 인데 `member_type` 을 보내고 있어 **필터가 에러 없이 조용히 무시되고 전체 목록이 돌아왔다.** `UserListParams.MembershipType` 을 추가하고, 기존 `MemberType` 은 `[Obsolete]` 별칭으로 남겨 `membership_type` 으로 실어 보낸다 (둘 다 주면 `MembershipType` 우선). 그동안 걸리지 않던 필터가 이제 실제로 걸리므로, 전체 목록을 기대하던 코드가 있다면 확인이 필요하다.
+- `OrderSubscriptionListParams` 에 `OrderNumber` 추가 — `GET order_subscriptions?order_number=` 로 주문번호 역조회.
+- `OrderSubscriptionUpdateParams` 에 `Memo` 추가 — 구독 변경이력(`SUBSCRIPTION_ACTION_UPDATE`)에 남길 사유다.
+- `MallProductListParams` 에 `ExUid` 추가 — `GET products?ex_uid=` 로 외부 UID 조회.
+- `ProductDetail(productId, userJwt = null, idempotencyKey = null)` — `ProductDetailMall` 과 동작을 맞췄다 (`Bootpay-User-JWT` 헤더 + `Idempotency-Key` 자동 부착). 인자 하나짜리 `ProductDetail(productId)` 호출은 그대로 동작한다.
+  ⚠️ **현재 서버(`V1::ProductsController`)는 이 헤더를 읽지 않는다** — `decode_user_jwt` before_action 이 `orders` · `users/sessions` 컨트롤러에만 걸려 있고, `ProductDetailService` 도 `project` 와 `product_id` 만 받는다. 즉 지금은 회원 컨텍스트가 실제로 적용되지 않으며, 서버가 지원을 추가하면 SDK 변경 없이 동작한다.
+- `OrderList` 의 빈 `status` / `payment_status` / `order_subscription_ids` 미전송은 이미 지원 중이라 변경 없다.
+- `Bootpay.Tests/Wire/CommerceWireTest.cs` 에 회귀 테스트 7건을 추가했다.
+
+### 2.6.0
+
+#### 구독 가격 변경 · 범위로 회차조정 (Ruby SDK `9832af9` parity)
+
+동기화 봇이 dotnet 에는 이 변경을 내보내지 않아 6개 서버 SDK 중 dotnet 만 이 기능이 빠져 있었다. 손으로 맞춘다.
+
+- `OrderSubscriptionUpdateParams` 에 `Price` 추가 — 회차별 결제 금액의 **기준금액**이다. 바꾸면 결제예정(READY) 회차의 청구액이 즉시 다시 계산되고, 이후 회차도 이 금액으로 만들어진다. 이미 결제된 회차는 그대로다. 0 이하는 서버가 거절한다. 특정 회차만 가감하려면 `OrderSubscriptionAdjustmentCreate` 를 쓴다.
+- `CommerceOrderSubscriptionAdjustment` 에 `DurationFrom` / `DurationTo` / `IsUnlimited` 추가 — 회차를 범위로 지정한다.
+  - `Duration = 5` → 5회차 한 건만
+  - `DurationFrom = 3, DurationTo = 7` → 3~7회차 각각 한 건씩 (총 5건)
+  - `DurationFrom = 3, IsUnlimited = true` → 3회차부터 계약 끝까지 (레코드는 1건, `DurationTo` 는 무시)
+  - 상한은 계약 총회차이며, 총회차가 무제한인 계약은 60회차까지다. 이미 결제가 끝난 회차는 거절되고, 범위 중 한 회차라도 최종 금액이 음수면 전부 거절된다 (부분 반영 없음).
+- `IsUnlimited` 는 `bool?` 이라 명시적 `false` 도 전송된다. 미지정 필드는 기존대로 바디에서 빠지고, `duration` 은 기준 SDK 와 동일하게 기본값 1 이 항상 실린다.
+- 요청 경로·동사·scope 는 변경 없다. 순수 추가라 기존 호출 결과는 바뀌지 않는다. `Bootpay.Tests/Wire/CommerceWireTest.cs` 에 회귀 테스트 6건을 추가했다.
+
 ### 2.5.0
 
 #### Commerce scope(BOOTPAY-ROLE) 정합성 (동작 변경)

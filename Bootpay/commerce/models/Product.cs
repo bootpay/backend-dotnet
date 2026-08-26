@@ -326,18 +326,46 @@ namespace Bootpay.Commerce.Models
     /// </summary>
     public class ProductListParams : ListParams
     {
+        /// <summary>
+        /// 카테고리 ID 로 필터한다 (하위 카테고리 포함)
+        /// </summary>
+        [JsonProperty("category_id")]
+        public string CategoryId { get; set; }
+
+        /// <summary>
+        /// 외부 UID 로 상품을 찾는다
+        /// </summary>
+        [JsonProperty("ex_uid")]
+        public string ExUid { get; set; }
+
+        /// <summary>
+        /// 정렬 키 — position | created_at | -created_at | price | -price | -sold
+        /// </summary>
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+
+        // ── 아래는 서버가 읽지 않는다 (하위호환 때문에 속성만 유지) ──
+
+        /// <summary>
+        /// ⚠️ 서버가 읽지 않는다. 서버의 상품 타입 필터는 문자열
+        /// (<c>subscription</c> | <c>discount</c> | <c>normal</c>)이라 이 숫자 속성과 값 체계가 다르다.
+        /// </summary>
         [JsonProperty("type")]
         public int? Type { get; set; }
 
+        /// <summary>⚠️ 서버(v1/products_controller#index)가 읽지 않는다</summary>
         [JsonProperty("period_type")]
         public string PeriodType { get; set; }
 
+        /// <summary>⚠️ 서버(v1/products_controller#index)가 읽지 않는다</summary>
         [JsonProperty("s_at")]
         public string SAt { get; set; }
 
+        /// <summary>⚠️ 서버(v1/products_controller#index)가 읽지 않는다</summary>
         [JsonProperty("e_at")]
         public string EAt { get; set; }
 
+        /// <summary>⚠️ 서버(v1/products_controller#index)가 읽지 않는다</summary>
         [JsonProperty("category_code")]
         public string CategoryCode { get; set; }
     }
@@ -345,16 +373,16 @@ namespace Bootpay.Commerce.Models
     /// <summary>
     /// 상품 목록 조회 파라미터 (V1 Mall API)
     /// page/limit 미지정시 각각 1 / 20 이 적용된다.
-    /// ⚠️ keyword 는 서버가 읽지 않는다 (하위호환으로 인자는 유지).
+    ///
+    /// <para>⚠️ 서버(v1/products_controller#index)가 읽는 것은
+    /// page / limit / keyword / category_id / ex_uid / sort 뿐이다.
+    /// <c>Type</c> / <c>PeriodType</c> / <c>SAt</c> / <c>EAt</c> / <c>CategoryCode</c> 는 보내도 조용히 무시된다.
+    /// <c>Keyword</c> 는 26-08-26 서버 변경부터 적용된다 — 그 이전 배포본에서는 무시된다.</para>
+    ///
+    /// <para><c>CategoryId</c> / <c>ExUid</c> / <c>Sort</c> 는 <see cref="ProductListParams"/> 에서 상속받는다.</para>
     /// </summary>
     public class MallProductListParams : ProductListParams
     {
-        [JsonProperty("category_id")]
-        public string CategoryId { get; set; }
-
-        [JsonProperty("sort")]
-        public string Sort { get; set; }
-
         /// <summary>
         /// 회원 JWT — Bootpay-User-JWT 헤더로 전송된다 (query 에는 포함되지 않는다)
         /// </summary>

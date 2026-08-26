@@ -33,6 +33,7 @@ namespace Bootpay.Commerce.Service
             queryParams["page"] = (listParams?.Page ?? 1).ToString();
             queryParams["limit"] = (listParams?.Limit ?? 20).ToString();
             if (!string.IsNullOrEmpty(mallParams?.CategoryId)) queryParams["category_id"] = mallParams.CategoryId;
+            if (!string.IsNullOrEmpty(mallParams?.ExUid)) queryParams["ex_uid"] = mallParams.ExUid;
             if (!string.IsNullOrEmpty(mallParams?.Sort)) queryParams["sort"] = mallParams.Sort;
             if (!string.IsNullOrEmpty(listParams?.Keyword)) queryParams["keyword"] = listParams.Keyword;
             if (listParams?.Type != null) queryParams["type"] = listParams.Type.ToString();
@@ -72,9 +73,9 @@ namespace Bootpay.Commerce.Service
         /// <summary>
         /// 상품 상세 조회
         /// </summary>
-        public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string productId)
+        public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string productId, string userJwt = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"products/{productId}", HttpMethod.Get);
+            return await bootpay.SendAsync($"products/{productId}", HttpMethod.Get, null, CommerceRequestHeaders.Mall(userJwt, idempotencyKey));
         }
 
         /// <summary>
@@ -119,6 +120,10 @@ namespace Bootpay.Commerce.Service
             if (listParams.Page.HasValue) queryParams["page"] = listParams.Page.ToString();
             if (listParams.Limit.HasValue) queryParams["limit"] = listParams.Limit.ToString();
             if (!string.IsNullOrEmpty(listParams.Keyword)) queryParams["keyword"] = listParams.Keyword;
+            if (!string.IsNullOrEmpty(listParams.CategoryId)) queryParams["category_id"] = listParams.CategoryId;
+            if (!string.IsNullOrEmpty(listParams.ExUid)) queryParams["ex_uid"] = listParams.ExUid;
+            if (!string.IsNullOrEmpty(listParams.Sort)) queryParams["sort"] = listParams.Sort;
+            // 아래 4개는 서버가 읽지 않는다 — 기존 호출을 깨지 않으려고 전송만 유지한다
             if (listParams.Type.HasValue) queryParams["type"] = listParams.Type.ToString();
             if (!string.IsNullOrEmpty(listParams.PeriodType)) queryParams["period_type"] = listParams.PeriodType;
             if (!string.IsNullOrEmpty(listParams.SAt)) queryParams["s_at"] = listParams.SAt;

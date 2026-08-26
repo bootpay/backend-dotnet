@@ -257,10 +257,13 @@ namespace Bootpay.Commerce
 
         /// <summary>
         /// 상품 상세 조회
+        ///
+        /// <para><c>userJwt</c> 를 주면 회원 컨텍스트로 조회한다 (<c>Bootpay-User-JWT</c> 헤더).
+        /// <c>ProductDetailMall</c> 과 uri·동작이 같다.</para>
         /// </summary>
-        public async Task<HttpResponseMessage> ProductDetail(string productId)
+        public async Task<HttpResponseMessage> ProductDetail(string productId, string userJwt = null, string idempotencyKey = null)
         {
-            return await ProductService.Detail(this, productId);
+            return await ProductService.Detail(this, productId, userJwt, idempotencyKey);
         }
 
         /// <summary>
@@ -507,6 +510,10 @@ namespace Bootpay.Commerce
 
         /// <summary>
         /// 구독 계약 내용 변경 — supervisor scope. 바뀐 값만 보내면 된다.
+        ///
+        /// <para><c>Price</c> 는 회차별 결제 금액의 <b>기준금액</b>이다. 바꾸면 결제예정(READY) 회차의 청구액이
+        /// 즉시 다시 계산되고, 이후 회차도 이 금액으로 만들어진다. 이미 결제된 회차는 그대로다. 0 이하는 받지 않는다.
+        /// 특정 회차만 가감하려면 <c>OrderSubscriptionAdjustmentCreate</c> 를 쓴다.</para>
         /// </summary>
         public async Task<HttpResponseMessage> OrderSubscriptionUpdate(OrderSubscriptionUpdateParams updateParams, string idempotencyKey = null)
         {
@@ -778,6 +785,13 @@ namespace Bootpay.Commerce
 
         /// <summary>
         /// 정기구독 조정 생성 — supervisor scope
+        ///
+        /// <para>회차 지정 방법 3가지 (아래로 갈수록 넓다).</para>
+        /// <list type="bullet">
+        ///   <item><description><c>Duration = 5</c> → 5회차 한 건만</description></item>
+        ///   <item><description><c>DurationFrom = 3, DurationTo = 7</c> → 3~7회차 각각 한 건씩 (총 5건)</description></item>
+        ///   <item><description><c>DurationFrom = 3, IsUnlimited = true</c> → 3회차부터 계약 끝까지 (레코드는 1건, <c>DurationTo</c> 는 무시)</description></item>
+        /// </list>
         /// </summary>
         public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentCreate(string orderSubscriptionId, CommerceOrderSubscriptionAdjustment adjustment, string idempotencyKey = null)
         {

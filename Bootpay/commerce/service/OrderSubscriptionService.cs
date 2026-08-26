@@ -30,6 +30,10 @@ namespace Bootpay.Commerce.Service
         /// <summary>
         /// 구독 계약 내용 변경 (PUT /v1/order_subscriptions/{order_subscription_id}) — supervisor scope
         /// 바뀐 값만 보내면 된다 (나머지는 서버가 그대로 유지한다).
+        ///
+        /// <para><c>Price</c> 는 회차별 결제 금액의 <b>기준금액</b>이다. 바꾸면 결제예정(READY) 회차의 청구액이
+        /// 즉시 다시 계산되고, 이후 회차도 이 금액으로 만들어진다. 이미 결제된 회차는 그대로다. 0 이하는 받지 않는다.
+        /// 특정 회차만 가감하려면 조정항목(<c>OrderSubscriptionAdjustmentCreate</c>)을 쓴다.</para>
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, OrderSubscriptionUpdateParams updateParams, string idempotencyKey = null)
         {
@@ -178,6 +182,7 @@ namespace Bootpay.Commerce.Service
             if (!string.IsNullOrEmpty(listParams.UserGroupId)) queryParams["user_group_id"] = listParams.UserGroupId;
             if (listParams.Status.HasValue) queryParams["status"] = listParams.Status.ToString();
             if (!string.IsNullOrEmpty(listParams.UserId)) queryParams["user_id"] = listParams.UserId;
+            if (!string.IsNullOrEmpty(listParams.OrderNumber)) queryParams["order_number"] = listParams.OrderNumber;
 
             var query = queryParams.ToString();
             return string.IsNullOrEmpty(query) ? "" : $"?{query}";

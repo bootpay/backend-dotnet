@@ -16,6 +16,15 @@ namespace Bootpay.Commerce.Service
         /// 가감산 조정항목 추가 (POST /v1/order_subscriptions/{order_subscription_id}/adjustments)
         /// type 미전달시 서버가 price &gt; 0 이면 SETUP_PRICE, 아니면 PERIOD_DISCOUNT 로 자동 판정한다.
         /// price/duration/tax_free_price 미지정시 각각 0 / 1 / 0 이 전송된다.
+        ///
+        /// <para>회차 지정 방법 3가지 (아래로 갈수록 넓다).</para>
+        /// <list type="bullet">
+        ///   <item><description><c>Duration = 5</c> → 5회차 한 건만</description></item>
+        ///   <item><description><c>DurationFrom = 3, DurationTo = 7</c> → 3~7회차 각각 한 건씩 (총 5건)</description></item>
+        ///   <item><description><c>DurationFrom = 3, IsUnlimited = true</c> → 3회차부터 계약 끝까지 (레코드는 1건, <c>DurationTo</c> 는 무시)</description></item>
+        /// </list>
+        /// <para>상한은 계약 총회차이며, 총회차가 무제한인 계약은 60회차까지다.
+        /// 이미 결제가 끝난 회차는 거절된다. 범위 중 한 회차라도 최종 금액이 음수면 전부 거절된다 (부분 반영 없음).</para>
         /// </summary>
         public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, string orderSubscriptionId, CommerceOrderSubscriptionAdjustment adjustment, string idempotencyKey = null)
         {
@@ -27,6 +36,9 @@ namespace Bootpay.Commerce.Service
                 TaxFreePrice = adjustment?.TaxFreePrice ?? 0,
                 Name = adjustment?.Name,
                 Type = adjustment?.Type,
+                DurationFrom = adjustment?.DurationFrom,
+                DurationTo = adjustment?.DurationTo,
+                IsUnlimited = adjustment?.IsUnlimited,
                 CreatedAt = adjustment?.CreatedAt
             };
             return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}/adjustments", HttpMethod.Post, payload, CommerceRequestHeaders.Supervisor(idempotencyKey));

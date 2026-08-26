@@ -154,6 +154,12 @@ namespace Bootpay.Commerce.Models
 
         [JsonProperty("user_id")]
         public string UserId { get; set; }
+
+        /// <summary>
+        /// 주문번호로 구독 계약을 역조회한다 (<c>GET order_subscriptions?order_number=</c>).
+        /// </summary>
+        [JsonProperty("order_number")]
+        public string OrderNumber { get; set; }
     }
 
     /// <summary>
@@ -215,6 +221,22 @@ namespace Bootpay.Commerce.Models
 
         [JsonProperty("service_end_at")]
         public string ServiceEndAt { get; set; }
+
+        /// <summary>
+        /// 회차별 결제 금액의 <b>기준금액</b>.
+        ///
+        /// <para>바꾸면 결제예정(READY) 회차의 청구액이 즉시 다시 계산되고, 이후 회차도 이 금액으로 만들어진다.
+        /// 이미 결제된 회차는 그대로다. 0 이하는 서버가 받지 않는다.
+        /// 특정 회차만 가감하려면 <c>OrderSubscriptionAdjustmentCreate</c> 를 쓴다.</para>
+        /// </summary>
+        [JsonProperty("price")]
+        public int? Price { get; set; }
+
+        /// <summary>
+        /// 변경 사유. 구독 변경이력(<c>SUBSCRIPTION_ACTION_UPDATE</c>)에 남는다.
+        /// </summary>
+        [JsonProperty("memo")]
+        public string Memo { get; set; }
     }
 
     /// <summary>

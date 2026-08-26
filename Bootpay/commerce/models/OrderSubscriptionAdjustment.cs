@@ -34,6 +34,34 @@ namespace Bootpay.Commerce.Models
         [JsonProperty("type")]
         public int? Type { get; set; }
 
+        /// <summary>
+        /// 범위 지정 시작 회차 (조정항목 생성 전용).
+        ///
+        /// <para>회차 지정 방법 3가지 (아래로 갈수록 넓다).</para>
+        /// <list type="bullet">
+        ///   <item><description><c>Duration = 5</c> → 5회차 한 건만</description></item>
+        ///   <item><description><c>DurationFrom = 3, DurationTo = 7</c> → 3~7회차 각각 한 건씩 (총 5건)</description></item>
+        ///   <item><description><c>DurationFrom = 3, IsUnlimited = true</c> → 3회차부터 계약 끝까지 (레코드는 1건, <c>DurationTo</c> 는 무시)</description></item>
+        /// </list>
+        /// <para>상한은 계약 총회차이며, 총회차가 무제한인 계약은 60회차까지다.
+        /// 이미 결제가 끝난 회차는 거절된다. 범위 중 한 회차라도 최종 금액이 음수면 전부 거절된다 (부분 반영 없음).</para>
+        /// </summary>
+        [JsonProperty("duration_from")]
+        public int? DurationFrom { get; set; }
+
+        /// <summary>
+        /// 범위 지정 종료 회차 (조정항목 생성 전용, <c>IsUnlimited = true</c> 이면 무시된다)
+        /// </summary>
+        [JsonProperty("duration_to")]
+        public int? DurationTo { get; set; }
+
+        /// <summary>
+        /// <c>DurationFrom</c> 회차부터 계약 끝까지 적용한다 (조정항목 생성 전용).
+        /// 명시적 <c>false</c> 도 그대로 전송된다.
+        /// </summary>
+        [JsonProperty("is_unlimited")]
+        public bool? IsUnlimited { get; set; }
+
         [JsonProperty("created_at")]
         public string CreatedAt { get; set; }
     }

@@ -169,7 +169,11 @@ namespace Bootpay.Commerce.Service
             if (listParams.Page.HasValue) queryParams["page"] = listParams.Page.ToString();
             if (listParams.Limit.HasValue) queryParams["limit"] = listParams.Limit.ToString();
             if (!string.IsNullOrEmpty(listParams.Keyword)) queryParams["keyword"] = listParams.Keyword;
-            if (listParams.MemberType.HasValue) queryParams["member_type"] = listParams.MemberType.ToString();
+            // 서버가 읽는 이름은 membership_type — MemberType 은 하위호환 별칭으로 같은 키에 실어 보낸다.
+#pragma warning disable CS0618
+            var membershipType = listParams.MembershipType ?? listParams.MemberType;
+#pragma warning restore CS0618
+            if (membershipType.HasValue) queryParams["membership_type"] = membershipType.ToString();
             if (!string.IsNullOrEmpty(listParams.Type)) queryParams["type"] = listParams.Type;
 
             var query = queryParams.ToString();
