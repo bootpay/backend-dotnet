@@ -815,5 +815,339 @@ namespace Bootpay.Commerce
         }
 
         #endregion
+
+        #region Alimtalk (카카오 알림톡 v1)
+
+        // 알림톡 API 는 Idempotency-Key 를 읽지 않고(멱등은 발송의 ref_id 로만 성립),
+        // 스코프 키가 전부 user:alimtalk_* 라 BOOTPAY-ROLE 을 항상 user 로 고정해 보낸다.
+        // 그래서 다른 Commerce 메서드와 달리 idempotencyKey 인자가 없다.
+
+        /// <summary>
+        /// 알림톡 단건 발송 (POST /v1/alimtalk/send)
+        /// ⚠️ 실제로 카카오톡이 발송되고 과금된다. 샌드박스가 없다.
+        /// ⚠️ Fallback 은 미지정(null)과 false 가 다르다 — 미지정이면 프로젝트 기본값을 따르고 false 는 명시적으로 끈다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSend(AlimtalkSendParams sendParams)
+        {
+            return await AlimtalkSendService.Send(this, sendParams);
+        }
+
+        /// <summary>
+        /// 알림톡 벌크 발송 (POST /v1/alimtalk/send/bulk) — 1요청 = N수신자
+        /// ⚠️ 수신자 수만큼 실제 발송되고 과금된다. 쿼터를 넘으면 요청 시점에 전체 거부된다(3022).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSendBulk(AlimtalkSendBulkParams bulkParams)
+        {
+            return await AlimtalkSendService.Bulk(this, bulkParams);
+        }
+
+        /// <summary>
+        /// 알림톡 예약 발송 취소 (DELETE /v1/alimtalk/send/{receipt_id})
+        /// 접수(READY) 상태의 예약 건만 취소할 수 있다 — 이미 전송에 들어갔으면 3023 이다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSendCancel(string receiptId)
+        {
+            return await AlimtalkSendService.Cancel(this, receiptId);
+        }
+
+        /// <summary>
+        /// 알림톡 발송내역 목록 조회 (GET /v1/alimtalk/messages)
+        /// ⚠️ 기간 기본값은 최근 30일, 최대 조회 폭은 92일이다 — 초과분은 시작일을 당겨 잘라내고 응답 period 로 알려 준다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkMessageList(AlimtalkMessageListParams listParams = null)
+        {
+            return await AlimtalkMessageService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 알림톡 기간 집계 조회 (GET /v1/alimtalk/messages/stats)
+        /// ⚠️ billing.unit_price_source 가 'default' 면 잠정 단가다(확정 청구액이 아니다).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkMessageStats(AlimtalkMessageStatsParams statsParams = null)
+        {
+            return await AlimtalkMessageService.Stats(this, statsParams);
+        }
+
+        /// <summary>
+        /// 알림톡 단건 발송 결과 조회 (GET /v1/alimtalk/messages/{receipt_id})
+        /// 다른 프로젝트의 건이거나 없으면 404(3025).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkMessageDetail(string receiptId)
+        {
+            return await AlimtalkMessageService.Detail(this, receiptId);
+        }
+
+        /// <summary>
+        /// 공식 알림톡 템플릿 검색 (GET /v1/alimtalk/official)
+        /// Keyword 는 서버 정본 키인 q 로 전송된다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOfficialList(AlimtalkOfficialListParams listParams = null)
+        {
+            return await AlimtalkOfficialService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 보내려는 문구로 공식 템플릿 추천받기 (POST /v1/alimtalk/official/recommend)
+        /// 유사도 score(0~1) 내림차순으로 돌려준다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOfficialRecommend(AlimtalkOfficialRecommendParams recommendParams)
+        {
+            return await AlimtalkOfficialService.Recommend(this, recommendParams);
+        }
+
+        /// <summary>
+        /// 공식 알림톡 템플릿 상세 조회 (GET /v1/alimtalk/official/{code})
+        /// </summary>
+        /// <param name="code">공식 템플릿 코드</param>
+        /// <param name="kspId">변수 예문을 채워 볼 채널 ID (선택)</param>
+        public async Task<HttpResponseMessage> AlimtalkOfficialDetail(string code, string kspId = null)
+        {
+            return await AlimtalkOfficialService.Detail(this, code, kspId);
+        }
+
+        /// <summary>
+        /// 내 자체 알림톡 템플릿 목록 조회 (GET /v1/alimtalk/templates)
+        /// ⚠️ 페이지네이션이 없다 — 필터에 걸린 템플릿을 한 번에 모두 돌려준다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateList(AlimtalkTemplateListParams listParams = null)
+        {
+            return await AlimtalkTemplateService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 자체 알림톡 템플릿 생성 (POST /v1/alimtalk/templates)
+        /// ⚠️ Register 를 false 로 주지 않으면 대행사·카카오에 실제 등록된다(되돌리려면 삭제해야 한다).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateCreate(AlimtalkTemplateCreateParams createParams)
+        {
+            return await AlimtalkTemplateService.Create(this, createParams);
+        }
+
+        /// <summary>
+        /// 자체 알림톡 템플릿 상세 조회 (GET /v1/alimtalk/templates/{template_id})
+        /// ⚠️ sync 는 서버 기본값이 true 라 조회만 해도 벤더 상태 동기화가 일어난다 — 초안 조회는 false 권장.
+        /// </summary>
+        /// <param name="templateId">템플릿 ID 또는 템플릿 코드</param>
+        /// <param name="sync">벤더 동기화 여부 (선택, 서버 기본 true)</param>
+        public async Task<HttpResponseMessage> AlimtalkTemplateDetail(string templateId, bool? sync = null)
+        {
+            return await AlimtalkTemplateService.Detail(this, templateId, sync);
+        }
+
+        /// <summary>
+        /// 자체 알림톡 템플릿 수정 (PUT /v1/alimtalk/templates/{template_id})
+        /// ⚠️ 부분 수정이 아니다 — 보내지 않은 필드는 null 로 덮어써지므로 항상 전체 필드를 보낸다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateUpdate(string templateId, AlimtalkTemplateUpdateParams updateParams)
+        {
+            return await AlimtalkTemplateService.Update(this, templateId, updateParams);
+        }
+
+        /// <summary>
+        /// 자체 알림톡 템플릿 삭제 (DELETE /v1/alimtalk/templates/{template_id})
+        /// ⚠️ 등록분은 대행사 삭제가 성공해야 삭제된다 — 승인(APR) 템플릿은 카카오가 거부한다(3013).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateDelete(string templateId)
+        {
+            return await AlimtalkTemplateService.Delete(this, templateId);
+        }
+
+        /// <summary>
+        /// 알림톡 템플릿 초안을 대행사에 등록 (POST /v1/alimtalk/templates/{template_id}/register)
+        /// ⚠️ 대행사·카카오에 실제 등록된다. 등록 전(초안) 상태에서만 호출할 수 있다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateRegister(string templateId)
+        {
+            return await AlimtalkTemplateService.Register(this, templateId);
+        }
+
+        /// <summary>
+        /// 알림톡 템플릿 검수 요청 (POST /v1/alimtalk/templates/{template_id}/inspect)
+        /// ⚠️ 카카오에 검수를 요청하며 취소할 수 없다. 초안은 먼저 AlimtalkTemplateRegister() 를 부른다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateInspect(string templateId)
+        {
+            return await AlimtalkTemplateService.Inspect(this, templateId);
+        }
+
+        /// <summary>
+        /// 알림톡 템플릿 목록 내보내기 (GET /v1/alimtalk/templates/export)
+        /// ⚠️ SDK 기본 Format 은 json 이다(서버 기본 csv). 1회 5,000건을 넘으면 3031 로 거부된다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkTemplateExport(AlimtalkTemplateExportParams exportParams = null)
+        {
+            return await AlimtalkTemplateService.Export(this, exportParams);
+        }
+
+        /// <summary>
+        /// 이미지형 알림톡 템플릿의 원본 이미지 업로드 (POST /v1/alimtalk/templates/image)
+        /// jpg/png · 500KB 이하 · 가로 500px 이상 · 2:1.
+        /// </summary>
+        /// <param name="imagePath">이미지 파일 경로</param>
+        /// <param name="replaceUrl">주면 업로드 성공 후에 기존 파일을 지운다</param>
+        public async Task<HttpResponseMessage> AlimtalkTemplateImage(string imagePath, string replaceUrl = null)
+        {
+            return await AlimtalkTemplateService.Image(this, imagePath, replaceUrl);
+        }
+
+        /// <summary>
+        /// 아이템리스트형 알림톡 템플릿의 하이라이트 썸네일 업로드 (POST /v1/alimtalk/templates/highlight_image)
+        /// ⚠️ 본문 이미지와 규격이 다르다 — jpg/png · 500KB 이하 · 가로 108px 이상 · 1:1.
+        /// </summary>
+        /// <param name="imagePath">이미지 파일 경로</param>
+        /// <param name="replaceUrl">주면 업로드 성공 후에 기존 파일을 지운다</param>
+        public async Task<HttpResponseMessage> AlimtalkTemplateHighlightImage(string imagePath, string replaceUrl = null)
+        {
+            return await AlimtalkTemplateService.HighlightImage(this, imagePath, replaceUrl);
+        }
+
+        /// <summary>
+        /// 카카오 카테고리 목록 조회 (GET /v1/alimtalk/categories)
+        /// 발신프로필 등록 시 필요한 category_code 후보다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSenderCategories()
+        {
+            return await AlimtalkSenderService.Categories(this);
+        }
+
+        /// <summary>
+        /// 채널 관리자폰으로 OTP 발송 (POST /v1/alimtalk/senders/otp)
+        /// ⚠️ 실제로 문자가 나간다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSenderOtp(AlimtalkSenderOtpParams otpParams)
+        {
+            return await AlimtalkSenderService.Otp(this, otpParams);
+        }
+
+        /// <summary>
+        /// 알림톡 발신프로필 등록 (POST /v1/alimtalk/senders)
+        /// ⚠️ 카카오에 발신프로필이 실제 등록된다. 등록 성공 시 그룹키 등록까지 서버가 수행한다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSenderCreate(AlimtalkSenderCreateParams createParams)
+        {
+            return await AlimtalkSenderService.Create(this, createParams);
+        }
+
+        /// <summary>
+        /// 연동한 알림톡 채널 목록 조회 (GET /v1/alimtalk/senders)
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSenderList()
+        {
+            return await AlimtalkSenderService.List(this);
+        }
+
+        /// <summary>
+        /// 알림톡 채널 상세 조회 (GET /v1/alimtalk/senders/{ksp_id})
+        /// ⚠️ 미연동/미존재 채널은 404, 다른 프로젝트의 채널은 403 으로 오며 둘 다 error_code 는 3024 다.
+        /// </summary>
+        /// <param name="kspId">채널 ID</param>
+        /// <param name="sync">벤더 동기화 여부 (선택)</param>
+        public async Task<HttpResponseMessage> AlimtalkSenderDetail(string kspId, bool? sync = null)
+        {
+            return await AlimtalkSenderService.Detail(this, kspId, sync);
+        }
+
+        /// <summary>
+        /// 알림톡 채널 연동 해지 (DELETE /v1/alimtalk/senders/{ksp_id})
+        /// 이 프로젝트와의 연동만 끊는다 — 채널 모델과 템플릿은 보존된다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkSenderRelease(string kspId)
+        {
+            return await AlimtalkSenderService.Release(this, kspId);
+        }
+
+        /// <summary>
+        /// 알림톡 채널 변수 예문 사전 갱신 (PUT /v1/alimtalk/senders/{ksp_id}/variable_examples)
+        /// ⚠️ 표시용 값이다 — 벤더로 전송되지 않으므로 검수 상태와 무관하다. 보낸 키만 덮어쓴다(부분 갱신).
+        /// </summary>
+        /// <param name="kspId">채널 ID</param>
+        /// <param name="examples">{ "user_name": "홍길동" } — 키에 '.' 이나 선행 '$' 는 쓸 수 없다</param>
+        public async Task<HttpResponseMessage> AlimtalkSenderVariableExamples(string kspId, Dictionary<string, string> examples)
+        {
+            return await AlimtalkSenderService.VariableExamples(this, kspId, examples);
+        }
+
+        /// <summary>
+        /// 알림톡 수신거부 목록 조회 (GET /v1/alimtalk/optouts)
+        /// phone 은 숫자만 남겨 부분일치로 찾는다(정확 매칭이 아니다).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOptoutList(AlimtalkOptoutListParams listParams = null)
+        {
+            return await AlimtalkOptoutService.List(this, listParams);
+        }
+
+        /// <summary>
+        /// 알림톡 수신거부 등록 (POST /v1/alimtalk/optouts)
+        /// 같은 번호를 다시 등록해도 멱등이다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOptoutCreate(AlimtalkOptoutCreateParams createParams)
+        {
+            return await AlimtalkOptoutService.Create(this, createParams);
+        }
+
+        /// <summary>
+        /// 발송 전 수신거부 사전 확인 (POST /v1/alimtalk/optouts/check)
+        /// ⚠️ 1회 최대 1,000건이고 넘으면 -48 이다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOptoutCheck(AlimtalkOptoutCheckParams checkParams)
+        {
+            return await AlimtalkOptoutService.Check(this, checkParams);
+        }
+
+        /// <summary>
+        /// 알림톡 수신거부 해제 (DELETE /v1/alimtalk/optouts/{phone})
+        /// ⚠️ 전역 차단은 해제되지 않고 global_blocked: true 로 알려 준다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkOptoutRelease(string phone)
+        {
+            return await AlimtalkOptoutService.Release(this, phone);
+        }
+
+        /// <summary>
+        /// 알림톡 웹훅 설정 조회 (GET /v1/alimtalk/webhook)
+        /// 시크릿은 앞 12자만 노출된다. 미설정이면 { configured: false } 로 온다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkWebhookDetail()
+        {
+            return await AlimtalkWebhookService.Detail(this);
+        }
+
+        /// <summary>
+        /// 알림톡 웹훅 설정 저장 (PUT /v1/alimtalk/webhook)
+        /// ⚠️ 주문·구독 통합 웹훅(WebhookSendTest)과 완전히 별개 경로다. url 은 https 만 허용한다(아니면 3028).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkWebhookUpdate(AlimtalkWebhookUpdateParams updateParams = null)
+        {
+            return await AlimtalkWebhookService.Update(this, updateParams);
+        }
+
+        /// <summary>
+        /// 알림톡 웹훅 테스트 이벤트 1건 발송 (POST /v1/alimtalk/webhook/test)
+        /// ⚠️ 설정된 URL 로 실제 HTTP 요청이 나간다. 미설정이면 3029.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkWebhookTest()
+        {
+            return await AlimtalkWebhookService.Test(this);
+        }
+
+        /// <summary>
+        /// 알림톡 웹훅 서명 시크릿 재발급 (POST /v1/alimtalk/webhook/secret)
+        /// ⚠️ 이 응답에서만 secret 원문을 돌려준다(이후 조회는 마스킹된다).
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkWebhookRotateSecret()
+        {
+            return await AlimtalkWebhookService.RotateSecret(this);
+        }
+
+        /// <summary>
+        /// 알림톡 웹훅 전송 이력 조회 (GET /v1/alimtalk/webhook/deliveries)
+        /// 성공·실패를 모두 남긴다.
+        /// </summary>
+        public async Task<HttpResponseMessage> AlimtalkWebhookDeliveries(AlimtalkWebhookDeliveriesParams deliveriesParams = null)
+        {
+            return await AlimtalkWebhookService.Deliveries(this, deliveriesParams);
+        }
+
+        #endregion
     }
 }

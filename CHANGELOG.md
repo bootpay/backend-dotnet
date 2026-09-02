@@ -1,3 +1,50 @@
+### 2.8.0
+
+#### 알림톡 v1 API 35종 추가 (NodeJS 2.13.0 parity)
+
+카카오 알림톡 API(`/v1/alimtalk/…`)를 SDK 에 추가했다. 봇 동기화가 dotnet 에는 들어오지 않아 다른 6개 SDK
+(nodejs·go·java·python·php·ruby)만 갖고 있던 것을 기준 SDK(NodeJS)를 보고 포팅했다. 발송·발송내역·공식 카탈로그·
+자체 템플릿·발신프로필·수신거부·알림톡 웹훅 7개 영역이며 `commerce.Alimtalk*` 로 접근한다.
+
+- `AlimtalkSend` / `AlimtalkSendBulk` / `AlimtalkSendCancel`
+  - ⚠️ `Fallback` 은 **미지정(null)과 false 가 다르다**. 미지정이면 프로젝트 기본값을 따르고 `false` 는
+    문자(LMS) 대체발송을 명시적으로 끈다. `NullValueHandling.Ignore` 가 null 만 걷어내므로 `false` 는 그대로 전달된다.
+  - 멱등은 `RefId` 로만 성립한다 — 같은 (프로젝트, `ref_id`) 로 재요청하면 기존 receipt 를 돌려준다.
+- `AlimtalkMessageList` / `AlimtalkMessageStats` / `AlimtalkMessageDetail`
+- `AlimtalkOfficialList` / `AlimtalkOfficialRecommend` / `AlimtalkOfficialDetail`
+  - `Keyword` 는 서버 정본 키인 **`q`** 로 전송한다 (서버는 `q` 를 먼저 보고 없으면 `keyword` 를 본다).
+- `AlimtalkTemplate…` — `List` / `Create` / `Detail` / `Update` / `Delete` / `Register` / `Inspect` /
+  `Export` / `Image` / `HighlightImage`
+  - `Export` 의 **기본 `Format` 을 `json` 으로 둔다.** 서버 기본은 `csv` 지만 csv 본문은 JSON 이 아니라
+    JSON 을 기대하는 호출부에서 파싱이 깨진다. `Format = "csv"` 를 주면 `Accept: */*` 로 원문을 받는다.
+  - 본문 이미지(2:1, 가로 500px↑)와 하이라이트 썸네일(1:1, 가로 108px↑)은 **규격이 다른 별개 endpoint** 다.
+  - `AlimtalkTemplateParams.Attrs` 에 담은 키는 명시 속성 위로 그대로 전송된다 (ruby SDK 의 `**attrs` 자리).
+- `AlimtalkSenderCategories` / `Otp` / `Create` / `List` / `Detail` / `Release` / `VariableExamples`
+- `AlimtalkOptoutList` / `Create` / `Check` / `Release` — 전역 차단은 해제되지 않고 `global_blocked: true` 로 알려 준다.
+- `AlimtalkWebhookDetail` / `Update` / `Test` / `RotateSecret` / `Deliveries`
+  - ⚠️ 주문·구독 통합 웹훅(`WebhookSendTest`, `POST /v1/webhook/test`)과 **완전히 별개 경로**다.
+
+공통 규약 (다른 Commerce 메서드와 다른 점):
+
+- **`Idempotency-Key` 를 싣지 않는다.** 알림톡 API 는 이 헤더를 읽지 않는다 — 붙이면 서버가 주지 않는
+  보장을 주는 것처럼 보인다. 그래서 알림톡 메서드에는 `idempotencyKey` 인자가 없다.
+- **`BOOTPAY-ROLE` 은 항상 `user`.** 알림톡 스코프 키가 전부 `user:alimtalk_*` 라, 인스턴스가
+  `AsSupervisor()` 로 설정돼 있어도 알림톡 요청만 user 로 나간다 (인스턴스 role 은 바뀌지 않는다).
+- ⚠️ **샌드박스가 없다.** 발송·OTP·발신프로필 등록·템플릿 등록/검수는 모두 실제로 나가고 과금된다.
+
+내부 추가: `BootpayCommerceObject.SendMultipartFileAsync()` — 상품 등록의 `images[0]` 인덱싱과 달리
+서버가 단일 필드명(`image`)을 읽는 템플릿 이미지 업로드용이다.
+
+#### 테스트
+
+- `Bootpay.Tests/Wire/CommerceAlimtalkWireTest.cs` 추가 (35건) — mock 서버로 35개 엔드포인트의 경로·쿼리·
+  바디를 고정하고, 위 두 공통 규약(Idempotency-Key 부재 · role 고정)을 단정한다.
+- `PgWireTest.RequestCashReceipt_OmitsPgWhenUnset_AndForwardsItWhenGiven` 추가 — 별건 현금영수증의 `pg` 가
+  미지정이면 바디에서 빠지고(서버 기본 PG 로 발행), 주면 그대로 전달되는 것을 고정한다.
+  dotnet 은 이미 그렇게 동작하고 있었으나 다른 SDK 가 2.x.1 에서 건 회귀 방지를 여기에도 맞췄다.
+
+**기존 PG/Commerce 메서드·타입·응답 구조 변경 없음.**
+
 ### 2.7.0
 
 #### `product.list` 의 조회 필터를 서버 실제 계약에 맞춤

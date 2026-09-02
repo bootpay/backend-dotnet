@@ -307,6 +307,69 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 파일 필드 이름을 지정하는 multipart/form-data 요청 (알림톡 템플릿 이미지 업로드용).
+        /// 상품 등록의 images[0], images[1] ... 인덱싱과 달리 서버가 단일 필드명(image)을 읽는다.
+        /// 파일명을 함께 붙인다 — 없으면 서버가 확장자를 못 읽는다.
+        /// </summary>
+        /// <param name="url">요청 경로</param>
+        /// <param name="fieldName">파일 필드 이름</param>
+        /// <param name="filePath">업로드할 파일 경로</param>
+        /// <param name="formFields">함께 보낼 form 필드 (값이 있는 것만)</param>
+        /// <param name="headers">요청별 헤더</param>
+        public async Task<HttpResponseMessage> SendMultipartFileAsync(string url, string fieldName, string filePath, Dictionary<string, string> formFields = null, Dictionary<string, string> headers = null)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentException("filePath must be provided.");
+            }
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("파일 경로가 올바르지 않습니다.", filePath);
+            }
+
+            using (HttpRequestMessage request = new HttpRequestMessage())
+            using (HttpClient client = new HttpClient())
+            using (var content = new MultipartFormDataContent())
+            {
+                var fileContent = new ByteArrayContent(File.ReadAllBytes(filePath));
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(GetMimeType(filePath));
+                content.Add(fileContent, fieldName, Path.GetFileName(filePath));
+
+                if (formFields != null)
+                {
+                    foreach (var field in formFields)
+                    {
+                        if (field.Value == null) continue;
+                        content.Add(new StringContent(field.Value), field.Key);
+                    }
+                }
+
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri(_baseUrl + url);
+                request.Content = content;
+
+                if (headers != null)
+                {
+                    foreach (var header in headers)
+                    {
+                        request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+
+                var credentials = $"{_clientKey}:{_secretKey}";
+                var encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+                client.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedCredentials}");
+
+                client.DefaultRequestHeaders.Add("BOOTPAY-SDK-VERSION", SDK_VERSION);
+                client.DefaultRequestHeaders.Add("BOOTPAY-API-VERSION", API_VERSION);
+                client.DefaultRequestHeaders.Add("BOOTPAY-SDK-TYPE", SDK_TYPE);
+                client.DefaultRequestHeaders.Add("BOOTPAY-ROLE", _role ?? "user");
+
+                return await client.SendAsync(request);
+            }
+        }
+
+        /// <summary>
         /// multipart form 스칼라 값 직렬화.
         /// bool 은 소문자 "true"/"false" — .NET 기본 ToString() 의 "True"/"False" 는 Rails 가 false 를 true 로 캐스팅한다.
         /// 숫자는 InvariantCulture — 로케일에 따라 소수점이 콤마로 직렬화되는 것을 방지.

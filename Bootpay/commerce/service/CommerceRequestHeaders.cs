@@ -41,6 +41,27 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
+        /// 알림톡 요청 헤더.
+        /// ★Idempotency-Key 를 싣지 않는다★ 알림톡 API 는 이 헤더를 읽지 않는다 —
+        ///   멱등은 발송의 ref_id 로만 성립하므로, 헤더를 붙이면 서버가 주지 않는 보장을 주는 것처럼 보인다.
+        /// ★BOOTPAY-ROLE 은 항상 user★ 알림톡 스코프 키가 전부 user:alimtalk_* 다.
+        ///   인스턴스 role 이 manager/supervisor 로 바뀌어 있어도 여기서 고정한다.
+        /// </summary>
+        /// <param name="accept">CSV 원문 수신처럼 JSON 이 아닌 응답을 받을 때 지정한다</param>
+        internal static Dictionary<string, string> Alimtalk(string accept = null)
+        {
+            var headers = new Dictionary<string, string>
+            {
+                { "BOOTPAY-ROLE", "user" }
+            };
+            if (!string.IsNullOrEmpty(accept))
+            {
+                headers["Accept"] = accept;
+            }
+            return headers;
+        }
+
+        /// <summary>
         /// V1 Mall API 요청 헤더 — Bootpay-User-JWT 는 값이 있을 때만 부착된다.
         /// </summary>
         internal static Dictionary<string, string> Mall(string userJwt = null, string idempotencyKey = null)
