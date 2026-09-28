@@ -1,3 +1,28 @@
+### Unreleased
+
+> 메시지 API(message.bootapi.com) 실서버 배포에 맞춰 릴리스한다.
+
+#### 알림톡 API 를 메시지 호스트로 전환 (NodeJS parity — 봇 미전달분 수동 포팅)
+
+`alimtalk/*` 경로는 이제 커머스 API(`api.bootapi.com/v1`)가 아니라 메시지 API 가 받는다 (경로에 `/v1` 없음).
+경로·파라미터·응답은 그대로이고 호스트만 다르다. 옛 주소(`/v1/alimtalk/*`)는 `410 ALIMTALK_API_MOVED` 로 응답한다.
+
+| 환경 | 알림톡 기본 주소 |
+|---|---|
+| development | `https://dev-m.bootapi.com/` |
+| stage | `https://stage-m.bootapi.com/` |
+| production | `https://message.bootapi.com/` |
+
+요청 경로로 호스트를 가르므로 `Alimtalk*` 메서드의 호출 방식은 바뀌지 않는다. 주소를 바꿔야 하면 `SetMessageApiUrl(url)` 을 쓴다.
+
+#### 알림톡 발송에 `WebhookUrl` 추가
+
+`AlimtalkSendParams` · `AlimtalkSendBulkParams` 에 `WebhookUrl`(`webhook_url`)을 추가했다. 주면 그 요청의 발송 성공·실패·
+문자 대체발송·예약취소 웹훅이 **그 주소로만** 가고 프로젝트 웹훅 설정은 쓰이지 않는다. 미지정이면 바디에서 빠진다.
+`https` 만 허용하고 2,000자를 넘으면 3028 로 거부된다 (벌크는 요청 전체가 거부된다).
+
+> ⚠️ 같은 `RefId` 로 이미 접수·성공한 건을 다시 요청하면 기존 접수가 그대로 돌아와 새 주소는 무시된다.
+
 ### 2.8.0
 
 #### 알림톡 v1 API 35종 추가 (NodeJS 2.13.0 parity)

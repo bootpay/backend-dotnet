@@ -18,6 +18,8 @@ namespace Bootpay.Commerce
         protected string _clientKey;
         protected string _secretKey;
         protected string _baseUrl;
+        // 알림톡(/alimtalk/*) 요청이 향하는 메시지 API 주소 (경로에 /v1 없음)
+        protected string _messageBaseUrl;
         private string _token;
         private string _role;
 
@@ -36,6 +38,15 @@ namespace Bootpay.Commerce
             { MODE_PRODUCTION, "https://api.bootapi.com/v1/" },
         };
 
+        // 26-09-18: 알림톡 API 는 커머스 API(api.bootapi.com/v1)가 아니라 메시지 API(message.bootapi.com, /v1 없음)가 받는다.
+        //   경로·파라미터·응답은 그대로이고 호스트만 다르다. 옛 주소(/v1/alimtalk/*)는 410 ALIMTALK_API_MOVED 로 응답한다.
+        private readonly Dictionary<int, string> _MESSAGE_URL = new Dictionary<int, string>()
+        {
+            { MODE_DEVELOPMENT, "https://dev-m.bootapi.com/" },
+            { MODE_STAGE, "https://stage-m.bootapi.com/" },
+            { MODE_PRODUCTION, "https://message.bootapi.com/" },
+        };
+
         public BootpayCommerceObject(string clientKey, string secretKey, int mode = MODE_PRODUCTION)
         {
             if (string.IsNullOrWhiteSpace(clientKey) || string.IsNullOrWhiteSpace(secretKey))
@@ -46,7 +57,31 @@ namespace Bootpay.Commerce
             _clientKey = clientKey;
             _secretKey = secretKey;
             _baseUrl = _URL[mode];
+            _messageBaseUrl = _MESSAGE_URL[mode];
             _role = "user";
+        }
+
+        /// <summary>
+        /// 알림톡(메시지 API) 주소를 변경한다.
+        /// </summary>
+        public BootpayCommerceObject SetMessageApiUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentException("url must be provided.");
+            }
+            _messageBaseUrl = url.EndsWith("/") ? url : url + "/";
+            return this;
+        }
+
+        /// <summary>
+        /// 요청 경로에 맞는 전체 URL. 알림톡 경로만 메시지 API 로 보내고, 나머지는 커머스 API 로 보낸다.
+        /// </summary>
+        private Uri RequestUri(string url)
+        {
+            var path = url.TrimStart('/');
+            var baseUrl = path.StartsWith("alimtalk") ? _messageBaseUrl : _baseUrl;
+            return new Uri(baseUrl + path);
         }
 
         /// <summary>
@@ -165,7 +200,7 @@ namespace Bootpay.Commerce
             using (HttpClient client = new HttpClient())
             {
                 request.Method = method;
-                request.RequestUri = new Uri(_baseUrl + url);
+                request.RequestUri = RequestUri(url);
 
                 if (!string.IsNullOrEmpty(json) && method != HttpMethod.Get)
                 {
@@ -202,7 +237,7 @@ namespace Bootpay.Commerce
             using (HttpClient client = new HttpClient())
             {
                 request.Method = method;
-                request.RequestUri = new Uri(_baseUrl + url);
+                request.RequestUri = RequestUri(url);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -282,7 +317,7 @@ namespace Bootpay.Commerce
                 }
 
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(_baseUrl + url);
+                request.RequestUri = RequestUri(url);
                 request.Content = content;
 
                 if (headers != null)
@@ -345,7 +380,7 @@ namespace Bootpay.Commerce
                 }
 
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(_baseUrl + url);
+                request.RequestUri = RequestUri(url);
                 request.Content = content;
 
                 if (headers != null)

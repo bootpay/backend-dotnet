@@ -51,6 +51,15 @@ namespace Bootpay.Commerce.Models
         /// <summary>가맹점 사용자 식별자</summary>
         [JsonProperty("user_id")]
         public string UserId { get; set; }
+
+        /// <summary>
+        /// 이 건의 결과 웹훅을 받을 주소(26-09-21).
+        /// 주면 발송 성공·실패·문자 대체발송·예약취소 웹훅이 이 주소로만 간다(프로젝트 웹훅 설정은 쓰이지 않는다).
+        /// https 만 허용하며 2,000자를 넘으면 3028 로 거부된다. 서명은 프로젝트 시크릿으로 한다.
+        /// ⚠️ 같은 RefId 로 이미 접수·성공한 건을 다시 요청하면 기존 접수가 그대로 돌아와 새 주소는 무시된다.
+        /// </summary>
+        [JsonProperty("webhook_url")]
+        public string WebhookUrl { get; set; }
     }
 
     /// <summary>벌크 발송 수신자</summary>
@@ -102,6 +111,13 @@ namespace Bootpay.Commerce.Models
         /// <summary>가맹점 사용자 식별자</summary>
         [JsonProperty("user_id")]
         public string UserId { get; set; }
+
+        /// <summary>
+        /// 이 요청으로 나간 모든 수신자 건의 결과 웹훅을 받을 주소(26-09-21).
+        /// 주면 프로젝트 웹훅 설정 대신 이 주소로만 간다. 형식이 틀리면(https 아님·2,000자 초과) 요청 전체가 3028 로 거부된다.
+        /// </summary>
+        [JsonProperty("webhook_url")]
+        public string WebhookUrl { get; set; }
     }
 
     #endregion

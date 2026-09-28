@@ -108,9 +108,11 @@ namespace Bootpay.Tests.Wire
     /// </summary>
     public sealed class WireCommerceApi : BootpayCommerceApi
     {
-        public WireCommerceApi(string baseUrl) : base("test_client_key", "test_secret_key")
+        public WireCommerceApi(string baseUrl, string? messageBaseUrl = null) : base("test_client_key", "test_secret_key")
         {
             _baseUrl = baseUrl;
+            // 알림톡은 메시지 API 로 간다 — 따로 주지 않으면 같은 mock 서버로 받는다
+            _messageBaseUrl = messageBaseUrl ?? baseUrl;
         }
     }
 

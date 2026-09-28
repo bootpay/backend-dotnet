@@ -104,6 +104,68 @@ namespace Bootpay.Tests.Wire
             AssertAlimtalk("DELETE", "/alimtalk/send/rcpt_1");
         }
 
+        [Fact]
+        public async Task Send_And_Bulk_CarryWebhookUrl_OnlyWhenSet()
+        {
+            await _api.AlimtalkSend(new AlimtalkSendParams { TemplateCode = "TPL_001", To = "01012345678", WebhookUrl = "https://example.com/hook" });
+            Assert.Equal("https://example.com/hook", (string?)Body()["webhook_url"]);
+
+            await _api.AlimtalkSendBulk(new AlimtalkSendBulkParams
+            {
+                TemplateCode = "TPL_001",
+                Recipients = new List<AlimtalkSendBulkRecipient> { new AlimtalkSendBulkRecipient { To = "01011112222" } },
+                WebhookUrl = "https://example.com/bulk-hook"
+            });
+            Assert.Equal("https://example.com/bulk-hook", (string?)Body()["webhook_url"]);
+
+            await _api.AlimtalkSend(new AlimtalkSendParams { TemplateCode = "TPL_001", To = "01012345678" });
+            Assert.False(Body().ContainsKey("webhook_url"));
+        }
+
+        #endregion
+
+        #region 호스트 — 알림톡만 메시지 API 로 간다
+
+        [Fact]
+        public async Task Alimtalk_GoesToMessageHost_OthersToCommerceHost()
+        {
+            using var commerce = new MockServer();
+            using var message = new MockServer();
+            var api = new WireCommerceApi(commerce.BaseUrl, message.BaseUrl);
+
+            await api.AlimtalkSendCancel("rcpt_1");
+            await api.GetMallSetting();
+
+            Assert.Single(message.Requests);
+            Assert.Equal("/alimtalk/send/rcpt_1", message.LastRequest.PathAndQuery);
+            Assert.Single(commerce.Requests);
+            Assert.DoesNotContain("alimtalk", commerce.LastRequest.PathAndQuery);
+        }
+
+        [Fact]
+        public async Task SetMessageApiUrl_OverridesMessageHost()
+        {
+            using var message = new MockServer();
+            _api.SetMessageApiUrl(message.BaseUrl.TrimEnd('/'));
+
+            await _api.AlimtalkSendCancel("rcpt_1");
+
+            Assert.Single(message.Requests);
+            Assert.Empty(_server.Requests);
+        }
+
+        [Theory]
+        [InlineData(Bootpay.Commerce.BootpayCommerceObject.MODE_DEVELOPMENT, "https://dev-m.bootapi.com/")]
+        [InlineData(Bootpay.Commerce.BootpayCommerceObject.MODE_STAGE, "https://stage-m.bootapi.com/")]
+        [InlineData(Bootpay.Commerce.BootpayCommerceObject.MODE_PRODUCTION, "https://message.bootapi.com/")]
+        public void DefaultMessageHost_PerMode(int mode, string expected)
+        {
+            var api = new Bootpay.Commerce.BootpayCommerceApi("ck", "sk", mode);
+            var field = typeof(Bootpay.Commerce.BootpayCommerceObject).GetField("_messageBaseUrl",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.Equal(expected, field?.GetValue(api));
+        }
+
         #endregion
 
         #region 발송내역·집계
