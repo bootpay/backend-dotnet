@@ -1,3 +1,12 @@
+### 2.10.0
+
+#### 커머스 게시판 API 28종 추가 (NodeJS 2.14.0 parity)
+
+- 공지사항·FAQ의 목록/상세/등록/수정/삭제, 1:1문의·상품문의의 목록/상세/등록/수정/삭제/답변, 상품평의 목록/상세/등록/수정/삭제/답글을 `BootpayCommerceApi`에 추가했다.
+- 상품평 경로는 `/v1/reviews`를 사용한다. 모든 게시판 요청은 커머스 `/v1` 호스트로 보내며 목록에 `page=1&limit=20`을 명시한다.
+- `Idempotency-Key`는 미지정 시 호출마다 새 UUID를 사용한다. `BOOTPAY-ROLE`은 호출별 user/supervisor로 고정하고, 회원 JWT가 있으면 `Bootpay-User-JWT` 헤더에만 넣는다.
+- 상품문의 삭제의 `guest_password`는 쿼리가 아닌 DELETE 본문에 넣는다. `answered=false`, `is_display=false`, `is_secret=false` 같은 명시적 false 값은 보존한다.
+
 ### 2.9.0
 
 #### 알림톡 API 를 메시지 호스트로 전환 (NodeJS parity — 봇 미전달분 수동 포팅)

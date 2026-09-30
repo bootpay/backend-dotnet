@@ -816,6 +816,150 @@ namespace Bootpay.Commerce
 
         #endregion
 
+        #region Boards (몰 게시판)
+
+        public Task<HttpResponseMessage> NoticeList(NoticeListParams listParams = null)
+        {
+            return NoticeService.List(this, listParams);
+        }
+
+        public Task<HttpResponseMessage> NoticeDetail(string id, NoticeDetailParams detailParams = null)
+        {
+            return NoticeService.Detail(this, id, detailParams);
+        }
+
+        public Task<HttpResponseMessage> NoticeCreate(NoticeCreateParams createParams)
+        {
+            return NoticeService.Create(this, createParams);
+        }
+
+        public Task<HttpResponseMessage> NoticeUpdate(string id, NoticeUpdateParams updateParams)
+        {
+            return NoticeService.Update(this, id, updateParams);
+        }
+
+        public Task<HttpResponseMessage> NoticeDelete(string id, string idempotencyKey = null)
+        {
+            return NoticeService.Delete(this, id, idempotencyKey);
+        }
+
+        public Task<HttpResponseMessage> FaqList(FaqListParams listParams = null)
+        {
+            return FaqService.List(this, listParams);
+        }
+
+        public Task<HttpResponseMessage> FaqDetail(string id, FaqDetailParams detailParams = null)
+        {
+            return FaqService.Detail(this, id, detailParams);
+        }
+
+        public Task<HttpResponseMessage> FaqCreate(FaqCreateParams createParams)
+        {
+            return FaqService.Create(this, createParams);
+        }
+
+        public Task<HttpResponseMessage> FaqUpdate(string id, FaqUpdateParams updateParams)
+        {
+            return FaqService.Update(this, id, updateParams);
+        }
+
+        public Task<HttpResponseMessage> FaqDelete(string id, string idempotencyKey = null)
+        {
+            return FaqService.Delete(this, id, idempotencyKey);
+        }
+
+        public Task<HttpResponseMessage> InquiryList(InquiryListParams listParams = null)
+        {
+            return InquiryService.List(this, listParams);
+        }
+
+        public Task<HttpResponseMessage> InquiryDetail(string id, InquiryDetailParams detailParams = null)
+        {
+            return InquiryService.Detail(this, id, detailParams);
+        }
+
+        public Task<HttpResponseMessage> InquiryCreate(InquiryCreateParams createParams)
+        {
+            return InquiryService.Create(this, createParams);
+        }
+
+        public Task<HttpResponseMessage> InquiryUpdate(string id, InquiryUpdateParams updateParams)
+        {
+            return InquiryService.Update(this, id, updateParams);
+        }
+
+        public Task<HttpResponseMessage> InquiryDelete(string id, InquiryDeleteParams deleteParams = null)
+        {
+            return InquiryService.Delete(this, id, deleteParams);
+        }
+
+        public Task<HttpResponseMessage> InquiryAnswer(string id, string content, string idempotencyKey = null)
+        {
+            return InquiryService.Answer(this, id, content, idempotencyKey);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaList(ProductQnaListParams listParams = null)
+        {
+            return ProductQnaService.List(this, listParams);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaDetail(string id, ProductQnaDetailParams detailParams = null)
+        {
+            return ProductQnaService.Detail(this, id, detailParams);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaCreate(ProductQnaCreateParams createParams)
+        {
+            return ProductQnaService.Create(this, createParams);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaUpdate(string id, ProductQnaUpdateParams updateParams)
+        {
+            return ProductQnaService.Update(this, id, updateParams);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaDelete(string id, ProductQnaDeleteParams deleteParams = null)
+        {
+            return ProductQnaService.Delete(this, id, deleteParams);
+        }
+
+        public Task<HttpResponseMessage> ProductQnaAnswer(string id, string content, string idempotencyKey = null)
+        {
+            return ProductQnaService.Answer(this, id, content, idempotencyKey);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewList(ProductReviewListParams listParams = null)
+        {
+            return ProductReviewService.List(this, listParams);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewDetail(string id, ProductReviewDetailParams detailParams = null)
+        {
+            return ProductReviewService.Detail(this, id, detailParams);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewCreate(ProductReviewCreateParams createParams)
+        {
+            return ProductReviewService.Create(this, createParams);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewUpdate(string id, ProductReviewUpdateParams updateParams)
+        {
+            return ProductReviewService.Update(this, id, updateParams);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewDelete(string id, ProductReviewDeleteParams deleteParams = null)
+        {
+            return ProductReviewService.Delete(this, id, deleteParams);
+        }
+
+        public Task<HttpResponseMessage> ProductReviewReply(string id, string content, string idempotencyKey = null)
+        {
+            return ProductReviewService.Reply(this, id, content, idempotencyKey);
+        }
+
+        #endregion
+
         #region Alimtalk (카카오 알림톡 v1)
 
         // 알림톡 API 는 Idempotency-Key 를 읽지 않고(멱등은 발송의 ref_id 로만 성립),

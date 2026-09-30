@@ -40,6 +40,7 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
   - [10-5. 정기구독 관리](#10-5-정기구독-관리)
   - [10-6. 청구서 관리](#10-6-청구서-관리)
   - [10-7. 알림톡](#10-7-알림톡)
+  - [10-8. 게시판](#10-8-게시판)
 - [Example 프로젝트](#example-프로젝트)
 - [Documentation](#documentation)
 - [기술문의](#기술문의)
@@ -842,6 +843,29 @@ await commerce.AlimtalkWebhookUpdate(new AlimtalkWebhookUpdateParams {
 ```
 
 더 자세한 Commerce API 사용 예제는 [Sample/Commerce](./Sample/Commerce) 디렉토리를 참고해주세요.
+
+### 10-8. 게시판
+
+공지사항·FAQ·1:1문의·상품문의·상품평 API는 모두 Commerce `/v1` 호스트를 사용합니다. 조회는 기본적으로 `user` role이며, 운영자 조회는 `Supervisor = true`를 지정합니다. 등록·수정·삭제 권한은 게시판마다 다릅니다.
+
+```csharp
+var commerce = new BootpayCommerceApi(clientKey, secretKey);
+await commerce.GetAccessToken();
+
+var notices = await commerce.NoticeList(new NoticeListParams { Page = 1, Limit = 20 });
+var faqs = await commerce.FaqList(new FaqListParams { Supervisor = true, View = "all" });
+var unanswered = await commerce.InquiryList(new InquiryListParams {
+    UserId = "USER_ID", Answered = false, UserJwt = "USER_JWT"
+});
+await commerce.ProductQnaDelete("QNA_ID", new ProductQnaDeleteParams {
+    GuestPassword = "password"
+}); // guest_password는 DELETE 본문으로 전송
+var reviews = await commerce.ProductReviewList(new ProductReviewListParams {
+    ProductId = "PRODUCT_ID", Supervisor = true
+});
+```
+
+`Idempotency-Key`는 지정하지 않으면 호출마다 새로 생성됩니다. `UserJwt`는 `Bootpay-User-JWT` 헤더에만 실립니다.
 
 ## Example 프로젝트
 
