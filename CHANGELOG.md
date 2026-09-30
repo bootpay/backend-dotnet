@@ -1,6 +1,4 @@
-### Unreleased
-
-> 메시지 API(message.bootapi.com) 실서버 배포에 맞춰 릴리스한다.
+### 2.9.0
 
 #### 알림톡 API 를 메시지 호스트로 전환 (NodeJS parity — 봇 미전달분 수동 포팅)
 
