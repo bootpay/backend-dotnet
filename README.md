@@ -41,6 +41,8 @@ Bootpay 패키지는 ASP.NET 언어로 작성된 어플리케이션, 프레임�
   - [10-6. 청구서 관리](#10-6-청구서-관리)
   - [10-7. 알림톡](#10-7-알림톡)
   - [10-8. 게시판](#10-8-게시판)
+  - [10-9. 뱅크알람 입금대기](#10-9-뱅크알람-입금대기-무통장-입금-자동-확인)
+  - [10-10. 입점사 지급 요청](#10-10-입점사-지급-요청)
 - [Example 프로젝트](#example-프로젝트)
 - [Documentation](#documentation)
 - [기술문의](#기술문의)
@@ -838,7 +840,8 @@ await commerce.AlimtalkWebhookUpdate(new AlimtalkWebhookUpdateParams {
         AlimtalkWebhookEvent.Failed,
         AlimtalkWebhookEvent.InspectApproved,
         AlimtalkWebhookEvent.InspectRejected
-    }
+    },
+    RetryCount = 10   // 1~25, 생략(null)하면 기존 값을 유지
 });
 ```
 
@@ -866,6 +869,120 @@ var reviews = await commerce.ProductReviewList(new ProductReviewListParams {
 ```
 
 `Idempotency-Key`는 지정하지 않으면 호출마다 새로 생성됩니다. `UserJwt`는 `Bootpay-User-JWT` 헤더에만 실립니다.
+
+### 10-9. 뱅크알람 입금대기 (무통장 입금 자동 확인)
+
+가맹점 서버가 아직 입금되지 않은 주문을 등록하면, 판매자 폰의 입금 알림 중 **금액 · 입금자명**이 맞는 것을
+뱅크알람이 그 주문에 연결해 입금을 확인하고 입금 웹훅으로 알립니다.
+5개 API 모두 Commerce 호스트의 `/v1` 경로를 사용하며, 인스턴스 role 과 무관하게 `BOOTPAY-ROLE: supervisor` 로 나갑니다.
+
+Commerce 메서드는 `HttpResponseMessage`를 반환합니다. 아래 응답은 모두 최상위가 곧 응답 모델인 flat JSON이므로,
+본문을 읽은 뒤 `JsonConvert.DeserializeObject<T>()`로 변환합니다.
+
+```csharp
+var commerce = new BootpayCommerceApi(clientKey, secretKey);
+await commerce.GetAccessToken();
+
+// 판매자 입금 계좌 목록 — 첫 계좌가 대표 계좌(Primary = true)
+var accountsHttp = await commerce.DepositAccounts();
+var accounts = Newtonsoft.Json.JsonConvert.DeserializeObject<DepositAccountsResponse>(
+    await accountsHttp.Content.ReadAsStringAsync()
+);
+
+// 웹훅 서명 비밀값 발급 — ⚠️ 원문은 이 응답에서만 받습니다. 다시 부르면 바뀝니다
+var secretHttp = await commerce.DepositWebhookSecret("deposit-secret-request-20261023");
+var webhookSecret = Newtonsoft.Json.JsonConvert.DeserializeObject<DepositWebhookSecretResponse>(
+    await secretHttp.Content.ReadAsStringAsync()
+);
+
+// 입금대기 등록 — 같은 MerchantOrderId 로 같은 금액·입금자명·계좌를 다시 보내면 기존 주문을 돌려줍니다
+// (하나라도 다르면 18110 BANK_DEPOSIT_MERCHANT_ID_CONFLICT)
+var createHttp = await commerce.DepositCreate(new DepositCreateParams {
+    MerchantOrderId = "ORDER_1234",
+    Price = 15000,
+    Depositor = "홍길동",                 // 은행 입금 알림과 맞춰 볼 이름
+    BuyerName = "홍길동",                 // 미지정시 입금자명
+    BuyerEmail = "buyer@example.com",     // 주면 입금 안내 · 확인 메일 (무료)
+    AccountId = accounts.Accounts[0].Id,   // 미지정시 대표 계좌
+    WebhookUrl = "https://example.com/hooks/deposit", // 비밀값을 먼저 발급받아야 합니다(18131)
+    // 구매자 알림톡 (유료) — BuyerPhone 필수, Link 는 https
+    // Notify = new DepositNotifyParams {
+    //     DepositGuide = true,
+    //     DepositPaid = true,
+    //     Link = "https://example.com/orders/ORDER_1234"
+    // },
+    IdempotencyKey = "deposit-create-ORDER_1234"
+});
+var created = Newtonsoft.Json.JsonConvert.DeserializeObject<CommerceDeposit>(
+    await createHttp.Content.ReadAsStringAsync()
+);
+
+// 조회 · 취소 — 가맹점 주문번호 또는 부트페이 주문번호
+var detailHttp = await commerce.DepositDetail("ORDER_1234");
+var detail = Newtonsoft.Json.JsonConvert.DeserializeObject<CommerceDeposit>(
+    await detailHttp.Content.ReadAsStringAsync()
+); // Status: awaiting · paid · expired · cancelled
+
+var cancelHttp = await commerce.DepositCancel("ORDER_1234", "deposit-cancel-ORDER_1234");
+var cancelled = Newtonsoft.Json.JsonConvert.DeserializeObject<CommerceDeposit>(
+    await cancelHttp.Content.ReadAsStringAsync()
+); // 이미 닫힌 주문은 그대로 돌려줍니다
+```
+
+`DepositWebhookSecret()` · `DepositCancel()`의 `idempotencyKey` 인자와 `DepositCreateParams.IdempotencyKey`는 선택입니다.
+생략하면 호출마다 새 UUID를 사용합니다. 등록 본문에서는 null인 선택 키만 빠지며, `Notify.DepositGuide = false`처럼
+명시한 `false`는 그대로 전송됩니다. 주문번호에 `/` 같은 경로 구분자가 들어 있어도 SDK가 경로 세그먼트를 URL 인코딩합니다.
+
+> 입금 웹훅은 `X-Bootpay-Signature: sha256=HMAC_SHA256(secret, "{X-Bootpay-Timestamp}.{raw_body}")` 로 서명됩니다.
+> 이벤트 코드는 `BankDepositWebhookEvent.Received`(400) · `Matched`(401) · `Ambiguous`(402) · `Unmatched`(403) ·
+> `ConfirmedManually`(404) · `Expired`(405) · `Cancelled`(406) · `Reverted`(407)를 참고하세요.
+
+### 10-10. 입점사 지급 요청
+
+가맹점 지정 금액(`manual`) 정산 방식의 쇼핑몰이 입점사와 지급액을 정해 지급 원장에 등록합니다.
+실제 송금은 부트페이 배치가 약 5분 간격으로 처리합니다. 3개 API 모두 인스턴스 role과 무관하게
+`BOOTPAY-ROLE: supervisor`로 나가며, `Idempotency-Key`를 생략하면 호출마다 새 UUID를 사용합니다.
+
+```csharp
+var commerce = new BootpayCommerceApi(clientKey, secretKey);
+await commerce.GetAccessToken();
+
+// 지급 요청 — 같은 MerchantPayoutId로 재호출하면 처음 등록한 항목을 돌려줍니다
+var createHttp = await commerce.PayoutCreate(new PayoutCreateParams {
+    SubSellerId = "SUB_SELLER_ID",       // PG 판매자 등록을 마친 입점사
+    Amount = 150000,                      // 1원 이상 정수
+    MerchantPayoutId = "PAYOUT_20261112_001",
+    OrderNumber = "ORDER_1234",          // 선택
+    PayoutDate = "2026-11-20",           // 선택, YYYY-MM-DD (미지정시 오늘)
+    IdempotencyKey = "payout-create-20261112-001"
+});
+var created = Newtonsoft.Json.JsonConvert.DeserializeObject<CommercePayout>(
+    await createHttp.Content.ReadAsStringAsync()
+);
+
+// 조회 — MerchantPayoutId 또는 지급 항목 id
+var detailHttp = await commerce.PayoutDetail("PAYOUT_20261112_001");
+var detail = Newtonsoft.Json.JsonConvert.DeserializeObject<CommercePayout>(
+    await detailHttp.Content.ReadAsStringAsync()
+); // Status: ready · held · sending · requested · processing · succeeded · failed · cancelled · unknown · void
+
+// 목록 — 응답은 현재 페이지의 항목 배열입니다(전체 개수 없음)
+var listHttp = await commerce.PayoutList(new PayoutListParams {
+    Status = PayoutStatus.Ready,
+    SubSellerId = "SUB_SELLER_ID",
+    From = "2026-11-01",
+    To = "2026-11-30",
+    Page = 1,
+    Limit = 20
+});
+var payouts = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CommercePayout>>(
+    await listHttp.Content.ReadAsStringAsync()
+);
+```
+
+`PayoutCreateParams.OrderNumber` · `PayoutDate`와 `PayoutListParams`의 모든 필터는 선택입니다.
+미지정 값은 본문·쿼리에 싣지 않고, 목록에 `Page` · `Limit` 기본값도 임의로 추가하지 않습니다.
+지급 id에 `/` 같은 경로 구분자가 있어도 SDK가 해당 경로 세그먼트를 URL 인코딩합니다.
 
 ## Example 프로젝트
 

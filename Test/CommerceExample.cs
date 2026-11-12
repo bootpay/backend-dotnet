@@ -62,6 +62,18 @@ namespace Test
             // await OrderSubscriptionPause();
             // await OrderSubscriptionResume();
             // await OrderSubscriptionTermination();
+
+            // === Deposit ===
+            // await DepositAccounts();
+            // await DepositWebhookSecret();
+            // await DepositCreate();
+            // await DepositDetail();
+            // await DepositCancel();
+
+            // === Payout ===
+            // await PayoutCreate(); // 실제 지급 원장을 등록하므로 기본 실행 금지
+            // await PayoutDetail();
+            // await PayoutList();
         }
 
         #region Token
@@ -742,6 +754,177 @@ namespace Test
                 {
                     Console.WriteLine("orderSubscriptionTermination false: " + content);
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        #endregion
+
+        #region Deposit
+
+        static async Task DepositAccounts()
+        {
+            try
+            {
+                var res = await bootpay.DepositAccounts();
+                var content = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("depositAccounts success: " + content);
+                }
+                else
+                {
+                    Console.WriteLine("depositAccounts false: " + content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task DepositWebhookSecret()
+        {
+            try
+            {
+                var res = await bootpay.DepositWebhookSecret("deposit-secret-example-key");
+                var content = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("depositWebhookSecret success: " + content);
+                }
+                else
+                {
+                    Console.WriteLine("depositWebhookSecret false: " + content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task DepositCreate()
+        {
+            var createParams = new DepositCreateParams
+            {
+                MerchantOrderId = $"sdk-test-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+                Price = 1000,
+                Depositor = "홍길동"
+            };
+
+            try
+            {
+                var res = await bootpay.DepositCreate(createParams);
+                var content = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("depositCreate success: " + content);
+                }
+                else
+                {
+                    Console.WriteLine("depositCreate false: " + content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task DepositDetail()
+        {
+            try
+            {
+                var depositId = Environment.GetEnvironmentVariable("BOOTPAY_TEST_COMMERCE_DEPOSIT_ID") ?? "MERCHANT_ORDER_ID";
+                var res = await bootpay.DepositDetail(depositId);
+                var content = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("depositDetail success: " + content);
+                }
+                else
+                {
+                    Console.WriteLine("depositDetail false: " + content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task DepositCancel()
+        {
+            try
+            {
+                var depositId = Environment.GetEnvironmentVariable("BOOTPAY_TEST_COMMERCE_DEPOSIT_ID") ?? "MERCHANT_ORDER_ID";
+                var res = await bootpay.DepositCancel(depositId, "deposit-cancel-example-key");
+                var content = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("depositCancel success: " + content);
+                }
+                else
+                {
+                    Console.WriteLine("depositCancel false: " + content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        #endregion
+
+        #region Payout
+
+        static async Task PayoutCreate()
+        {
+            var createParams = new PayoutCreateParams
+            {
+                SubSellerId = Environment.GetEnvironmentVariable("BOOTPAY_TEST_COMMERCE_SUB_SELLER_ID") ?? "SUB_SELLER_ID",
+                Amount = 1000,
+                MerchantPayoutId = $"sdk-payout-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+                PayoutDate = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"),
+                IdempotencyKey = $"payout-example-{Guid.NewGuid():N}"
+            };
+
+            try
+            {
+                var res = await bootpay.PayoutCreate(createParams);
+                Console.WriteLine("payoutCreate: " + await res.Content.ReadAsStringAsync());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task PayoutDetail()
+        {
+            try
+            {
+                var payoutId = Environment.GetEnvironmentVariable("BOOTPAY_TEST_COMMERCE_PAYOUT_ID") ?? "MERCHANT_PAYOUT_ID";
+                var res = await bootpay.PayoutDetail(payoutId);
+                Console.WriteLine("payoutDetail: " + await res.Content.ReadAsStringAsync());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        static async Task PayoutList()
+        {
+            try
+            {
+                var res = await bootpay.PayoutList(new PayoutListParams { Status = PayoutStatus.Ready, Page = 1, Limit = 20 });
+                Console.WriteLine("payoutList: " + await res.Content.ReadAsStringAsync());
             }
             catch (Exception e)
             {

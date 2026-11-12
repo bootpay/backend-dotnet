@@ -8,7 +8,7 @@ namespace Bootpay.Commerce.Service
 {
     /// <summary>
     /// 상품 서비스
-    /// 쓰기(등록/수정/삭제/상태변경)는 서버가 manager scope 를 요구한다.
+    /// 쓰기(등록/수정/삭제/상태변경)는 서버가 user scope 를 요구한다.
     /// </summary>
     public class ProductService
     {
@@ -46,15 +46,15 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
-        /// 상품 생성 (POST /v1/products) — manager scope
+        /// 상품 생성 (POST /v1/products) — user scope
         /// </summary>
         public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CommerceProduct product, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("products", HttpMethod.Post, product, CommerceRequestHeaders.Manager(idempotencyKey));
+            return await bootpay.SendAsync("products", HttpMethod.Post, product, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
-        /// 상품 생성 (이미지 파일 포함) — manager scope
+        /// 상품 생성 (이미지 파일 포함) — user scope
         /// imagePaths 가 있으면 multipart/form-data (images[0], images[1] ... 인덱싱), 없으면 JSON 으로 보낸다.
         /// </summary>
         /// <param name="bootpay">Bootpay Commerce 객체</param>
@@ -67,7 +67,7 @@ namespace Bootpay.Commerce.Service
             {
                 return await Create(bootpay, product, idempotencyKey);
             }
-            return await bootpay.SendMultipartAsync("products", product, imagePaths, CommerceRequestHeaders.Manager(idempotencyKey));
+            return await bootpay.SendMultipartAsync("products", product, imagePaths, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
@@ -87,29 +87,29 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
-        /// 상품 수정 (PUT /v1/products/{product_id}) — manager scope
+        /// 상품 수정 (PUT /v1/products/{product_id}) — user scope
         /// 바뀐 값만 보내면 된다. ⚠️ category_id 는 키 존재 여부로 '해제 의사'를 판별하므로 주의.
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CommerceProduct product, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"products/{product.ProductId}", HttpMethod.Put, product, CommerceRequestHeaders.Manager(idempotencyKey));
+            return await bootpay.SendAsync($"products/{product.ProductId}", HttpMethod.Put, product, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
-        /// 상품 상태 변경 (PUT /v1/products/{product_id}/status) — manager scope
+        /// 상품 상태 변경 (PUT /v1/products/{product_id}/status) — user scope
         /// ⚠️ 재고(stock)는 여기가 아니라 update 로 바꾼다.
         /// </summary>
         public static async Task<HttpResponseMessage> Status(BootpayCommerceObject bootpay, ProductStatusParams statusParams, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"products/{statusParams.ProductId}/status", HttpMethod.Put, statusParams, CommerceRequestHeaders.Manager(idempotencyKey));
+            return await bootpay.SendAsync($"products/{statusParams.ProductId}/status", HttpMethod.Put, statusParams, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
-        /// 상품 삭제 (DELETE /v1/products/{product_id}) — manager scope
+        /// 상품 삭제 (DELETE /v1/products/{product_id}) — user scope
         /// </summary>
         public static async Task<HttpResponseMessage> Delete(BootpayCommerceObject bootpay, string productId, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync($"products/{productId}", HttpMethod.Delete, null, CommerceRequestHeaders.Manager(idempotencyKey));
+            return await bootpay.SendAsync($"products/{productId}", HttpMethod.Delete, null, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         private static string BuildListQuery(ProductListParams listParams)

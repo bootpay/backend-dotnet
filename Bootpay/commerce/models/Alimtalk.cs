@@ -521,6 +521,10 @@ namespace Bootpay.Commerce.Models
         /// <summary>활성화 여부</summary>
         [JsonProperty("enabled")]
         public bool? Enabled { get; set; }
+
+        /// <summary>건별 재시도 횟수(1~25, 기본 10). 범위 밖이면 11304. 생략하면 기존 값을 유지한다.</summary>
+        [JsonProperty("retry_count")]
+        public int? RetryCount { get; set; }
     }
 
     /// <summary>웹훅 전송 이력 조회 파라미터 (GET /v1/alimtalk/webhook/deliveries)</summary>

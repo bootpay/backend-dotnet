@@ -471,6 +471,20 @@ namespace Bootpay.Tests.Wire
             Assert.True((bool?)body["enabled"]);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData(1)]
+        [InlineData(25)]
+        public async Task WebhookUpdate_RetryCount_IsOptionalWireField(int? retryCount)
+        {
+            await _api.AlimtalkWebhookUpdate(new AlimtalkWebhookUpdateParams { Enabled = false, RetryCount = retryCount });
+            AssertAlimtalk("PUT", "/alimtalk/webhook");
+            // 미지정이면 키 자체를 보내지 않는다 — 서버에 저장된 기존 재시도 횟수가 유지된다
+            var expected = new JObject { ["enabled"] = false };
+            if (retryCount.HasValue) expected["retry_count"] = retryCount.Value;
+            Assert.True(JToken.DeepEquals(expected, Body()), _server.LastRequest.Body);
+        }
+
         [Fact]
         public async Task WebhookUpdate_WithoutParams_PutsEmptyBody()
         {

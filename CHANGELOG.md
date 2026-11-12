@@ -1,3 +1,42 @@
+### 2.11.0
+
+#### 뱅크알람 입금대기 API 5종 (NodeJS 2.15.0 parity)
+
+가맹점 서버가 아직 입금되지 않은 주문을 등록하면, 판매자 폰의 입금 알림 중 금액·입금자명이 맞는 것을
+뱅크알람이 그 주문에 연결해 입금을 확인하고 입금 웹훅으로 알린다.
+
+- `DepositAccounts()` — `GET /v1/sdk/deposits/accounts`. 판매자 입금 계좌 목록(첫 계좌가 대표, `Primary = true`).
+- `DepositWebhookSecret()` — `POST /v1/sdk/deposits/webhook_secret`. 웹훅 서명 비밀값을 새로 발급한다.
+  원문은 이 응답에서만 오고, 부를 때마다 바뀐다.
+- `DepositCreate(params)` — `POST /v1/sdk/deposits`. `MerchantOrderId` · `Price` · `Depositor` 필수,
+  주문·구매자·계좌·웹훅·구매자 알림 설정은 선택이다. 같은 `MerchantOrderId` 로 금액·입금자명·계좌가 같은 재호출은 기존 주문을 돌려주고, 하나라도 다르면 `18110` 으로 거절된다.
+- `DepositDetail(id)` / `DepositCancel(id)` — `GET` · `DELETE /v1/sdk/deposits/{id}`. id 는 가맹점 주문번호 또는
+  부트페이 주문번호이며, 경로 구분자가 섞일 수 있어 URL 인코딩한다.
+- 전부 supervisor scope라 인스턴스 role 과 무관하게 `BOOTPAY-ROLE: supervisor` 로 나간다.
+  `Idempotency-Key`는 등록·웹훅 비밀값 발급·취소에서 직접 지정할 수 있고, 미지정 시 호출마다 새 UUID를 사용한다.
+- 등록 본문은 null인 선택 키를 빼고 명시적 `false`는 보존한다.
+- 응답 모델 `CommerceDeposit` · `DepositAccountsResponse` · `DepositWebhookSecretResponse`와 웹훅 이벤트 상수
+  `BankDepositWebhookEvent`(400~407)를 추가했다.
+- mock wire 계약 테스트로 5개 경로·동사·role·멱등 키·compact 본문·주문번호 URL 인코딩을 고정했다.
+
+#### 입점사 지급 요청 API 3종
+
+- `PayoutCreate(params)` — `POST /v1/sdk/payouts`. `SubSellerId` · `Amount` · `MerchantPayoutId` 필수,
+  `OrderNumber` · `PayoutDate`(YYYY-MM-DD) 선택. 같은 `MerchantPayoutId` 재호출은 처음 항목을 돌려준다.
+- `PayoutDetail(id)` / `PayoutList(params)` — `GET /v1/sdk/payouts/{id}` · `GET /v1/sdk/payouts`.
+  목록은 `Status` · `SubSellerId` · `From` · `To` · `Page` · `Limit` 필터를 선택으로 보내고 bare array를 받는다.
+- 전부 `BOOTPAY-ROLE: supervisor`로 나가며 인스턴스 role은 바꾸지 않는다. `Idempotency-Key`는 미지정 시 호출마다 새로 생성한다.
+
+#### 상품 등록·수정·삭제·상태변경 `BOOTPAY-ROLE` manager → user (봇 sync `9a8bb2bf`)
+
+- 상품 등록·수정·삭제·상태변경 요청의 `BOOTPAY-ROLE`을 `manager`에서 `user`로 바꿘다.
+- 서버 스코프가 `user:product_*`만 제공해 manager는 401 `API_ROLE_NOT_SUPPORT(-50)`로 막혀서이며, 인스턴스 role은 바꾸지 않는다.
+
+#### 알림톡 웹훅 설정에 `RetryCount` 추가
+
+`AlimtalkWebhookUpdateParams.RetryCount`가 건별 재시도 횟수 `retry_count`(1~25, 서버 기본 10)를 받는다.
+nullable 값이라 생략하면 키를 보내지 않고 기존 설정을 유지한다.
+
 ### 2.10.0
 
 #### 커머스 게시판 API 28종 추가 (NodeJS 2.14.0 parity)

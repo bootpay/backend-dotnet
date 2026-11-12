@@ -236,7 +236,7 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 생성 — manager scope
+        /// 상품 생성 — user scope
         /// </summary>
         public async Task<HttpResponseMessage> ProductCreate(CommerceProduct product, string idempotencyKey = null)
         {
@@ -244,7 +244,7 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 생성 (이미지 파일 포함) — manager scope
+        /// 상품 생성 (이미지 파일 포함) — user scope
         /// 이미지가 있으면 multipart/form-data (images[0], images[1] ... 인덱싱), 없으면 JSON 으로 전송된다.
         /// </summary>
         /// <param name="product">상품 정보</param>
@@ -284,7 +284,7 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 수정 — manager scope
+        /// 상품 수정 — user scope
         /// </summary>
         public async Task<HttpResponseMessage> ProductUpdate(CommerceProduct product, string idempotencyKey = null)
         {
@@ -292,7 +292,7 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 상태 변경 — manager scope
+        /// 상품 상태 변경 — user scope
         /// </summary>
         public async Task<HttpResponseMessage> ProductStatus(ProductStatusParams statusParams, string idempotencyKey = null)
         {
@@ -300,7 +300,7 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
-        /// 상품 삭제 — manager scope
+        /// 상품 삭제 — user scope
         /// </summary>
         public async Task<HttpResponseMessage> ProductDelete(string productId, string idempotencyKey = null)
         {
@@ -812,6 +812,62 @@ namespace Bootpay.Commerce
         public async Task<HttpResponseMessage> OrderSubscriptionAdjustmentDelete(string orderSubscriptionId, string orderSubscriptionAdjustmentId, string idempotencyKey = null)
         {
             return await OrderSubscriptionAdjustmentService.Delete(this, orderSubscriptionId, orderSubscriptionAdjustmentId, idempotencyKey);
+        }
+
+        #endregion
+
+        #region Deposit (뱅크알람 입금대기)
+
+        /// <summary>판매자 입금 계좌 목록. 첫 계좌가 대표 계좌(primary: true)다.</summary>
+        public Task<HttpResponseMessage> DepositAccounts()
+        {
+            return DepositService.Accounts(this);
+        }
+
+        /// <summary>웹훅 서명 비밀값 발급. 원문은 이 응답에서만 주며 다시 부르면 바뀐다.</summary>
+        public Task<HttpResponseMessage> DepositWebhookSecret(string idempotencyKey = null)
+        {
+            return DepositService.WebhookSecret(this, idempotencyKey);
+        }
+
+        /// <summary>입금대기 등록. 같은 MerchantOrderId 로 금액·입금자명·계좌가 같은 재호출은 기존 주문을 반환한다(다르면 18110).</summary>
+        public Task<HttpResponseMessage> DepositCreate(DepositCreateParams createParams)
+        {
+            return DepositService.Create(this, createParams);
+        }
+
+        /// <summary>가맹점 주문번호 또는 부트페이 주문번호로 조회. 기한이 지났으면 만료로 닫힌다.</summary>
+        public Task<HttpResponseMessage> DepositDetail(string id)
+        {
+            return DepositService.Detail(this, id);
+        }
+
+        /// <summary>입금대기 취소. 닫힌 주문은 그대로 반환하며, 입금 확인된 주문은 18108.</summary>
+        public Task<HttpResponseMessage> DepositCancel(string id, string idempotencyKey = null)
+        {
+            return DepositService.Cancel(this, id, idempotencyKey);
+        }
+
+        #endregion
+
+        #region Payout (입점사 지급 요청)
+
+        /// <summary>입점사 지급 요청 등록. 같은 MerchantPayoutId 재호출은 처음 등록한 항목을 반환한다.</summary>
+        public Task<HttpResponseMessage> PayoutCreate(PayoutCreateParams createParams)
+        {
+            return PayoutService.Create(this, createParams);
+        }
+
+        /// <summary>MerchantPayoutId 또는 지급 항목 id로 조회한다.</summary>
+        public Task<HttpResponseMessage> PayoutDetail(string id, string idempotencyKey = null)
+        {
+            return PayoutService.Detail(this, id, idempotencyKey);
+        }
+
+        /// <summary>지급 항목 목록. 응답은 전체 개수 없이 현재 페이지의 배열이다.</summary>
+        public Task<HttpResponseMessage> PayoutList(PayoutListParams listParams = null)
+        {
+            return PayoutService.List(this, listParams);
         }
 
         #endregion

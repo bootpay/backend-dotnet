@@ -295,10 +295,11 @@ namespace Bootpay.Tests.Wire
         [Fact]
         public async Task PerRequestRole_DoesNotOverwriteAndIsNotOverwritten()
         {
-            // 기본 role 을 supervisor 로 바꿔도, endpoint 가 지정한 role(manager)이 단일 값으로 이긴다
+            // 기본 role 을 supervisor 로 바꿔도, endpoint 가 지정한 role(user)가 단일 값으로 이긴다
             _api.AsSupervisor();
             await _api.ProductCreate(new CommerceProduct { Name = "상품" });
-            Assert.Equal("manager", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("supervisor", _api.GetCurrentRole());
 
             // scope 미지정 endpoint 는 기본 role 을 그대로 쓴다
             // (26-08-24: 예전엔 supervisorApprove 를 예시로 썼지만, 그 endpoint 는
@@ -316,22 +317,28 @@ namespace Bootpay.Tests.Wire
         }
 
         [Fact]
-        public async Task ProductWrite_SendsManagerRole()
+        public async Task ProductWrite_SendsUserRoleAndPreservesInstanceRole()
         {
+            _api.AsManager();
             await _api.ProductCreate(new CommerceProduct { Name = "상품" });
-            Assert.Equal("manager", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
             Assert.Equal("/products", _server.LastRequest.PathAndQuery);
             Assert.StartsWith("application/json", _server.LastRequest.ContentType); // 이미지 없는 create 는 JSON
 
+            await _api.ProductUpdate(new CommerceProduct { ProductId = "prod1", Name = "수정 상품" });
+            Assert.Equal("PUT", _server.LastRequest.Method);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+
             await _api.ProductDelete("prod1");
             Assert.Equal("DELETE", _server.LastRequest.Method);
-            Assert.Equal("manager", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
 
             await _api.ProductStatus(new ProductStatusParams { ProductId = "prod1", Status = 1 });
             Assert.Equal("/products/prod1/status", _server.LastRequest.PathAndQuery);
-            Assert.Equal("manager", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
             var statusBody = JObject.Parse(_server.LastRequest.Body);
             Assert.False(statusBody.ContainsKey("product_id"), "product_id 는 URL 로만 전송된다");
+            Assert.Equal("manager", _api.GetCurrentRole());
         }
 
         [Fact]
@@ -350,7 +357,7 @@ namespace Bootpay.Tests.Wire
                 Assert.Equal("POST", req.Method);
                 Assert.StartsWith("multipart/form-data", req.ContentType); // boundary 유실 금지
                 Assert.Contains("boundary=", req.ContentType);
-                Assert.Equal("manager", req.Headers["BOOTPAY-ROLE"]);
+                Assert.Equal("user", req.Headers["BOOTPAY-ROLE"]);
                 Assert.Contains("images[0]", req.Body);
                 Assert.Contains("images[1]", req.Body);
                 Assert.DoesNotContain("name=images;", req.Body);
