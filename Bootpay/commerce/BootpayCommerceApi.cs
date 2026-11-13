@@ -452,6 +452,23 @@ namespace Bootpay.Commerce
             return await OrderService.Month(this, userGroupId, searchDate);
         }
 
+        /// <summary>
+        /// 발송 정보 조회 — 발주(배송) 단위 운송장·택배사·배송추적 상태·이력. GET /v1/orders/{orderNumber}/purchases. BOOTPAY-ROLE 은 user 로 고정.
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderPurchases(string orderNumber, string idempotencyKey = null)
+        {
+            return await OrderService.Purchases(this, orderNumber, idempotencyKey);
+        }
+
+        /// <summary>
+        /// 발송처리 — 발주 단위 상태·운송장 갱신. PUT /v1/orders/{orderNumber}/purchases. BOOTPAY-ROLE 은 user 로 고정.
+        /// 경로 주문에 딸리지 않은 order_purchase_number 가 섞이면 요청 전체가 ORDER_PURCHASE_NOT_FOUND. 한 번에 최대 50건.
+        /// </summary>
+        public async Task<HttpResponseMessage> OrderUpdatePurchases(string orderNumber, List<OrderPurchaseUpdateItem> purchases, string idempotencyKey = null)
+        {
+            return await OrderService.UpdatePurchases(this, orderNumber, purchases, idempotencyKey);
+        }
+
         #endregion
 
         #region OrderCancel (주문 취소)

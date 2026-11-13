@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -36,6 +38,28 @@ namespace Bootpay.Commerce.Service
             queryParams["user_group_id"] = userGroupId;
             queryParams["search_date"] = searchDate;
             return await bootpay.SendAsync($"orders/month?{queryParams}", HttpMethod.Get);
+        }
+
+        /// <summary>
+        /// 발송 정보 조회 (GET /v1/orders/{orderNumber}/purchases) — BOOTPAY-ROLE 은 user 로 고정
+        /// </summary>
+        public static async Task<HttpResponseMessage> Purchases(BootpayCommerceObject bootpay, string orderNumber, string idempotencyKey = null)
+        {
+            if (string.IsNullOrEmpty(orderNumber))
+                throw new ArgumentException("orderNumber must be provided.");
+            return await bootpay.SendAsync($"orders/{Uri.EscapeDataString(orderNumber)}/purchases", HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
+        }
+
+        /// <summary>
+        /// 발송처리 (PUT /v1/orders/{orderNumber}/purchases) — BOOTPAY-ROLE 은 user 로 고정, 한 번에 최대 50건
+        /// </summary>
+        public static async Task<HttpResponseMessage> UpdatePurchases(BootpayCommerceObject bootpay, string orderNumber, List<OrderPurchaseUpdateItem> purchases, string idempotencyKey = null)
+        {
+            if (string.IsNullOrEmpty(orderNumber))
+                throw new ArgumentException("orderNumber must be provided.");
+            if (purchases == null || purchases.Count == 0)
+                throw new ArgumentException("purchases must be provided.");
+            return await bootpay.SendAsync($"orders/{Uri.EscapeDataString(orderNumber)}/purchases", HttpMethod.Put, new OrderPurchasesUpdateBody { Purchases = purchases }, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         private static string BuildListQuery(OrderListParams listParams)

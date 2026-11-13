@@ -404,6 +404,41 @@ namespace Bootpay.Tests.Wire
         }
 
         [Fact]
+        public async Task OrderPurchases_SendsUserRoleEvenAsManager()
+        {
+            _api.AsManager();
+            await _api.OrderPurchases("ORD-1");
+            Assert.Equal("GET", _server.LastRequest.Method);
+            Assert.Equal("/orders/ORD-1/purchases", _server.LastRequest.PathAndQuery);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.False(string.IsNullOrEmpty(_server.LastRequest.Headers["Idempotency-Key"]));
+
+            await _api.OrderPurchases("ORD-1", "idem-1");
+            Assert.Equal("idem-1", _server.LastRequest.Headers["Idempotency-Key"]);
+            Assert.Equal("manager", _api.GetCurrentRole());
+        }
+
+        [Fact]
+        public async Task OrderUpdatePurchases_SendsPurchasesBody()
+        {
+            _api.AsManager();
+            await _api.OrderUpdatePurchases(
+                "ORD-1",
+                new List<OrderPurchaseUpdateItem> { new OrderPurchaseUpdateItem { OrderPurchaseNumber = "P1", Status = 4 } },
+                "idem-2");
+            var req = _server.LastRequest;
+            Assert.Equal("PUT", req.Method);
+            Assert.Equal("/orders/ORD-1/purchases", req.PathAndQuery);
+            Assert.Equal("user", req.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("idem-2", req.Headers["Idempotency-Key"]);
+            Assert.Contains("\"purchases\"", req.Body);
+            Assert.Contains("\"order_purchase_number\":\"P1\"", req.Body);
+            Assert.Contains("\"status\":4", req.Body);
+            Assert.DoesNotContain("order_number\":\"ORD-1", req.Body);
+            Assert.DoesNotContain("idempotency", req.Body);
+        }
+
+        [Fact]
         public async Task InvoiceNotify_SendTypesOptional()
         {
             await _api.InvoiceNotify("inv1");

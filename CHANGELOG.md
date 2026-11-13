@@ -1,3 +1,11 @@
+### Unreleased
+
+#### 주문 발송 정보 조회·발송처리 추가 (ruby `b762095` parity, 수동 포팅)
+
+- `OrderPurchases(orderNumber, idempotencyKey = null)` — `GET /v1/orders/{orderNumber}/purchases`. 발주(배송) 단위 운송장·택배사·배송추적 상태·이력 조회.
+- `OrderUpdatePurchases(orderNumber, purchases, idempotencyKey = null)` — `PUT /v1/orders/{orderNumber}/purchases`. 발송처리, 바디 `{ "purchases": [...] }`(`OrderPurchaseUpdateItem`, null 필드 생략), 한 번에 최대 50건. 경로 주문에 딸리지 않은 `order_purchase_number` 가 섞이면 요청 전체가 `ORDER_PURCHASE_NOT_FOUND`.
+- 두 호출 모두 인스턴스 role 이 manager 여도 `BOOTPAY-ROLE` 을 `user` 로 고정하고, `Idempotency-Key` 를 자동 생성한다(미지정시). `orderNumber`·`idempotencyKey` 는 바디에 싣지 않는다.
+
 ### 2.11.1
 
 #### 청구서 생성 `BOOTPAY-ROLE` 을 user 로 고정 (nodejs `40b5d45` parity)

@@ -177,4 +177,37 @@ namespace Bootpay.Commerce.Models
         [JsonProperty("order_subscription_ids")]
         public List<string> OrderSubscriptionIds { get; set; }
     }
+
+    /// <summary>
+    /// 발송처리 항목 — 발주(배송) 단위 상태·운송장 갱신
+    /// </summary>
+    public class OrderPurchaseUpdateItem
+    {
+        [JsonProperty("order_purchase_number")]
+        public string OrderPurchaseNumber { get; set; }
+
+        [JsonProperty("status")]
+        public int? Status { get; set; }
+
+        [JsonProperty("chosen_product_option_id")]
+        public string ChosenProductOptionId { get; set; }
+
+        [JsonProperty("delivery_type")]
+        public int? DeliveryType { get; set; }
+
+        [JsonProperty("delivery_company_code")]
+        public string DeliveryCompanyCode { get; set; }
+
+        [JsonProperty("tracking_number")]
+        public string TrackingNumber { get; set; }
+    }
+
+    /// <summary>
+    /// 발송처리 요청 바디 (한 번에 최대 50건)
+    /// </summary>
+    public class OrderPurchasesUpdateBody
+    {
+        [JsonProperty("purchases")]
+        public List<OrderPurchaseUpdateItem> Purchases { get; set; }
+    }
 }
