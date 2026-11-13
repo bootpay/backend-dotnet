@@ -29,7 +29,11 @@ namespace Bootpay.Tests.Wire
             Assert.Equal("/v1/" + path, request.PathAndQuery);
             Assert.Equal("supervisor", request.Headers["BOOTPAY-ROLE"]);
             Assert.Equal("manager", _api.GetCurrentRole());
-            Assert.Equal("2.11.0", request.Headers["BOOTPAY-SDK-VERSION"]);
+            // 릴리스마다 고치지 않도록 SDK 의 버전 상수와 비교한다
+            var sdkVersion = (string)typeof(Bootpay.Commerce.BootpayCommerceObject)
+                .GetField("SDK_VERSION", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                .GetValue(null);
+            Assert.Equal(sdkVersion, request.Headers["BOOTPAY-SDK-VERSION"]);
             if (key == null) Assert.True(Guid.TryParse(request.Headers["Idempotency-Key"], out _));
             else Assert.Equal(key, request.Headers["Idempotency-Key"]);
             if (body == null) Assert.True(string.IsNullOrEmpty(request.Body));
