@@ -388,6 +388,22 @@ namespace Bootpay.Tests.Wire
         }
 
         [Fact]
+        public async Task InvoiceCreate_SendsUserRoleAndPreservesInstanceRole()
+        {
+            // 서버 스코프는 user:invoice_create 뿐 — 인스턴스 role 이 manager 여도 user 로 보낸다
+            _api.AsManager();
+            await _api.InvoiceCreate(new CommerceInvoice { Name = "청구서" });
+            Assert.Equal("POST", _server.LastRequest.Method);
+            Assert.Equal("/invoices", _server.LastRequest.PathAndQuery);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.False(string.IsNullOrEmpty(_server.LastRequest.Headers["Idempotency-Key"]));
+
+            await _api.InvoiceCreate(new CommerceInvoice { Name = "청구서" }, "idem-invoice");
+            Assert.Equal("idem-invoice", _server.LastRequest.Headers["Idempotency-Key"]);
+            Assert.Equal("manager", _api.GetCurrentRole());
+        }
+
+        [Fact]
         public async Task InvoiceNotify_SendTypesOptional()
         {
             await _api.InvoiceNotify("inv1");

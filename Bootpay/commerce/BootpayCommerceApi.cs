@@ -400,6 +400,14 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 청구서 생성 — Idempotency-Key 지정. 인스턴스 role 과 무관하게 BOOTPAY-ROLE: user.
+        /// </summary>
+        public async Task<HttpResponseMessage> InvoiceCreate(CommerceInvoice invoice, string idempotencyKey)
+        {
+            return await InvoiceService.Create(this, invoice, idempotencyKey);
+        }
+
+        /// <summary>
         /// 청구서 알림 재발송 — sendTypes 미전달시 서버가 빈 배열로 처리한다.
         /// ⚠️ 실제 고객에게 알림이 발송되므로 테스트 호출 주의.
         /// </summary>

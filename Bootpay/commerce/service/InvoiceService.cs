@@ -27,7 +27,16 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CommerceInvoice invoice)
         {
-            return await bootpay.SendAsync("invoices", HttpMethod.Post, invoice);
+            return await Create(bootpay, invoice, null);
+        }
+
+        /// <summary>
+        /// 청구서 생성 (POST /v1/invoices) — 서버 스코프는 user:invoice_create 뿐이라 인스턴스 role 과 무관하게
+        /// BOOTPAY-ROLE: user 로 보낸다 (manager/supervisor 로 나가면 401 API_ROLE_NOT_SUPPORT). idempotencyKey 미지정시 자동 생성.
+        /// </summary>
+        public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CommerceInvoice invoice, string idempotencyKey)
+        {
+            return await bootpay.SendAsync("invoices", HttpMethod.Post, invoice, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
