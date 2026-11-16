@@ -6,6 +6,10 @@
 - `OrderUpdatePurchases(orderNumber, purchases, idempotencyKey = null)` — `PUT /v1/orders/{orderNumber}/purchases`. 발송처리, 바디 `{ "purchases": [...] }`(`OrderPurchaseUpdateItem`, null 필드 생략), 한 번에 최대 50건. 경로 주문에 딸리지 않은 `order_purchase_number` 가 섞이면 요청 전체가 `ORDER_PURCHASE_NOT_FOUND`.
 - 두 호출 모두 인스턴스 role 이 manager 여도 `BOOTPAY-ROLE` 을 `user` 로 고정하고, `Idempotency-Key` 를 자동 생성한다(미지정시). `orderNumber`·`idempotencyKey` 는 바디에 싣지 않는다.
 
+#### 입금대기 `DepositAccounts` · `DepositDetail` 에 `idempotencyKey` 추가
+
+`DepositAccounts(idempotencyKey = null)` · `DepositDetail(id, idempotencyKey = null)`. 지정하면 그 값을, 아니면 자동 생성한 값을 `Idempotency-Key` 로 보낸다.
+
 ### 2.11.1
 
 #### 청구서 생성 `BOOTPAY-ROLE` 을 user 로 고정 (nodejs `40b5d45` parity)

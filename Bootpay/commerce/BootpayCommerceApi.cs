@@ -844,9 +844,9 @@ namespace Bootpay.Commerce
         #region Deposit (뱅크알람 입금대기)
 
         /// <summary>판매자 입금 계좌 목록. 첫 계좌가 대표 계좌(primary: true)다.</summary>
-        public Task<HttpResponseMessage> DepositAccounts()
+        public Task<HttpResponseMessage> DepositAccounts(string idempotencyKey = null)
         {
-            return DepositService.Accounts(this);
+            return DepositService.Accounts(this, idempotencyKey);
         }
 
         /// <summary>웹훅 서명 비밀값 발급. 원문은 이 응답에서만 주며 다시 부르면 바뀐다.</summary>
@@ -862,9 +862,9 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>가맹점 주문번호 또는 부트페이 주문번호로 조회. 기한이 지났으면 만료로 닫힌다.</summary>
-        public Task<HttpResponseMessage> DepositDetail(string id)
+        public Task<HttpResponseMessage> DepositDetail(string id, string idempotencyKey = null)
         {
-            return DepositService.Detail(this, id);
+            return DepositService.Detail(this, id, idempotencyKey);
         }
 
         /// <summary>입금대기 취소. 닫힌 주문은 그대로 반환하며, 입금 확인된 주문은 18108.</summary>
