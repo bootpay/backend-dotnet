@@ -85,6 +85,20 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 요청 경로(쿼리 제외, 맨 앞 / 하나 무시)에 빈 구간이 있으면 true.
+        /// 빈 id 로 상세 메서드를 부르면 "orders/" 처럼 / 로 끝나거나 "orders//purchases" 처럼 // 가 생겨,
+        /// 서버가 목록이나 다른 엔드포인트로 라우팅한다. 그런 요청은 보내지 않고 막는다.
+        /// </summary>
+        public static bool BlankPathSegment(string url)
+        {
+            var path = url ?? "";
+            var query = path.IndexOf('?');
+            if (query >= 0) path = path.Substring(0, query);
+            if (path.StartsWith("/")) path = path.Substring(1);
+            return path.Length == 0 || path.EndsWith("/") || path.Contains("//");
+        }
+
+        /// <summary>
         /// 액세스 토큰 발급
         /// </summary>
         public async Task<HttpResponseMessage> GetAccessToken()
@@ -185,6 +199,11 @@ namespace Bootpay.Commerce
         /// </summary>
         public async Task<HttpResponseMessage> SendAsync(string url, HttpMethod method, object data = null, Dictionary<string, string> headers = null)
         {
+            if (BlankPathSegment(url))
+            {
+                throw new ArgumentException($"요청 경로에 빈 id 가 있습니다: {url}");
+            }
+
             string json = "";
             if (data != null)
             {

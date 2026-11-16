@@ -10,6 +10,11 @@
 
 `DepositAccounts(idempotencyKey = null)` · `DepositDetail(id, idempotencyKey = null)`. 지정하면 그 값을, 아니면 자동 생성한 값을 `Idempotency-Key` 로 보낸다.
 
+#### 빈 경로 id 는 요청을 보내지 않고 `ArgumentException`
+
+빈 id 로 상세 메서드를 부르면 `orders/` 처럼 `/` 로 끝나거나 `orders//purchases` 처럼 `//` 가 생겨 서버가 목록이나 다른 엔드포인트로 라우팅했다.
+`SendAsync` 가 경로(쿼리 제외)가 비었거나 `/` 로 끝나거나 `//` 를 포함하면 `ArgumentException("요청 경로에 빈 id 가 있습니다: ...")` 를 던진다(검사 함수 `BootpayCommerceObject.BlankPathSegment`).
+
 ### 2.11.1
 
 #### 청구서 생성 `BOOTPAY-ROLE` 을 user 로 고정 (nodejs `40b5d45` parity)
