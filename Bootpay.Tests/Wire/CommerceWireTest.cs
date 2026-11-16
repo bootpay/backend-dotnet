@@ -59,7 +59,8 @@ namespace Bootpay.Tests.Wire
             Assert.Equal("POST", req.Method);
             Assert.Equal("/webhook/test", req.PathAndQuery);
             Assert.True(req.Headers.ContainsKey("Idempotency-Key"));
-            Assert.Equal("user", req.Headers["BOOTPAY-ROLE"]); // 기본 role 유지
+            // @date: 26-11-16 서버 스코프가 supervisor:webhook_test 뿐이라 supervisor 로 고정한다(예전 user 는 401 을 냈다).
+            Assert.Equal("supervisor", req.Headers["BOOTPAY-ROLE"]);
 
             var body = JObject.Parse(req.Body);
             Assert.Equal(1, (int?)body["header_content_type"]);
@@ -301,11 +302,11 @@ namespace Bootpay.Tests.Wire
             Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
             Assert.Equal("supervisor", _api.GetCurrentRole());
 
-            // scope 미지정 endpoint 는 기본 role 을 그대로 쓴다
-            // (26-08-24: 예전엔 supervisorApprove 를 예시로 썼지만, 그 endpoint 는
-            //  서버가 supervisor 를 요구해 이제 요청 단위로 role 을 고정한다.)
+            // @date: 26-11-16 이제 모든 커머스 endpoint 가 서버 스코프에 맞는 role 을 요청 단위로 고정한다.
+            //   user 전용 endpoint(UserList)는 기본 role 이 supervisor 여도 user 로 나가고, 기본 role 은 그대로 남는다.
             await _api.UserList();
-            Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("supervisor", _api.GetCurrentRole());
 
             _api.ClearRole();
             await _api.UserList();
@@ -927,6 +928,115 @@ namespace Bootpay.Tests.Wire
             var detail = _server.LastRequest;
             Assert.Equal("/store/detail", detail.PathAndQuery);
             Assert.True(Guid.TryParse(detail.Headers["Idempotency-Key"], out _));
+        }
+
+        // 엔드포인트별 고정 BOOTPAY-ROLE 표 (서버 검증 규칙) — user_or_supervisor 는 인스턴스 role 이 supervisor 일 때만 supervisor
+        private static List<(string Name, string Rule, Func<WireCommerceApi, Task<HttpResponseMessage>> Call)> RoleTable() => new()
+        {
+            ("CartOrderPreview", "user", a => a.CartOrderPreview()),
+            ("CategoryList", "user", a => a.CategoryList()),
+            ("CategoryDetail", "user", a => a.CategoryDetail("c1")),
+            ("CategoryCreate", "supervisor", a => a.CategoryCreate(new CategoryCreateParams())),
+            ("CouponList", "user_or_supervisor", a => a.CouponList()),
+            ("CouponAvailable", "user_or_supervisor", a => a.CouponAvailable()),
+            ("CouponDownload", "user", a => a.CouponDownload(new CouponDownloadParams())),
+            ("DepositAccounts", "supervisor", a => a.DepositAccounts()),
+            ("DepositDetail", "supervisor", a => a.DepositDetail("d1")),
+            ("NoticeDetail", "user_or_supervisor", a => a.NoticeDetail("n1")),
+            ("FaqDetail", "user_or_supervisor", a => a.FaqDetail("f1")),
+            ("ProductQnaDelete", "user_or_supervisor", a => a.ProductQnaDelete("q1")),
+            ("InvoiceList", "user", a => a.InvoiceList()),
+            ("OrderCancelRequest", "user_or_supervisor", a => a.OrderCancelRequest(new OrderCancelParams())),
+            ("OrderCancelList", "user", a => a.OrderCancelList()),
+            ("OrderSubscriptionBillList", "user_or_supervisor", a => a.OrderSubscriptionBillList()),
+            ("OrderSubscriptionBillDetail", "user_or_supervisor", a => a.OrderSubscriptionBillDetail("b1")),
+            ("OrderSubscriptionBillUpdate", "supervisor", a => a.OrderSubscriptionBillUpdate(new CommerceOrderSubscriptionBill { OrderSubscriptionBillId = "b1" })),
+            ("OrderSubscriptionRequestList", "user_or_supervisor", a => a.OrderSubscriptionRequestList()),
+            ("OrderSubscriptionRequestDetail", "user_or_supervisor", a => a.OrderSubscriptionRequestDetail("r1")),
+            ("OrderSubscriptionList", "user", a => a.OrderSubscriptionList()),
+            ("OrderSubscriptionDetail", "user", a => a.OrderSubscriptionDetail("s1")),
+            ("OrderSubscriptionUpdate", "supervisor", a => a.OrderSubscriptionUpdate(new OrderSubscriptionUpdateParams { OrderSubscriptionId = "s1" })),
+            ("OrderList", "user", a => a.OrderList()),
+            ("OrderDetail", "user", a => a.OrderDetail("o1")),
+            ("OrderMonth", "user", a => a.OrderMonth("g1", "2026-11")),
+            ("OrderPurchases", "user", a => a.OrderPurchases("ORD-1")),
+            ("PointBalance", "user", a => a.PointBalance()),
+            ("PointTransactions", "user", a => a.PointTransactions()),
+            ("ProductList", "user", a => a.ProductList()),
+            ("ProductDetail", "user", a => a.ProductDetail("p1")),
+            ("StoreDetail", "user", a => a.StoreDetail()),
+            ("UserGroupCreate", "user", a => a.UserGroupCreate(new CommerceUserGroup())),
+            ("UserGroupList", "user", a => a.UserGroupList()),
+            ("UserGroupDetail", "user", a => a.UserGroupDetail("g1")),
+            ("UserGroupUpdate", "user", a => a.UserGroupUpdate(new CommerceUserGroup { UserGroupId = "g1" })),
+            ("UserGroupUserCreate", "manager", a => a.UserGroupUserCreate("g1", "u1")),
+            ("UserList", "user", a => a.UserList()),
+            ("UserDetail", "user", a => a.UserDetail("u1")),
+            ("UserSession", "user", a => a.UserSession()),
+            ("WebhookSendTest", "supervisor", a => a.WebhookSendTest()),
+        };
+
+        [Fact]
+        public async Task FixedRolePerEndpoint_ManagerInstance()
+        {
+            _api.AsManager();
+            foreach (var (name, rule, call) in RoleTable())
+            {
+                await call(_api);
+                var expected = rule == "user_or_supervisor" ? "user" : rule;
+                Assert.True(expected == _server.LastRequest.Headers["BOOTPAY-ROLE"], $"{name}: expected {expected}");
+            }
+            Assert.Equal("manager", _api.GetCurrentRole());
+        }
+
+        [Fact]
+        public async Task FixedRolePerEndpoint_SupervisorInstance()
+        {
+            _api.AsSupervisor();
+            foreach (var (name, rule, call) in RoleTable())
+            {
+                await call(_api);
+                var expected = rule == "user_or_supervisor" ? "supervisor" : rule;
+                Assert.True(expected == _server.LastRequest.Headers["BOOTPAY-ROLE"], $"{name}: expected {expected}");
+            }
+            Assert.Equal("supervisor", _api.GetCurrentRole());
+        }
+
+        [Fact]
+        public async Task Deposit_AccountsAndDetail_RespectExplicitIdempotencyKey()
+        {
+            await _api.DepositAccounts("acc-key");
+            Assert.Equal("/sdk/deposits/accounts", _server.LastRequest.PathAndQuery);
+            Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.Equal("acc-key", _server.LastRequest.Headers["Idempotency-Key"]);
+
+            await _api.DepositDetail("d1", "detail-key");
+            Assert.Equal("/sdk/deposits/d1", _server.LastRequest.PathAndQuery);
+            Assert.Equal("detail-key", _server.LastRequest.Headers["Idempotency-Key"]);
+        }
+
+        [Fact]
+        public async Task EmptyPathId_ThrowsWithoutSendingRequest()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.OrderDetail(""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.OrderSubscriptionDetail(""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.DepositDetail(""));
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.UserGroupUserCreate("", "u1"));
+            Assert.Empty(_server.Requests);
+        }
+
+        [Theory]
+        [InlineData("orders/", true)]
+        [InlineData("/orders/", true)]
+        [InlineData("orders//purchases", true)]
+        [InlineData("orders/?page=1", true)]
+        [InlineData("", true)]
+        [InlineData("orders", false)]
+        [InlineData("orders/o1/purchases", false)]
+        [InlineData("/orders/o1?a=//", false)]
+        public void BlankPathSegment_DetectsEmptyIds(string url, bool blank)
+        {
+            Assert.Equal(blank, Bootpay.Commerce.BootpayCommerceObject.BlankPathSegment(url));
         }
     }
 }

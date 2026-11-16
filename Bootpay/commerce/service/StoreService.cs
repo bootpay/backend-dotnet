@@ -13,7 +13,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> GetStore(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("store", HttpMethod.Get, null, CommerceRequestHeaders.Idempotency(idempotencyKey));
+            return await bootpay.SendAsync("store", HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         public static async Task<HttpResponseMessage> Info(BootpayCommerceObject bootpay, string idempotencyKey = null)
@@ -26,7 +26,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> GetStoreDetail(BootpayCommerceObject bootpay, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("store/detail", HttpMethod.Get, null, CommerceRequestHeaders.Idempotency(idempotencyKey));
+            return await bootpay.SendAsync("store/detail", HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string idempotencyKey = null)

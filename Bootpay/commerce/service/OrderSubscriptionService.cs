@@ -16,7 +16,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, OrderSubscriptionListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"order_subscriptions{query}", HttpMethod.Get);
+            return await bootpay.SendAsync($"order_subscriptions{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string orderSubscriptionId)
         {
-            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}", HttpMethod.Get);
+            return await bootpay.SendAsync($"order_subscriptions/{orderSubscriptionId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>

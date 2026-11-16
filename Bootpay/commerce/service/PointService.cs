@@ -15,7 +15,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Balance(BootpayCommerceObject bootpay)
         {
-            return await bootpay.SendAsync("point/balance", HttpMethod.Get);
+            return await bootpay.SendAsync("point/balance", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> Transactions(BootpayCommerceObject bootpay, PointTransactionsParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"point/transactions{query}", HttpMethod.Get);
+            return await bootpay.SendAsync($"point/transactions{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         private static string BuildListQuery(PointTransactionsParams listParams)

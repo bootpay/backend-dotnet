@@ -6,6 +6,16 @@
 - `OrderUpdatePurchases(orderNumber, purchases, idempotencyKey = null)` — `PUT /v1/orders/{orderNumber}/purchases`. 발송처리, 바디 `{ "purchases": [...] }`(`OrderPurchaseUpdateItem`, null 필드 생략), 한 번에 최대 50건. 경로 주문에 딸리지 않은 `order_purchase_number` 가 섞이면 요청 전체가 `ORDER_PURCHASE_NOT_FOUND`.
 - 두 호출 모두 인스턴스 role 이 manager 여도 `BOOTPAY-ROLE` 을 `user` 로 고정하고, `Idempotency-Key` 를 자동 생성한다(미지정시). `orderNumber`·`idempotencyKey` 는 바디에 싣지 않는다.
 
+#### 엔드포인트별 `BOOTPAY-ROLE` 고정 (서버 검증 규칙)
+
+role 헤더를 싣지 않던 커머스 메서드가 인스턴스 role(`AsManager()` 등)을 그대로 보내, 서버가 받지 않는 role 이면 401 `API_ROLE_NOT_SUPPORT(-50)` 로 실패했다.
+이제 모든 커머스 메서드가 엔드포인트 규칙대로 role 을 고정한다. 인스턴스 role 은 바뀌지 않는다.
+
+- `user` 고정: 장바구니 미리보기·카테고리 조회·쿠폰 받기·주문 조회/월별·구독 조회·포인트·상품 조회·스토어·회원 그룹 CRUD·회원 API 전부(Mall 헬퍼 포함).
+- `supervisor` 고정: 구독 청구 수정(`OrderSubscriptionBillUpdate`)·웹훅 테스트(`WebhookSendTest`).
+- `user_or_supervisor`: 인스턴스 role 이 supervisor 면 supervisor, 그 밖(manager 포함)은 user — 쿠폰 목록·사용 가능, 주문 취소 요청, 구독 청구 목록·상세, 구독 변경 요청 목록·상세(`project_id` 지정시 supervisor 유지), 구독 수정(`OrderSubscriptionUpdate`), 공지·FAQ 상세, 상품 문의 삭제(`Supervisor = true` 도 supervisor).
+- 표에 없는 목록·삭제 엔드포인트(공지·FAQ·문의·리뷰 목록 등)는 기존 동작을 유지한다.
+
 #### 입금대기 `DepositAccounts` · `DepositDetail` 에 `idempotencyKey` 추가
 
 `DepositAccounts(idempotencyKey = null)` · `DepositDetail(id, idempotencyKey = null)`. 지정하면 그 값을, 아니면 자동 생성한 값을 `Idempotency-Key` 로 보낸다.

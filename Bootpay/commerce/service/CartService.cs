@@ -14,7 +14,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> OrderPreview(BootpayCommerceObject bootpay, OrderPreviewParams previewParams = null)
         {
-            return await bootpay.SendAsync("cart/order-preview", HttpMethod.Post, previewParams ?? new OrderPreviewParams());
+            return await bootpay.SendAsync("cart/order-preview", HttpMethod.Post, previewParams ?? new OrderPreviewParams(), CommerceRequestHeaders.User());
         }
     }
 }

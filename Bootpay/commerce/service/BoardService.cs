@@ -29,6 +29,12 @@ namespace Bootpay.Commerce.Service
             return headers;
         }
 
+        /// <summary>user_or_supervisor 엔드포인트용 — 명시 supervisor 이거나 인스턴스 role 이 supervisor 면 supervisor, 아니면 user.</summary>
+        internal static System.Collections.Generic.Dictionary<string, string> HeadersUserOrSupervisor(BootpayCommerceObject bootpay, bool? supervisor, string userJwt, string idempotencyKey)
+        {
+            return Headers(supervisor == true || CommerceRequestHeaders.IsSupervisor(bootpay), userJwt, idempotencyKey);
+        }
+
         internal static object Content(string content) => new { content };
     }
 
@@ -45,7 +51,7 @@ namespace Bootpay.Commerce.Service
 
         public static Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string noticeId, NoticeDetailParams detailParams = null) =>
             bootpay.SendAsync($"notices/{noticeId}", HttpMethod.Get, null,
-                BoardServiceSupport.Headers(detailParams?.Supervisor, null, detailParams?.IdempotencyKey));
+                BoardServiceSupport.HeadersUserOrSupervisor(bootpay, detailParams?.Supervisor, null, detailParams?.IdempotencyKey));
 
         public static Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, NoticeCreateParams createParams) =>
             bootpay.SendAsync("notices", HttpMethod.Post, createParams, CommerceRequestHeaders.Supervisor(createParams?.IdempotencyKey));
@@ -70,7 +76,7 @@ namespace Bootpay.Commerce.Service
 
         public static Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string faqId, FaqDetailParams detailParams = null) =>
             bootpay.SendAsync($"faqs/{faqId}", HttpMethod.Get, null,
-                BoardServiceSupport.Headers(detailParams?.Supervisor, null, detailParams?.IdempotencyKey));
+                BoardServiceSupport.HeadersUserOrSupervisor(bootpay, detailParams?.Supervisor, null, detailParams?.IdempotencyKey));
 
         public static Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, FaqCreateParams createParams) =>
             bootpay.SendAsync("faqs", HttpMethod.Post, createParams, CommerceRequestHeaders.Supervisor(createParams?.IdempotencyKey));
@@ -156,7 +162,7 @@ namespace Bootpay.Commerce.Service
 
         public static Task<HttpResponseMessage> Delete(BootpayCommerceObject bootpay, string productQnaId, ProductQnaDeleteParams deleteParams = null) =>
             bootpay.SendAsync($"product-qnas/{productQnaId}", HttpMethod.Delete, deleteParams ?? new ProductQnaDeleteParams(),
-                BoardServiceSupport.Headers(deleteParams?.Supervisor, deleteParams?.UserJwt, deleteParams?.IdempotencyKey));
+                BoardServiceSupport.HeadersUserOrSupervisor(bootpay, deleteParams?.Supervisor, deleteParams?.UserJwt, deleteParams?.IdempotencyKey));
 
         public static Task<HttpResponseMessage> Answer(BootpayCommerceObject bootpay, string productQnaId, string content, string idempotencyKey = null) =>
             bootpay.SendAsync($"product-qnas/{productQnaId}/answer", HttpMethod.Put, BoardServiceSupport.Content(content), CommerceRequestHeaders.Supervisor(idempotencyKey));

@@ -16,7 +16,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> Token(BootpayCommerceObject bootpay, string userId)
         {
             var data = new { user_id = userId };
-            return await bootpay.SendAsync("users/login/token", HttpMethod.Post, data);
+            return await bootpay.SendAsync("users/login/token", HttpMethod.Post, data, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Join(BootpayCommerceObject bootpay, CommerceUser user)
         {
-            return await bootpay.SendAsync("users/join", HttpMethod.Post, user);
+            return await bootpay.SendAsync("users/join", HttpMethod.Post, user, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> CheckExist(BootpayCommerceObject bootpay, string key, string value)
         {
             var encodedValue = HttpUtility.UrlEncode(value);
-            return await bootpay.SendAsync($"users/join/{key}?pk={encodedValue}", HttpMethod.Get);
+            return await bootpay.SendAsync($"users/join/{key}?pk={encodedValue}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> AuthenticationData(BootpayCommerceObject bootpay, string standId)
         {
-            return await bootpay.SendAsync($"users/authenticate/{standId}", HttpMethod.Get);
+            return await bootpay.SendAsync($"users/authenticate/{standId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> Login(BootpayCommerceObject bootpay, string loginId, string loginPw)
         {
             var data = new { login_id = loginId, login_pw = loginPw };
-            return await bootpay.SendAsync("users/login", HttpMethod.Post, data);
+            return await bootpay.SendAsync("users/login", HttpMethod.Post, data, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, UserListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"users{query}", HttpMethod.Get);
+            return await bootpay.SendAsync($"users{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string userId)
         {
-            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Get);
+            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CommerceUser user)
         {
-            return await bootpay.SendAsync($"users/{user.UserId}", HttpMethod.Put, user);
+            return await bootpay.SendAsync($"users/{user.UserId}", HttpMethod.Put, user, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Delete(BootpayCommerceObject bootpay, string userId)
         {
-            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Delete);
+            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Delete, null, CommerceRequestHeaders.User());
         }
 
         private static string BuildListQuery(UserListParams listParams)

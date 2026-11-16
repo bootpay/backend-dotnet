@@ -25,7 +25,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Request(BootpayCommerceObject bootpay, OrderCancelParams cancelParams)
         {
-            return await bootpay.SendAsync("order/cancel", HttpMethod.Post, cancelParams);
+            return await bootpay.SendAsync("order/cancel", HttpMethod.Post, cancelParams, CommerceRequestHeaders.UserOrSupervisor(bootpay));
         }
 
         /// <summary>

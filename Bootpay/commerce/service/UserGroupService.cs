@@ -15,7 +15,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Create(BootpayCommerceObject bootpay, CommerceUserGroup userGroup)
         {
-            return await bootpay.SendAsync("user-groups", HttpMethod.Post, userGroup);
+            return await bootpay.SendAsync("user-groups", HttpMethod.Post, userGroup, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, UserGroupListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"user-groups{query}", HttpMethod.Get);
+            return await bootpay.SendAsync($"user-groups{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string userGroupId)
         {
-            return await bootpay.SendAsync($"user-groups/{userGroupId}", HttpMethod.Get);
+            return await bootpay.SendAsync($"user-groups/{userGroupId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CommerceUserGroup userGroup)
         {
-            return await bootpay.SendAsync($"user-groups/{userGroup.UserGroupId}", HttpMethod.Put, userGroup);
+            return await bootpay.SendAsync($"user-groups/{userGroup.UserGroupId}", HttpMethod.Put, userGroup, CommerceRequestHeaders.User());
         }
 
         /// <summary>

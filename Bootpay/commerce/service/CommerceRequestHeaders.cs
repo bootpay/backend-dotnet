@@ -41,6 +41,20 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
+        /// user 또는 supervisor 를 받는 엔드포인트용 BOOTPAY-ROLE.
+        /// 인스턴스 role 이 supervisor 면 supervisor, 그 밖(manager 포함)은 user 로 고정한다.
+        /// </summary>
+        internal static Dictionary<string, string> UserOrSupervisor(BootpayCommerceObject bootpay, string idempotencyKey = null)
+        {
+            return WithRole(IsSupervisor(bootpay) ? "supervisor" : "user", idempotencyKey);
+        }
+
+        internal static bool IsSupervisor(BootpayCommerceObject bootpay)
+        {
+            return bootpay != null && bootpay.GetCurrentRole() == "supervisor";
+        }
+
+        /// <summary>
         /// 알림톡 요청 헤더.
         /// ★Idempotency-Key 를 싣지 않는다★ 알림톡 API 는 이 헤더를 읽지 않는다 —
         ///   멱등은 발송의 ref_id 로만 성립하므로, 헤더를 붙이면 서버가 주지 않는 보장을 주는 것처럼 보인다.
@@ -63,10 +77,11 @@ namespace Bootpay.Commerce.Service
 
         /// <summary>
         /// V1 Mall API 요청 헤더 — Bootpay-User-JWT 는 값이 있을 때만 부착된다.
+        /// BOOTPAY-ROLE 은 항상 user (Mall API 엔드포인트는 전부 user 스코프).
         /// </summary>
         internal static Dictionary<string, string> Mall(string userJwt = null, string idempotencyKey = null)
         {
-            var headers = Idempotency(idempotencyKey);
+            var headers = WithRole("user", idempotencyKey);
             if (!string.IsNullOrEmpty(userJwt))
             {
                 headers["Bootpay-User-JWT"] = userJwt;

@@ -16,7 +16,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, CouponListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"coupon{query}", HttpMethod.Get);
+            return await bootpay.SendAsync($"coupon{query}", HttpMethod.Get, null, CommerceRequestHeaders.UserOrSupervisor(bootpay));
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Available(BootpayCommerceObject bootpay)
         {
-            return await bootpay.SendAsync("coupon/available", HttpMethod.Get);
+            return await bootpay.SendAsync("coupon/available", HttpMethod.Get, null, CommerceRequestHeaders.UserOrSupervisor(bootpay));
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Download(BootpayCommerceObject bootpay, CouponDownloadParams downloadParams)
         {
-            return await bootpay.SendAsync("coupon/download", HttpMethod.Post, downloadParams);
+            return await bootpay.SendAsync("coupon/download", HttpMethod.Post, downloadParams, CommerceRequestHeaders.User());
         }
 
         private static string BuildListQuery(CouponListParams listParams)

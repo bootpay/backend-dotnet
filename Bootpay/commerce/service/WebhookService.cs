@@ -15,7 +15,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> SendTest(BootpayCommerceObject bootpay, SendTestWebhookParams sendParams = null, string idempotencyKey = null)
         {
-            return await bootpay.SendAsync("webhook/test", HttpMethod.Post, sendParams ?? new SendTestWebhookParams(), CommerceRequestHeaders.Idempotency(idempotencyKey));
+            return await bootpay.SendAsync("webhook/test", HttpMethod.Post, sendParams ?? new SendTestWebhookParams(), CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
     }
 }

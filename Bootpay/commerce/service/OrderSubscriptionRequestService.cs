@@ -23,7 +23,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, OrderSubscriptionRequestListParams listParams = null, string idempotencyKey = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"order-subscription-requests{query}", HttpMethod.Get, null, RequestHeaders(listParams?.ProjectId, idempotencyKey));
+            return await bootpay.SendAsync($"order-subscription-requests{query}", HttpMethod.Get, null, RequestHeaders(bootpay, listParams?.ProjectId, idempotencyKey));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Bootpay.Commerce.Service
             var queryString = queryParams.ToString();
             var query = string.IsNullOrEmpty(queryString) ? "" : $"?{queryString}";
 
-            return await bootpay.SendAsync($"order-subscription-requests/{orderSubscriptionRequestHistoryId}{query}", HttpMethod.Get, null, RequestHeaders(projectId, idempotencyKey));
+            return await bootpay.SendAsync($"order-subscription-requests/{orderSubscriptionRequestHistoryId}{query}", HttpMethod.Get, null, RequestHeaders(bootpay, projectId, idempotencyKey));
         }
 
         /// <summary>
@@ -48,10 +48,10 @@ namespace Bootpay.Commerce.Service
             return await bootpay.SendAsync($"order-subscription-requests/{updateParams.OrderSubscriptionRequestHistoryId}", HttpMethod.Put, updateParams, CommerceRequestHeaders.Supervisor(idempotencyKey));
         }
 
-        private static System.Collections.Generic.Dictionary<string, string> RequestHeaders(string projectId, string idempotencyKey)
+        private static System.Collections.Generic.Dictionary<string, string> RequestHeaders(BootpayCommerceObject bootpay, string projectId, string idempotencyKey)
         {
             return string.IsNullOrEmpty(projectId)
-                ? CommerceRequestHeaders.User(idempotencyKey)
+                ? CommerceRequestHeaders.UserOrSupervisor(bootpay, idempotencyKey)
                 : CommerceRequestHeaders.Supervisor(idempotencyKey);
         }
 
