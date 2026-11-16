@@ -973,6 +973,16 @@ namespace Bootpay.Tests.Wire
             ("UserList", "user", a => a.UserList()),
             ("UserDetail", "user", a => a.UserDetail("u1")),
             ("UserSession", "user", a => a.UserSession()),
+            ("UserUpdate", "user", a => a.UserUpdate(new CommerceUser { UserId = "u1" })),
+            ("UserDelete", "user", a => a.UserDelete("u1")),
+            ("UserJoin", "user", a => a.UserJoin(new CommerceUser())),
+            ("UserLogin", "user", a => a.UserLogin("id", "pw")),
+            ("UserToken", "user", a => a.UserToken("u1")),
+            ("UserCheckExist", "user", a => a.UserCheckExist("email-exist", "a@b.c")),
+            ("UserAuthenticationData", "user", a => a.UserAuthenticationData("st1")),
+            ("UserJoinMall", "user", a => a.UserJoinMall(new MallUserJoinParams { LoginId = "h", Password = "pw", Name = "n" })),
+            ("UserLoginMall", "user", a => a.UserLoginMall("id", "pw")),
+            ("UserJoinCheckMall", "user", a => a.UserJoinCheckMall("id-exist", "a")),
             ("WebhookSendTest", "supervisor", a => a.WebhookSendTest()),
         };
 
