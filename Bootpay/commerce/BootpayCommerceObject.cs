@@ -27,7 +27,7 @@ namespace Bootpay.Commerce
         public const int MODE_STAGE = 2;
         public const int MODE_PRODUCTION = 3;
 
-        private const string SDK_VERSION = "2.11.1";
+        private const string SDK_VERSION = "2.12.0";
         private const string API_VERSION = "1.0.0";
         private const string SDK_TYPE = "307";
 

@@ -942,17 +942,17 @@ namespace Bootpay.Tests.Wire
             ("CouponDownload", "user", a => a.CouponDownload(new CouponDownloadParams())),
             ("DepositAccounts", "supervisor", a => a.DepositAccounts()),
             ("DepositDetail", "supervisor", a => a.DepositDetail("d1")),
-            ("NoticeDetail", "user_or_supervisor", a => a.NoticeDetail("n1")),
-            ("FaqDetail", "user_or_supervisor", a => a.FaqDetail("f1")),
-            ("ProductQnaDelete", "user_or_supervisor", a => a.ProductQnaDelete("q1")),
+            ("NoticeDetail", "user", a => a.NoticeDetail("n1")),
+            ("FaqDetail", "user", a => a.FaqDetail("f1")),
+            ("ProductQnaDelete", "user", a => a.ProductQnaDelete("q1")),
             ("InvoiceList", "user", a => a.InvoiceList()),
             ("OrderCancelRequest", "user_or_supervisor", a => a.OrderCancelRequest(new OrderCancelParams())),
             ("OrderCancelList", "user", a => a.OrderCancelList()),
-            ("OrderSubscriptionBillList", "user_or_supervisor", a => a.OrderSubscriptionBillList()),
+            ("OrderSubscriptionBillList", "user", a => a.OrderSubscriptionBillList()),
             ("OrderSubscriptionBillDetail", "user_or_supervisor", a => a.OrderSubscriptionBillDetail("b1")),
             ("OrderSubscriptionBillUpdate", "supervisor", a => a.OrderSubscriptionBillUpdate(new CommerceOrderSubscriptionBill { OrderSubscriptionBillId = "b1" })),
-            ("OrderSubscriptionRequestList", "user_or_supervisor", a => a.OrderSubscriptionRequestList()),
-            ("OrderSubscriptionRequestDetail", "user_or_supervisor", a => a.OrderSubscriptionRequestDetail("r1")),
+            ("OrderSubscriptionRequestList", "user", a => a.OrderSubscriptionRequestList()),
+            ("OrderSubscriptionRequestDetail", "user", a => a.OrderSubscriptionRequestDetail("r1")),
             ("OrderSubscriptionList", "user", a => a.OrderSubscriptionList()),
             ("OrderSubscriptionDetail", "user", a => a.OrderSubscriptionDetail("s1")),
             ("OrderSubscriptionUpdate", "supervisor", a => a.OrderSubscriptionUpdate(new OrderSubscriptionUpdateParams { OrderSubscriptionId = "s1" })),
@@ -1023,6 +1023,72 @@ namespace Bootpay.Tests.Wire
             await _api.DepositDetail("d1", "detail-key");
             Assert.Equal("/sdk/deposits/d1", _server.LastRequest.PathAndQuery);
             Assert.Equal("detail-key", _server.LastRequest.Headers["Idempotency-Key"]);
+        }
+
+        [Fact]
+        public async Task Deposit_LegacyOverloads_StillAutoGenerateKey()
+        {
+            // 기존 시그니처(바이너리 호환) — 인자 없이 불러도 멱등 키가 자동으로 실린다
+            await _api.DepositAccounts();
+            Assert.Equal("/sdk/deposits/accounts", _server.LastRequest.PathAndQuery);
+            Assert.False(string.IsNullOrEmpty(_server.LastRequest.Headers["Idempotency-Key"]));
+
+            await _api.DepositDetail("d1");
+            Assert.Equal("/sdk/deposits/d1", _server.LastRequest.PathAndQuery);
+            Assert.False(string.IsNullOrEmpty(_server.LastRequest.Headers["Idempotency-Key"]));
+        }
+
+        [Fact]
+        public async Task Board_SupervisorFlagOnly_KeepsUserOnSupervisorInstance()
+        {
+            _api.AsSupervisor();
+            await _api.FaqDetail("f1", new FaqDetailParams { Supervisor = false });
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            await _api.NoticeDetail("n1", new NoticeDetailParams { Supervisor = false });
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            await _api.ProductQnaDelete("q1", new ProductQnaDeleteParams { Supervisor = false });
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+
+            // 생략해도 user — 기존 동작 유지 (Supervisor = true 일 때만 supervisor)
+            await _api.FaqDetail("f1");
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            await _api.FaqDetail("f1", new FaqDetailParams { Supervisor = true });
+            Assert.Equal("supervisor", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            _api.ClearRole();
+        }
+
+        [Fact]
+        public async Task RoleFixedEndpoints_WithoutKeyBefore_StillSendNoIdempotencyKey()
+        {
+            // role 고정 전에 헤더가 없던 엔드포인트는 role 만 싣는다 (nodejs · go 와 같다)
+            _api.AsManager();
+            await _api.OrderList();
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.False(_server.LastRequest.Headers.ContainsKey("Idempotency-Key"));
+            await _api.CategoryList();
+            Assert.False(_server.LastRequest.Headers.ContainsKey("Idempotency-Key"));
+            await _api.OrderCancelRequest(new OrderCancelParams());
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.False(_server.LastRequest.Headers.ContainsKey("Idempotency-Key"));
+            _api.ClearRole();
+        }
+
+        [Fact]
+        public async Task UserAuthenticate_SendsContextAndKey()
+        {
+            await _api.UserAuthenticate("s1");
+            Assert.Equal("/users/authenticate/s1", _server.LastRequest.PathAndQuery);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
+            Assert.False(string.IsNullOrEmpty(_server.LastRequest.Headers["Idempotency-Key"]));
+
+            await _api.UserAuthenticate("s1", "signup", "auth-key");
+            Assert.Equal("/users/authenticate/s1?verification_context=signup", _server.LastRequest.PathAndQuery);
+            Assert.Equal("auth-key", _server.LastRequest.Headers["Idempotency-Key"]);
+
+            // 호환 별칭은 같은 엔드포인트로 간다
+            await _api.UserAuthenticationData("s2");
+            Assert.Equal("/users/authenticate/s2", _server.LastRequest.PathAndQuery);
+            Assert.Equal("user", _server.LastRequest.Headers["BOOTPAY-ROLE"]);
         }
 
         [Fact]

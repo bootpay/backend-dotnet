@@ -18,7 +18,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, OrderSubscriptionBillListParams listParams = null, string idempotencyKey = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"order_subscription_bills{query}", HttpMethod.Get, null, CommerceRequestHeaders.UserOrSupervisor(bootpay, idempotencyKey));
+            return await bootpay.SendAsync($"order_subscription_bills{query}", HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string orderSubscriptionBillId)
         {
-            return await bootpay.SendAsync($"order_subscription_bills/{orderSubscriptionBillId}", HttpMethod.Get, null, CommerceRequestHeaders.UserOrSupervisor(bootpay));
+            return await bootpay.SendAsync($"order_subscription_bills/{orderSubscriptionBillId}", HttpMethod.Get, null, CommerceRequestHeaders.UserOrSupervisorRoleOnly(bootpay));
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CommerceOrderSubscriptionBill orderSubscriptionBill)
         {
-            return await bootpay.SendAsync($"order_subscription_bills/{orderSubscriptionBill.OrderSubscriptionBillId}", HttpMethod.Put, orderSubscriptionBill, CommerceRequestHeaders.Supervisor());
+            return await bootpay.SendAsync($"order_subscription_bills/{orderSubscriptionBill.OrderSubscriptionBillId}", HttpMethod.Put, orderSubscriptionBill, CommerceRequestHeaders.RoleOnly("supervisor"));
         }
 
         private static string BuildListQuery(OrderSubscriptionBillListParams listParams)

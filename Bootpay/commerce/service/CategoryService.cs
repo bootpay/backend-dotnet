@@ -14,7 +14,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay)
         {
-            return await bootpay.SendAsync("categories", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync("categories", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string categoryId)
         {
-            return await bootpay.SendAsync($"categories/{categoryId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"categories/{categoryId}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>

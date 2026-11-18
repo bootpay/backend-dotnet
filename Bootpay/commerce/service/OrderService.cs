@@ -18,7 +18,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, OrderListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"orders{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"orders{query}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string orderId)
         {
-            return await bootpay.SendAsync($"orders/{orderId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"orders/{orderId}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Bootpay.Commerce.Service
             var queryParams = HttpUtility.ParseQueryString(string.Empty);
             queryParams["user_group_id"] = userGroupId;
             queryParams["search_date"] = searchDate;
-            return await bootpay.SendAsync($"orders/month?{queryParams}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"orders/month?{queryParams}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -16,7 +17,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> Token(BootpayCommerceObject bootpay, string userId)
         {
             var data = new { user_id = userId };
-            return await bootpay.SendAsync("users/login/token", HttpMethod.Post, data, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync("users/login/token", HttpMethod.Post, data, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Join(BootpayCommerceObject bootpay, CommerceUser user)
         {
-            return await bootpay.SendAsync("users/join", HttpMethod.Post, user, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync("users/join", HttpMethod.Post, user, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -33,15 +34,30 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> CheckExist(BootpayCommerceObject bootpay, string key, string value)
         {
             var encodedValue = HttpUtility.UrlEncode(value);
-            return await bootpay.SendAsync($"users/join/{key}?pk={encodedValue}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"users/join/{key}?pk={encodedValue}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
         /// 본인인증 데이터 조회
         /// </summary>
+        /// <remarks>호환용 별칭 — <see cref="UserAuthenticate"/> 로 위임한다 (같은 엔드포인트).</remarks>
         public static async Task<HttpResponseMessage> AuthenticationData(BootpayCommerceObject bootpay, string standId)
         {
-            return await bootpay.SendAsync($"users/authenticate/{standId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await UserAuthenticate(bootpay, standId);
+        }
+
+        /// <summary>
+        /// 가입 이메일 인증 대기 상태 조회 — GET /v1/users/authenticate/{user_standby_id}, BOOTPAY-ROLE: user
+        /// </summary>
+        /// <param name="userStandbyId">가입 대기(user_standby) ID</param>
+        /// <param name="verificationContext">인증 컨텍스트 (선택, null 이면 전송하지 않는다)</param>
+        /// <param name="idempotencyKey">미지정시 자동 생성</param>
+        public static async Task<HttpResponseMessage> UserAuthenticate(BootpayCommerceObject bootpay, string userStandbyId, string verificationContext = null, string idempotencyKey = null)
+        {
+            var path = $"users/authenticate/{Uri.EscapeDataString(userStandbyId ?? string.Empty)}";
+            if (!string.IsNullOrEmpty(verificationContext))
+                path += $"?verification_context={Uri.EscapeDataString(verificationContext)}";
+            return await bootpay.SendAsync(path, HttpMethod.Get, null, CommerceRequestHeaders.User(idempotencyKey));
         }
 
         /// <summary>
@@ -50,7 +66,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> Login(BootpayCommerceObject bootpay, string loginId, string loginPw)
         {
             var data = new { login_id = loginId, login_pw = loginPw };
-            return await bootpay.SendAsync("users/login", HttpMethod.Post, data, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync("users/login", HttpMethod.Post, data, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -134,7 +150,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, UserListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"users{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"users{query}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -142,7 +158,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Detail(BootpayCommerceObject bootpay, string userId)
         {
-            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -150,7 +166,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Update(BootpayCommerceObject bootpay, CommerceUser user)
         {
-            return await bootpay.SendAsync($"users/{user.UserId}", HttpMethod.Put, user, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"users/{user.UserId}", HttpMethod.Put, user, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>
@@ -158,7 +174,7 @@ namespace Bootpay.Commerce.Service
         /// </summary>
         public static async Task<HttpResponseMessage> Delete(BootpayCommerceObject bootpay, string userId)
         {
-            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Delete, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"users/{userId}", HttpMethod.Delete, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         private static string BuildListQuery(UserListParams listParams)

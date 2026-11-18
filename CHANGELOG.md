@@ -1,4 +1,4 @@
-### Unreleased
+### 2.12.0
 
 #### 주문 발송 정보 조회·발송처리 추가 (ruby `b762095` parity, 수동 포팅)
 
@@ -13,12 +13,21 @@ role 헤더를 싣지 않던 커머스 메서드가 인스턴스 role(`AsManager
 
 - `user` 고정: 장바구니 미리보기·카테고리 조회·쿠폰 받기·주문 조회/월별·구독 조회·포인트·상품 조회·스토어·회원 그룹 CRUD·회원 API 전부(Mall 헬퍼 포함).
 - `supervisor` 고정: 구독 청구 수정(`OrderSubscriptionBillUpdate`)·웹훅 테스트(`WebhookSendTest`).
-- `user_or_supervisor`: 인스턴스 role 이 supervisor 면 supervisor, 그 밖(manager 포함)은 user — 쿠폰 목록·사용 가능, 주문 취소 요청, 구독 청구 목록·상세, 구독 변경 요청 목록·상세(`project_id` 지정시 supervisor 유지), 구독 수정(`OrderSubscriptionUpdate`), 공지·FAQ 상세, 상품 문의 삭제(`Supervisor = true` 도 supervisor).
+- `user_or_supervisor`: 인스턴스 role 이 supervisor 면 supervisor, 그 밖(manager 포함)은 user — 쿠폰 목록·사용 가능, 주문 취소 요청, 구독 청구 상세.
+- 이미 role 을 명시하던 엔드포인트는 기존 동작을 그대로 둔다 — supervisor 인스턴스여도 바뀌지 않는다. 공지·FAQ 상세·상품 문의 삭제는 `Supervisor = true` 일 때만 supervisor(그 외 user), 구독 청구 목록은 user, 구독 변경 요청 목록·상세는 `project_id` 가 있을 때만 supervisor(그 외 user).
+- `supervisor` 고정에 구독 수정(`OrderSubscriptionUpdate`)도 포함된다.
 - 표에 없는 목록·삭제 엔드포인트(공지·FAQ·문의·리뷰 목록 등)는 기존 동작을 유지한다.
+- role 고정 전에 헤더가 없던 엔드포인트(주문·카테고리·포인트·회원·회원그룹 조회, 주문 취소 신청, 쿠폰 받기 등)는 `BOOTPAY-ROLE` 만 싣고 `Idempotency-Key` 를 새로 붙이지 않는다 (nodejs · go 와 동일).
 
 #### 입금대기 `DepositAccounts` · `DepositDetail` 에 `idempotencyKey` 추가
 
-`DepositAccounts(idempotencyKey = null)` · `DepositDetail(id, idempotencyKey = null)`. 지정하면 그 값을, 아니면 자동 생성한 값을 `Idempotency-Key` 로 보낸다.
+`DepositAccounts(idempotencyKey)` · `DepositDetail(id, idempotencyKey)` 오버로드를 추가했다. 지정하면 그 값을, null 이면 자동 생성한 값을 `Idempotency-Key` 로 보낸다.
+기존 `DepositAccounts()` · `DepositDetail(id)` · `DepositService.Accounts(bootpay)` · `DepositService.Detail(bootpay, id)` 시그니처는 그대로 남겨 이미 컴파일된 소비자도 깨지지 않는다(바이너리 호환).
+
+#### 가입 이메일 인증 대기 상태 조회 `UserAuthenticate` 추가 (nodejs `userAuthenticate` parity)
+
+- `UserAuthenticate(userStandbyId, verificationContext = null, idempotencyKey = null)` — `GET /v1/users/authenticate/{user_standby_id}`, `BOOTPAY-ROLE: user`, `Idempotency-Key` 자동 생성. `verificationContext` 는 지정했을 때만 query 로 싣는다.
+- 기존 `UserAuthenticationData(standId)` 는 같은 엔드포인트로 위임하는 호환 별칭으로 남는다.
 
 #### 빈 경로 id 는 요청을 보내지 않고 `ArgumentException`
 

@@ -41,12 +41,21 @@ namespace Bootpay.Commerce.Service
         }
 
         /// <summary>
-        /// user 또는 supervisor 를 받는 엔드포인트용 BOOTPAY-ROLE.
+        /// BOOTPAY-ROLE 만 싣는다 (Idempotency-Key 없음).
+        /// role 고정 전에 헤더가 없던 엔드포인트용 — role 을 고정하면서 멱등 키까지 새로 붙이지 않도록 nodejs · go 와 맞춘다.
+        /// </summary>
+        internal static Dictionary<string, string> RoleOnly(string role)
+        {
+            return new Dictionary<string, string> { { "BOOTPAY-ROLE", role } };
+        }
+
+        /// <summary>
+        /// user 또는 supervisor 를 받는 엔드포인트용 BOOTPAY-ROLE (Idempotency-Key 없음).
         /// 인스턴스 role 이 supervisor 면 supervisor, 그 밖(manager 포함)은 user 로 고정한다.
         /// </summary>
-        internal static Dictionary<string, string> UserOrSupervisor(BootpayCommerceObject bootpay, string idempotencyKey = null)
+        internal static Dictionary<string, string> UserOrSupervisorRoleOnly(BootpayCommerceObject bootpay)
         {
-            return WithRole(IsSupervisor(bootpay) ? "supervisor" : "user", idempotencyKey);
+            return RoleOnly(IsSupervisor(bootpay) ? "supervisor" : "user");
         }
 
         internal static bool IsSupervisor(BootpayCommerceObject bootpay)

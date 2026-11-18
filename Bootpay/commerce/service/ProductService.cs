@@ -18,7 +18,7 @@ namespace Bootpay.Commerce.Service
         public static async Task<HttpResponseMessage> List(BootpayCommerceObject bootpay, ProductListParams listParams = null)
         {
             var query = BuildListQuery(listParams);
-            return await bootpay.SendAsync($"products{query}", HttpMethod.Get, null, CommerceRequestHeaders.User());
+            return await bootpay.SendAsync($"products{query}", HttpMethod.Get, null, CommerceRequestHeaders.RoleOnly("user"));
         }
 
         /// <summary>

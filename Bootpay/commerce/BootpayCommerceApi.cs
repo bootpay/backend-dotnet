@@ -50,6 +50,17 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>
+        /// 가입 이메일 인증 대기 상태 조회 (UserAuthenticationData 와 같은 엔드포인트)
+        /// </summary>
+        /// <param name="userStandbyId">가입 대기(user_standby) ID</param>
+        /// <param name="verificationContext">인증 컨텍스트 (선택)</param>
+        /// <param name="idempotencyKey">미지정시 자동 생성</param>
+        public async Task<HttpResponseMessage> UserAuthenticate(string userStandbyId, string verificationContext = null, string idempotencyKey = null)
+        {
+            return await UserService.UserAuthenticate(this, userStandbyId, verificationContext, idempotencyKey);
+        }
+
+        /// <summary>
         /// 로그인
         /// </summary>
         public async Task<HttpResponseMessage> UserLogin(string loginId, string loginPw)
@@ -844,7 +855,13 @@ namespace Bootpay.Commerce
         #region Deposit (뱅크알람 입금대기)
 
         /// <summary>판매자 입금 계좌 목록. 첫 계좌가 대표 계좌(primary: true)다.</summary>
-        public Task<HttpResponseMessage> DepositAccounts(string idempotencyKey = null)
+        public Task<HttpResponseMessage> DepositAccounts()
+        {
+            return DepositService.Accounts(this, null);
+        }
+
+        /// <summary>판매자 입금 계좌 목록 — 멱등 키 지정. null 이면 자동 생성.</summary>
+        public Task<HttpResponseMessage> DepositAccounts(string idempotencyKey)
         {
             return DepositService.Accounts(this, idempotencyKey);
         }
@@ -862,7 +879,13 @@ namespace Bootpay.Commerce
         }
 
         /// <summary>가맹점 주문번호 또는 부트페이 주문번호로 조회. 기한이 지났으면 만료로 닫힌다.</summary>
-        public Task<HttpResponseMessage> DepositDetail(string id, string idempotencyKey = null)
+        public Task<HttpResponseMessage> DepositDetail(string id)
+        {
+            return DepositService.Detail(this, id, null);
+        }
+
+        /// <summary>입금대기 조회 — 멱등 키 지정. null 이면 자동 생성.</summary>
+        public Task<HttpResponseMessage> DepositDetail(string id, string idempotencyKey)
         {
             return DepositService.Detail(this, id, idempotencyKey);
         }
